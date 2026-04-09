@@ -29,3 +29,10 @@
 *.sn*
 *.sa*
 *.sg1
+
+# native build trees
+/build-native/
+/cmake-build-*/
+
+# local Codex workspace state
+/.codex/

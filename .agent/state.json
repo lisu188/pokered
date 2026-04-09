@@ -1,0 +1,58 @@
+{
+  "phase": "pallet_town_slice_running",
+  "active_task": "Keep the playable Pallet Town slice green while extending adjacent interiors, outdoor script seams, and runtime-facing provenance.",
+  "completed_tasks": [
+    "Created work branch native-sdl-bootstrap",
+    "Validated original RGBDS oracle build under WSL",
+    "Created durable memory files and local agent definitions",
+    "Merged first exploration pass into the wiki",
+    "Chose RedsHouse1F as the first native playable slice",
+    "Created the top-level native CMake + SDL2 project skeleton",
+    "Implemented deterministic native save/load for the first slice",
+    "Built a runnable native title -> menu -> RedsHouse1F slice",
+    "Verified native build, unit tests, and smoke test locally",
+    "Confirmed RedsHouse1F uses source-driven .blk + .bst + collision metadata import",
+    "Hardened the MinGW CMake path to link SDL2main when provided by the SDL2 package",
+    "Added paged Mom/TV text so the exact RedsHouse1F lines fit the current native text box",
+    "Hardened the native save format with temp-file replacement, explicit payload sizing, and corrupted-save rejection tests",
+    "Imported RedsHouse1F warps/bg events/NPC placement and Mom/TV text from asm source files",
+    "Added .map section parsing and joined .sym symbols to .map sections in native oracle tests",
+    "Extended the native slice to source-driven RedsHouse2F import",
+    "Implemented stair warp traversal between RedsHouse1F and RedsHouse2F",
+    "Re-verified the two-room native slice on the Linux SDL CMake path",
+    "Generalized the indoor importer to a second tileset family through source-driven PewterSpeechHouse import",
+    "Added NPC-specific static text dispatch for non-RedsHouse indoor maps",
+    "Re-verified the three-room indoor slice on the Linux SDL CMake path",
+    "Added a source-driven PalletTown exterior slice with Overworld blockset/collision import",
+    "Implemented LAST_MAP door traversal for supported native maps",
+    "Switched the native SDL renderer to a scrolling camera for larger maps",
+    "Re-verified the PalletTown slice on the Linux SDL CMake path",
+    "Imported BluesHouse as the next PalletTown-adjacent live interior",
+    "Re-verified the expanded PalletTown hub with BluesHouse on the Linux SDL CMake path"
+  ],
+  "blockers": [
+    "MinGW cross-compilation tools are not installed locally",
+    "No MinGW SDL2 development package with SDL2Config.cmake is installed locally",
+    "No emulator/debugger is installed locally yet for ROM-side differential traces",
+    "Runtime-facing provenance overlays and trace hooks beyond the current oracle tests are still missing",
+    "OaksLab, Route1, and Route21 are still unimplemented even though PalletTown now has two live interior doors",
+    "Oak's PalletTown script chain and town-edge cutscene logic are still intentionally deferred",
+    "BluesHouse Daisy's Town Map gift path is still intentionally simplified to the default static-text branch until native item/event state exists",
+    "The current importer is now validated for the RedsHouse, House, and Overworld tilesets used by the first town slice, but broader tileset coverage is still missing"
+  ],
+  "next_actions": [
+    "Import OaksLab as the next PalletTown-adjacent live interior",
+    "Decide whether Oak should remain static text for now or gain the first PalletTown cutscene seam",
+    "Evaluate Route1/Route21 boundary handling once the next PalletTown door is live",
+    "Decide whether BluesHouse Daisy should stay on the default dialogue branch or gain the first small indoor gift/event seam",
+    "Lift current oracle provenance from test coverage into runtime-facing debug and trace hooks",
+    "Broaden indoor metadata import beyond the current RedsHouse and House tilesets once the exterior seam is stable",
+    "Verify the documented MinGW cross-build path once the compiler and SDL2 packages are available",
+    "Pick the next small interior after OaksLab once the PalletTown hub is broader"
+  ],
+  "resume_instructions": [
+    "Read AGENTS.md, .agent/state.json, .agent/EXECPLAN.md, .agent/wiki/index.md, and the most relevant wiki pages first",
+    "Continue from next_actions without re-asking for context",
+    "Update .agent/wiki/index.md and .agent/wiki/log.md after every meaningful finding or milestone"
+  ]
+}

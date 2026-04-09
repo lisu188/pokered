@@ -1,0 +1,83 @@
+#pragma once
+
+#include <cstdint>
+
+namespace pokered {
+
+enum class SceneId : std::uint8_t {
+  Title = 0,
+  World = 1,
+};
+
+enum class Facing : std::uint8_t {
+  Up = 0,
+  Down = 1,
+  Left = 2,
+  Right = 3,
+};
+
+enum class WorldId : std::uint8_t {
+  RedsHouse1F = 0,
+  RedsHouse2F = 1,
+  PewterSpeechHouse = 2,
+  PalletTown = 3,
+  BluesHouse = 4,
+  OaksLab = 5,
+};
+
+enum class MessageId : std::uint8_t {
+  None = 0,
+  MomWakeUp,
+  MomRest,
+  TvMovie,
+  TvWrongSide,
+  PewterSpeechHouseGambler,
+  PewterSpeechHouseYoungster,
+  BluesHouseDaisyRivalAtLab,
+  BluesHouseDaisyWalking,
+  BluesHouseTownMap,
+  PalletTownOak,
+  PalletTownGirl,
+  PalletTownFisher,
+  PalletTownOaksLabSign,
+  PalletTownSign,
+  PalletTownPlayersHouseSign,
+  PalletTownRivalsHouseSign,
+  SaveOk,
+  LoadOk,
+  SaveMissing,
+  SaveCorrupt,
+};
+
+inline constexpr std::uint16_t kNoLastMap = 0xFFFFu;
+
+struct PlayerState {
+  int x = 3;
+  int y = 6;
+  Facing facing = Facing::Up;
+};
+
+struct WorldState {
+  WorldId map_id = WorldId::RedsHouse1F;
+  PlayerState player {};
+  bool got_starter = false;
+  std::uint32_t rng_state = 0x4F414B31u;
+  std::uint64_t step_counter = 0;
+  std::uint16_t last_map = kNoLastMap;
+  std::uint8_t last_warp = 1;
+};
+
+struct GameState {
+  SceneId scene = SceneId::Title;
+  int menu_index = 0;
+  bool has_save = false;
+  WorldState world {};
+  MessageId active_message = MessageId::None;
+  int active_message_page = 0;
+  bool running = true;
+};
+
+void StartNewGameShortcut(GameState& state);
+bool TryMove(WorldState& world, Facing facing);
+
+}  // namespace pokered
