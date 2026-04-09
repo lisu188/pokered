@@ -58,3 +58,7 @@
   - event-flag lookups
   - trainer battle handoffs
   - text callback transitions
+
+## Provenance Note
+- Runtime-facing provenance is no longer test-only: the SDL app can now display the current map's source header/object labels and section ownership through the existing `.sym` / `.map` plumbing.
+- The current overlay is intentionally observational only and does not yet trace script-state transitions, warp history, or object toggles.

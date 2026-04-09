@@ -3,11 +3,16 @@
 #include <algorithm>
 #include <SDL.h>
 
+#include <cstdio>
 #include <filesystem>
 #include <iostream>
+#include <string>
 #include <string_view>
 
 #include "pokered/core/game_state.hpp"
+#include "pokered/oracle/map_file.hpp"
+#include "pokered/oracle/provenance.hpp"
+#include "pokered/oracle/symbol_file.hpp"
 #include "pokered/save/save_system.hpp"
 #include "pokered/ui/bitmap_font.hpp"
 #include "pokered/world/map_data.hpp"
@@ -36,6 +41,7 @@ struct FrameInput {
   bool load = false;
   bool toggle_starter = false;
   bool cycle_map = false;
+  bool toggle_provenance = false;
 };
 
 struct CameraView {
@@ -47,9 +53,23 @@ struct CameraView {
   int render_y = kMapOffsetY;
 };
 
+struct OracleContext {
+  oracle::SymbolTable symbols {};
+  oracle::MapSections sections {};
+  bool available = false;
+};
+
 const std::filesystem::path& SavePath() {
   static const std::filesystem::path path = "native-save.sav";
   return path;
+}
+
+std::filesystem::path OraclePath(std::string_view filename) {
+#ifdef POKERED_NATIVE_SOURCE_DIR
+  return std::filesystem::path(POKERED_NATIVE_SOURCE_DIR) / std::filesystem::path(filename);
+#else
+  return std::filesystem::path(filename);
+#endif
 }
 
 std::filesystem::path TempRuntimePath(std::string_view filename) {
@@ -84,6 +104,14 @@ CameraView BuildCameraView(const MapData& map, const WorldState& world) {
   view.render_x = kMapOffsetX + (kMapViewportWidth - view.width) * kTilePixels / 2;
   view.render_y = kMapOffsetY + (kMapViewportHeight - view.height) * kTilePixels / 2;
   return view;
+}
+
+OracleContext LoadOracleContext() {
+  OracleContext context {};
+  context.symbols = oracle::SymbolFile::Load(OraclePath("pokered.sym"));
+  context.sections = oracle::MapFile::Load(OraclePath("pokered.map"));
+  context.available = !context.symbols.empty() && !context.sections.empty();
+  return context;
 }
 
 int FindPalletTownNorthExitX(const MapData& map) {
@@ -129,6 +157,34 @@ void HandleWorldMove(GameState& state, Facing facing) {
   if (result.message != MessageId::None) {
     ShowMessage(state, result.message);
   }
+}
+
+std::string FormatSymbolLocation(const oracle::ProvenanceSymbol& symbol) {
+  char buffer[16];
+  std::snprintf(buffer, sizeof(buffer), "%02X:%04X", symbol.address.bank, symbol.address.address);
+
+  std::string text(buffer);
+  if (symbol.section) {
+    text.push_back(' ');
+    text += symbol.section->name;
+  } else {
+    text += " no-section";
+  }
+  return text;
+}
+
+std::string BuildProvenanceText(const GameState& state, const OracleContext& oracle_context) {
+  if (!oracle_context.available) {
+    return "ORACLE DATA\nNOT FOUND";
+  }
+
+  const auto provenance = oracle::LookupMapProvenance(oracle_context.symbols, oracle_context.sections, state.world.map_id);
+  if (!provenance) {
+    return "PROVENANCE\nUNAVAILABLE";
+  }
+
+  return provenance->header.label + "\n" + FormatSymbolLocation(provenance->header) + "\n" +
+         provenance->object.label + "\n" + FormatSymbolLocation(provenance->object);
 }
 
 void TryLoadGame(GameState& state) {
@@ -269,6 +325,9 @@ FrameInput PollInput(GameState& state) {
       case SDLK_F6:
         input.cycle_map = true;
         break;
+      case SDLK_F7:
+        input.toggle_provenance = true;
+        break;
       default:
         break;
     }
@@ -297,13 +356,16 @@ void UpdateTitle(GameState& state, const FrameInput& input) {
   }
 }
 
-void UpdateWorld(GameState& state, const FrameInput& input) {
+void UpdateWorld(GameState& state, const FrameInput& input, bool& show_provenance) {
   if (input.toggle_starter) {
     state.world.got_starter = !state.world.got_starter;
   }
   if (input.cycle_map) {
     CycleDebugMap(state);
     return;
+  }
+  if (input.toggle_provenance) {
+    show_provenance = !show_provenance;
   }
 
   if (state.active_message != MessageId::None) {
@@ -361,17 +423,22 @@ SDL_Color TileColor(TileKind tile) {
   return {0, 0, 0, 255};
 }
 
-void DrawMessageBox(SDL_Renderer* renderer, const GameState& state) {
+void DrawMessageBox(SDL_Renderer* renderer,
+                    const GameState& state,
+                    bool show_provenance,
+                    const OracleContext& oracle_context) {
   if (state.active_message == MessageId::None) {
     SDL_SetRenderDrawColor(renderer, 24, 28, 36, 255);
     const SDL_Rect info {4, kTextBoxY, 152, 42};
     SDL_RenderFillRect(renderer, &info);
     SDL_SetRenderDrawColor(renderer, 205, 214, 221, 255);
     SDL_RenderDrawRect(renderer, &info);
+    const std::string text = show_provenance ? BuildProvenanceText(state, oracle_context)
+                                             : "ARROWS MOVE  Z TALK\nF5 SAVE  F9 LOAD\nF6 MAP  F7 ORCL\nG FLAG";
     DrawText(renderer,
              8,
              kTextBoxY + 6,
-             "ARROWS MOVE  Z TALK\nF5 SAVE  F9 LOAD\nF6 NEXT MAP  G FLAG",
+             text,
              SDL_Color {240, 240, 240, 255},
              1);
     return;
@@ -408,13 +475,16 @@ void RenderTitle(SDL_Renderer* renderer, const GameState& state) {
            state.has_save ? (state.menu_index == 1 ? active : inactive) : disabled, 1);
 
   if (state.active_message != MessageId::None) {
-    DrawMessageBox(renderer, state);
+    DrawMessageBox(renderer, state, false, OracleContext {});
   } else {
     DrawText(renderer, 26, 126, "ENTER OR Z", SDL_Color {180, 180, 180, 255}, 1);
   }
 }
 
-void RenderWorld(SDL_Renderer* renderer, const GameState& state) {
+void RenderWorld(SDL_Renderer* renderer,
+                 const GameState& state,
+                 bool show_provenance,
+                 const OracleContext& oracle_context) {
   SDL_SetRenderDrawColor(renderer, 140, 188, 216, 255);
   SDL_RenderClear(renderer);
 
@@ -478,7 +548,7 @@ void RenderWorld(SDL_Renderer* renderer, const GameState& state) {
     DrawText(renderer, 92, 4, "STARTER FLAG", SDL_Color {20, 20, 20, 255}, 1);
   }
 
-  DrawMessageBox(renderer, state);
+  DrawMessageBox(renderer, state, show_provenance, oracle_context);
 }
 
 int RunSmokeTest() {
@@ -605,6 +675,8 @@ int Application::Run(int argc, char** argv) const {
   SDL_RenderSetLogicalSize(renderer, kLogicalWidth, kLogicalHeight);
 
   GameState state {};
+  const OracleContext oracle_context = LoadOracleContext();
+  bool show_provenance = false;
   RefreshSaveAvailability(state);
 
   while (state.running) {
@@ -614,13 +686,13 @@ int Application::Run(int argc, char** argv) const {
     } else if (state.scene == SceneId::Title) {
       UpdateTitle(state, input);
     } else {
-      UpdateWorld(state, input);
+      UpdateWorld(state, input, show_provenance);
     }
 
     if (state.scene == SceneId::Title) {
       RenderTitle(renderer, state);
     } else {
-      RenderWorld(renderer, state);
+      RenderWorld(renderer, state, show_provenance, oracle_context);
     }
 
     SDL_RenderPresent(renderer);

@@ -288,6 +288,8 @@ add_executable(pokered_native
     native/src/ui/bitmap_font.cpp
     native/src/core/game_state.cpp
     native/src/oracle/map_file.cpp
+    native/src/oracle/provenance.cpp
+    native/src/oracle/symbol_file.cpp
     native/src/world/map_data.cpp
     native/src/save/save_system.cpp
     "${POKERED_NATIVE_GENERATED_DIR}/reds_house_1f_blk.hpp"
@@ -314,6 +316,10 @@ target_include_directories(pokered_native
         native/include
         "${POKERED_NATIVE_GENERATED_DIR}"
 )
+target_compile_definitions(pokered_native
+    PRIVATE
+        POKERED_NATIVE_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\"
+)
 target_compile_options(pokered_native PRIVATE -Wall -Wextra -Wpedantic)
 target_link_libraries(pokered_native PRIVATE ${POKERED_NATIVE_SDL_LIBS})
 
@@ -324,6 +330,7 @@ if(POKERED_NATIVE_BUILD_TESTS)
         native/tests/save_system_tests.cpp
         native/src/core/game_state.cpp
         native/src/oracle/map_file.cpp
+        native/src/oracle/provenance.cpp
         native/src/oracle/symbol_file.cpp
         native/src/world/map_data.cpp
         native/src/save/save_system.cpp

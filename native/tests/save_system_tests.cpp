@@ -7,6 +7,7 @@
 
 #include "pokered/core/game_state.hpp"
 #include "pokered/oracle/map_file.hpp"
+#include "pokered/oracle/provenance.hpp"
 #include "pokered/oracle/symbol_file.hpp"
 #include "pokered/save/save_system.hpp"
 #include "pokered/world/map_data.hpp"
@@ -89,6 +90,26 @@ int main() {
   }
   if (!ExpectSectionForSymbol(symbols, sections, "BluesHouse_Object", 0x06, 0x5BCE, "ROMX", "Maps 2")) {
     std::cerr << "expected BluesHouse_Object section ownership in pokered.map\n";
+    return 1;
+  }
+  const auto pallet_provenance = pokered::oracle::LookupMapProvenance(symbols, sections, pokered::WorldId::PalletTown);
+  if (!pallet_provenance || pallet_provenance->header.label != "PalletTown_h" ||
+      pallet_provenance->header.address.bank != 0x06 || pallet_provenance->header.address.address != 0x42A1 ||
+      !pallet_provenance->header.section || pallet_provenance->header.section->name != "Maps 1" ||
+      pallet_provenance->object.label != "PalletTown_Object" ||
+      pallet_provenance->object.address.bank != 0x06 || pallet_provenance->object.address.address != 0x42C3 ||
+      !pallet_provenance->object.section || pallet_provenance->object.section->name != "Maps 1") {
+    std::cerr << "expected PalletTown provenance lookup\n";
+    return 1;
+  }
+  const auto oaks_provenance = pokered::oracle::LookupMapProvenance(symbols, sections, pokered::WorldId::OaksLab);
+  if (!oaks_provenance || oaks_provenance->header.label != "OaksLab_h" ||
+      oaks_provenance->header.address.bank != 0x07 || oaks_provenance->header.address.address != 0x4B02 ||
+      !oaks_provenance->header.section || oaks_provenance->header.section->name != "Maps 4" ||
+      oaks_provenance->object.label != "OaksLab_Object" ||
+      oaks_provenance->object.address.bank != 0x07 || oaks_provenance->object.address.address != 0x540A ||
+      !oaks_provenance->object.section || oaks_provenance->object.section->name != "Maps 4") {
+    std::cerr << "expected OaksLab provenance lookup\n";
     return 1;
   }
 

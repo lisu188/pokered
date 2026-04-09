@@ -66,6 +66,7 @@
 - Oracle provenance coverage currently verifies:
   - `native/src/oracle/symbol_file.cpp` can load `pokered.sym`
   - `native/src/oracle/map_file.cpp` can load `pokered.map`
+  - `native/src/oracle/provenance.cpp` can join current-map header/object labels to symbol addresses and `.map` sections for runtime-facing use
   - symbol lookup for `EnterMap`, `OverworldLoop`, `PalletTown_h`, `BluesHouse_h`, `OaksLab_h`, `RedsHouse1F_h`, `RedsHouse2F_h`, `PewterSpeechHouse_h`, and `TryLoadSaveFile`
   - `.sym` + `.map` section containment for `Home`, `Maps 1`, `Maps 2`, `Maps 8`, `Maps 15`, `Maps 4`, and `bank1C`
 
@@ -81,7 +82,7 @@
 - keep deterministic save/load as a native milestone requirement, not a later cleanup item
 
 ## Next Verification Work
-- lift the existing `.sym` / `.map` plumbing into runtime-facing provenance hooks
+- extend the current runtime-facing provenance overlay into richer warp and trace hooks
 - add the next outdoor-adjacent scenario beyond the now-live `OaksLab` seam
 - add checks for deferred `LAST_MAP` door behavior on maps beyond the PalletTown seam
 - add importer regression checks for the lower-left representative tile rule used by overworld collision/warp semantics

@@ -28,6 +28,7 @@
 - [x] Import `BluesHouse` as the next PalletTown-adjacent live interior
 - [x] Import `OaksLab` as the next PalletTown-adjacent live interior
 - [x] Add the first bounded `PalletTown` Oak north-exit warning seam
+- [x] Lift current `.sym` / `.map` provenance into a runtime-facing current-map overlay
 
 ## Current Working Assumptions
 - The disassembly remains the authoritative behavior specification.
@@ -39,7 +40,7 @@
 - No MinGW cross-toolchain installed locally yet
 - No MinGW SDL2 package installed locally yet
 - No emulator-backed trace harness yet
-- Runtime-facing provenance UI/trace hooks are still missing even though `.sym` and `.map` parsing now exist in native code
+- Runtime-facing provenance is now available as a current-map header/object overlay, but broader warp/trace hooks are still missing
 - Map import is currently proven for the `RedsHouse*`, `HOUSE`, and one `OVERWORLD` slice, but not yet broader than that
 - `Route1` and `Route21` are still not imported, so PalletTown is broader but still a bounded hub
 - Oak's PalletTown follow-to-lab chain and the `OaksLab` starter / rival sequence remain deferred
@@ -67,6 +68,6 @@
 - Decide whether to keep `OaksLab` on safe default dialogue branches or implement the first starter / rival script seam.
 - Decide whether to extend the bounded `PalletTown` Oak warning into the full follow-to-lab cutscene.
 - Decide whether `BluesHouse` Daisy should remain a static-text simplification or become the first small indoor gift/event seam.
-- Lift the existing `.sym` / `.map` provenance plumbing into runtime-facing debug and trace hooks.
+- Extend the current `.sym` / `.map` overlay into richer runtime-facing warp and trace hooks.
 - Broaden the importer to another tileset family after the exterior seam is stable.
 - Validate the documented WSL -> MinGW -> `.exe` flow once the missing compiler and SDL2 packages are available.

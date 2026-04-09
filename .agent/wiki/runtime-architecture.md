@@ -87,12 +87,13 @@
   - paged Mom/TV dialogue so the exact first-slice lines fit the current message box
   - source-backed `RedsHouse1F` warps/bg events/NPC placement and Mom/TV text imported from asm
   - `.sym` + `.map` oracle parsing in native code for provenance-oriented tests
+  - a runtime-facing `F7` overlay that shows the current map's header/object labels plus bank/section ownership from `pokered.sym` and `pokered.map`
   - `LAST_MAP` door traversal for supported native maps
   - camera-based SDL world rendering for larger maps on the Linux/WSL window size
 
 ## Current Gaps
 - Real `gfx/tilesets/reds_house.2bpp` graphics are not rendered yet; the first slice still uses semantic colors.
-- Runtime-facing provenance overlays and trace hooks are still missing even though `.sym` and `.map` parsing now exist.
+- Runtime-facing provenance is currently limited to a current-map header/object overlay; richer warp and trace hooks are still missing.
 - The current control flow is still a native simplification of the original map script/text dispatch rather than a reusable generated script runtime.
 - `Route1` and `Route21` are still not imported, so PalletTown is currently a broader bounded hub rather than a full outdoor progression map.
 - `BluesHouse` Daisy's Town Map gift path is still simplified to the default static-text branch; native item/event state does not exist yet.
@@ -162,6 +163,7 @@
 - The `BluesHouse` and `OaksLab` doors are now live in both directions.
 - A bounded Oak warning seam now intercepts north-exit movement before `got_starter` and surfaces the short source-backed “Hey! Wait! Don’t go out!” text.
 - Girl, Fisher, Oak, and the PalletTown signs use source-backed message text without pulling in the map-script engine.
+- Pressing `F7` now replaces the world help box with current-map provenance lines for the active map header and object symbols.
 - The SDL renderer now scrolls a centered camera viewport instead of trying to draw the full world unscaled.
 
 ## Current Data Model Notes

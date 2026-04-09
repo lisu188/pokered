@@ -107,3 +107,9 @@ Added a narrow movement-trigger result path to the native runtime and used it fo
 
 ## [2026-04-09 18:57] verification | PalletTown Oak warning seam re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the new tests cover both the pre-starter warning trigger and the post-starter north-exit reopen behavior.
+
+## [2026-04-09 19:50] provenance | current-map oracle overlay added to the SDL runtime
+Added `native/src/oracle/provenance.cpp` as a small bridge from `WorldId` to source labels, then loaded `pokered.sym` and `pokered.map` in the app binary so `F7` can replace the help box with the current map's header/object labels plus bank/section ownership.
+
+## [2026-04-09 19:50] verification | runtime provenance overlay plumbing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake -S . -B build-native`, `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now also verifies shared `PalletTown` / `OaksLab` provenance lookups used by the runtime overlay.
