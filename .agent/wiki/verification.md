@@ -60,6 +60,7 @@
   - static interaction dispatch for the current `BluesHouse` Daisy/Town Map objects
   - safe default interaction dispatch for the current `OaksLab` Rival / Oak / Pokeball branches plus Pokedex / Girl / Scientist text
   - static NPC/sign interaction dispatch for `PalletTown`
+  - movement-triggered `PalletTown` Oak warning coverage before `got_starter`, plus reopening of the north exit once the starter flag is set
   - PalletTown <-> BluesHouse door traversal
   - PalletTown <-> OaksLab door traversal
 - Oracle provenance coverage currently verifies:

@@ -86,6 +86,15 @@ CameraView BuildCameraView(const MapData& map, const WorldState& world) {
   return view;
 }
 
+int FindPalletTownNorthExitX(const MapData& map) {
+  for (int x = 0; x < map.width; ++x) {
+    if (CanMoveTo(map, x, 2) && CanMoveTo(map, x, 1)) {
+      return x;
+    }
+  }
+  return -1;
+}
+
 void RefreshSaveAvailability(GameState& state) {
   state.has_save = SaveSystem::Exists(SavePath());
 }
@@ -113,6 +122,13 @@ void AdvanceOrDismissMessage(GameState& state) {
 void StartNewGame(GameState& state) {
   StartNewGameShortcut(state);
   RefreshSaveAvailability(state);
+}
+
+void HandleWorldMove(GameState& state, Facing facing) {
+  const MoveResult result = TryMoveWithResult(state.world, facing);
+  if (result.message != MessageId::None) {
+    ShowMessage(state, result.message);
+  }
 }
 
 void TryLoadGame(GameState& state) {
@@ -307,19 +323,19 @@ void UpdateWorld(GameState& state, const FrameInput& input) {
   }
 
   if (input.up) {
-    TryMove(state.world, Facing::Up);
+    HandleWorldMove(state, Facing::Up);
     return;
   }
   if (input.down) {
-    TryMove(state.world, Facing::Down);
+    HandleWorldMove(state, Facing::Down);
     return;
   }
   if (input.left) {
-    TryMove(state.world, Facing::Left);
+    HandleWorldMove(state, Facing::Left);
     return;
   }
   if (input.right) {
-    TryMove(state.world, Facing::Right);
+    HandleWorldMove(state, Facing::Right);
     return;
   }
   if (input.confirm) {
@@ -496,6 +512,19 @@ int RunSmokeTest() {
   }
   if (InteractionForFacingTile(GetMapData(state.world.map_id), state.world) != MessageId::PalletTownGirl) {
     std::cerr << "smoke: expected PalletTown girl interaction\n";
+    return 1;
+  }
+
+  const int north_exit_x = FindPalletTownNorthExitX(GetMapData(state.world.map_id));
+  if (north_exit_x < 0) {
+    std::cerr << "smoke: failed to find PalletTown north exit seam\n";
+    return 1;
+  }
+  state.world.player = PlayerState {north_exit_x, 2, Facing::Up};
+  const MoveResult oak_warning = TryMoveWithResult(state.world, Facing::Up);
+  if (oak_warning.moved || oak_warning.message != MessageId::PalletTownOakHeyWaitDontGoOut ||
+      state.world.player.x != north_exit_x || state.world.player.y != 2 || state.world.step_counter != 5) {
+    std::cerr << "smoke: expected PalletTown Oak north-exit warning\n";
     return 1;
   }
 

@@ -12,6 +12,10 @@
 - The first slice now imports `RedsHouse1F` object/text metadata directly from source asm, but the control-flow decisions around Mom/TV interaction are still expressed as a small native switch rather than a reusable script runner.
 - `PewterSpeechHouse` confirms a simpler script pattern: `scripts/PewterSpeechHouse.asm` only enables auto text-box drawing and routes static NPC text pointers, which the native runtime now reproduces through source-driven NPC message IDs rather than a per-map script interpreter.
 - `BluesHouse` adds the first small indoor script seam beyond static NPC text: `scripts/BluesHouse.asm` conditionally offers the Town Map through Daisy, but the current native runtime intentionally stays on the default pre-Pokedex dialogue branch until item/event state exists.
+- `PalletTown` now provides the first bounded outdoor movement-trigger seam:
+  - `scripts/PalletTown.asm` triggers Oak's intervention when the player reaches `y == 1` before `EVENT_FOLLOWED_OAK_INTO_LAB`.
+  - the current native runtime mirrors only the first warning beat by blocking the north-exit step before `got_starter` and surfacing `_PalletTownOakHeyWaitDontGoOutText`.
+  - the rest of the original sequence, including Oak appearing, walking to the player, and escorting the player into the lab, remains deferred.
 - `OaksLab` is the next imported interior with much richer original script flow than the current runtime:
   - `scripts/OaksLab.asm` covers starter selection, Oak movement, rival battle, Pokedex handoff, parcel progression, and later reward text.
   - the current native runtime imports the object/text pointers and keeps only safe default interaction branches live:

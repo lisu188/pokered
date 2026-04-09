@@ -27,7 +27,7 @@
 - [x] Add camera-based SDL rendering so larger native maps remain navigable
 - [x] Import `BluesHouse` as the next PalletTown-adjacent live interior
 - [x] Import `OaksLab` as the next PalletTown-adjacent live interior
-- [ ] Decide whether Oak remains static text for now or gains the first PalletTown cutscene seam
+- [x] Add the first bounded `PalletTown` Oak north-exit warning seam
 
 ## Current Working Assumptions
 - The disassembly remains the authoritative behavior specification.
@@ -42,7 +42,7 @@
 - Runtime-facing provenance UI/trace hooks are still missing even though `.sym` and `.map` parsing now exist in native code
 - Map import is currently proven for the `RedsHouse*`, `HOUSE`, and one `OVERWORLD` slice, but not yet broader than that
 - `Route1` and `Route21` are still not imported, so PalletTown is broader but still a bounded hub
-- Oak's PalletTown script chain and the `OaksLab` starter / rival sequence remain deferred
+- Oak's PalletTown follow-to-lab chain and the `OaksLab` starter / rival sequence remain deferred
 - `BluesHouse` currently uses the source-backed default Daisy text branch only; the Town Map gift/event path is still deferred
 
 ## First Slice Decision
@@ -64,8 +64,8 @@
 - Native Linux SDL launch still starts under WSL via `timeout 2s ./build-native/pokered_native` with no startup error and an expected timeout exit.
 
 ## Next Focus
-- Decide whether to keep Oak as a static blocker with source text or implement the first cutscene seam at the north exit.
 - Decide whether to keep `OaksLab` on safe default dialogue branches or implement the first starter / rival script seam.
+- Decide whether to extend the bounded `PalletTown` Oak warning into the full follow-to-lab cutscene.
 - Decide whether `BluesHouse` Daisy should remain a static-text simplification or become the first small indoor gift/event seam.
 - Lift the existing `.sym` / `.map` provenance plumbing into runtime-facing debug and trace hooks.
 - Broaden the importer to another tileset family after the exterior seam is stable.

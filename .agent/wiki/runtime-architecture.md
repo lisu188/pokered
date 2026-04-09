@@ -83,6 +83,7 @@
   - source-driven `OaksLab` semantics via `.blk`, the original `DOJO -> gym.bst` blockset alias, `Dojo_Coll`, and asm/text metadata
   - source-driven `PalletTown` semantics via `.blk`, `overworld.bst`, `Overworld_Coll`, and asm/text metadata
   - NPC-specific static text dispatch through source-driven `MessageId` values on `Npc` records
+  - movement-triggered message dispatch for bounded outdoor/script seams
   - paged Mom/TV dialogue so the exact first-slice lines fit the current message box
   - source-backed `RedsHouse1F` warps/bg events/NPC placement and Mom/TV text imported from asm
   - `.sym` + `.map` oracle parsing in native code for provenance-oriented tests
@@ -95,7 +96,7 @@
 - The current control flow is still a native simplification of the original map script/text dispatch rather than a reusable generated script runtime.
 - `Route1` and `Route21` are still not imported, so PalletTown is currently a broader bounded hub rather than a full outdoor progression map.
 - `BluesHouse` Daisy's Town Map gift path is still simplified to the default static-text branch; native item/event state does not exist yet.
-- Oak's PalletTown cutscene chain, town-edge blockers, and the `OaksLab` starter / rival sequence are still intentionally deferred; Oak currently works only as a static NPC interaction target.
+- Oak's PalletTown follow-to-lab cutscene chain and the `OaksLab` starter / rival sequence are still intentionally deferred; only the first north-exit warning seam is live.
 - Battle, broader overworld support, and audio are still intentionally deferred.
 
 ## Immediate Unknowns
@@ -159,6 +160,7 @@
 - `PalletTown` is now playable as a native exterior map with `20 x 18` movement cells expanded from the original `10 x 9` block map.
 - `RedsHouse1F` front-door warps now exit into `PalletTown`, and the PalletTown house door re-enters `RedsHouse1F`.
 - The `BluesHouse` and `OaksLab` doors are now live in both directions.
+- A bounded Oak warning seam now intercepts north-exit movement before `got_starter` and surfaces the short source-backed “Hey! Wait! Don’t go out!” text.
 - Girl, Fisher, Oak, and the PalletTown signs use source-backed message text without pulling in the map-script engine.
 - The SDL renderer now scrolls a centered camera viewport instead of trying to draw the full world unscaled.
 

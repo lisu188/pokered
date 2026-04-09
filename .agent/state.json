@@ -30,7 +30,9 @@
     "Imported BluesHouse as the next PalletTown-adjacent live interior",
     "Re-verified the expanded PalletTown hub with BluesHouse on the Linux SDL CMake path",
     "Imported OaksLab as the next PalletTown-adjacent live interior",
-    "Re-verified the expanded PalletTown hub with OaksLab on the Linux SDL CMake path"
+    "Re-verified the expanded PalletTown hub with OaksLab on the Linux SDL CMake path",
+    "Added the first bounded PalletTown Oak north-exit warning seam",
+    "Re-verified the PalletTown Oak seam on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",
@@ -38,13 +40,13 @@
     "No emulator/debugger is installed locally yet for ROM-side differential traces",
     "Runtime-facing provenance overlays and trace hooks beyond the current oracle tests are still missing",
     "Route1 and Route21 are still unimplemented even though PalletTown now has three live interior doors",
-    "Oak's PalletTown script chain and OaksLab starter/rival sequence are still intentionally deferred",
+    "Oak's PalletTown follow-to-lab chain and OaksLab starter/rival sequence are still intentionally deferred",
     "BluesHouse Daisy's Town Map gift path is still intentionally simplified to the default static-text branch until native item/event state exists",
     "The current importer is now validated for the RedsHouse, House, Overworld, and Dojo tilesets used by the first town slice, but broader tileset coverage is still missing"
   ],
   "next_actions": [
-    "Decide whether Oak should remain static text for now or gain the first PalletTown cutscene seam",
     "Decide whether OaksLab should stay on safe default dialogue branches or gain the first starter-selection / rival-battle seam",
+    "Decide whether the bounded PalletTown Oak warning should expand into the full follow-to-lab cutscene",
     "Evaluate Route1/Route21 boundary handling once the next PalletTown door is live",
     "Decide whether BluesHouse Daisy should stay on the default dialogue branch or gain the first small indoor gift/event seam",
     "Lift current oracle provenance from test coverage into runtime-facing debug and trace hooks",

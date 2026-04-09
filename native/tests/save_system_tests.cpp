@@ -132,6 +132,17 @@ int main() {
     std::cerr << "PalletTown import shape mismatch\n";
     return 1;
   }
+  int pallet_north_exit_x = -1;
+  for (int x = 0; x < pallet_town.width; ++x) {
+    if (pokered::CanMoveTo(pallet_town, x, 2) && pokered::CanMoveTo(pallet_town, x, 1)) {
+      pallet_north_exit_x = x;
+      break;
+    }
+  }
+  if (pallet_north_exit_x < 0) {
+    std::cerr << "expected passable PalletTown north exit seam\n";
+    return 1;
+  }
   if (pokered::GetCell(map, 3, 1).behavior_tile != 0x16 || pokered::GetCell(map, 3, 1).passable) {
     std::cerr << "expected TV cell to import as solid tile 0x16\n";
     return 1;
@@ -255,6 +266,9 @@ int main() {
     return 1;
   }
   if (pokered::MessagePageCount(pokered::MessageId::PalletTownGirl) != 2 ||
+      pokered::MessagePageCount(pokered::MessageId::PalletTownOakHeyWaitDontGoOut) != 1 ||
+      pokered::MessageText(pokered::MessageId::PalletTownOakHeyWaitDontGoOut, 0) !=
+          "OAK: Hey! Wait!\nDon't go out!" ||
       pokered::MessageText(pokered::MessageId::PalletTownGirl, 1) !=
           "When they get\nstrong, they can\nprotect me!" ||
       pokered::MessagePageCount(pokered::MessageId::PalletTownFisher) != 2 ||
@@ -266,6 +280,23 @@ int main() {
       pokered::MessageText(pokered::MessageId::PalletTownPlayersHouseSign, 0) != "PLAYER's house " ||
       pokered::MessageText(pokered::MessageId::PalletTownRivalsHouseSign, 0) != "RIVAL's house ") {
     std::cerr << "expected PalletTown text import\n";
+    return 1;
+  }
+
+  pokered::WorldState oak_trigger {};
+  oak_trigger.map_id = pokered::WorldId::PalletTown;
+  oak_trigger.player = {pallet_north_exit_x, 2, pokered::Facing::Up};
+  const pokered::MoveResult oak_warning = pokered::TryMoveWithResult(oak_trigger, pokered::Facing::Up);
+  if (oak_warning.moved || oak_warning.message != pokered::MessageId::PalletTownOakHeyWaitDontGoOut ||
+      oak_trigger.player.x != pallet_north_exit_x || oak_trigger.player.y != 2 || oak_trigger.step_counter != 0) {
+    std::cerr << "expected PalletTown Oak north-exit warning seam\n";
+    return 1;
+  }
+  oak_trigger.got_starter = true;
+  const pokered::MoveResult route_progress = pokered::TryMoveWithResult(oak_trigger, pokered::Facing::Up);
+  if (!route_progress.moved || route_progress.message != pokered::MessageId::None ||
+      oak_trigger.player.x != pallet_north_exit_x || oak_trigger.player.y != 1 || oak_trigger.step_counter != 1) {
+    std::cerr << "expected PalletTown north exit to reopen after starter flag\n";
     return 1;
   }
 

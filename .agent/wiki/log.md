@@ -101,3 +101,9 @@ Imported `OaksLab` object and text pointers, but intentionally kept only the saf
 
 ## [2026-04-09 13:39] verification | OaksLab-expanded PalletTown hub re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake -S . -B build-native`, `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output is `smoke-ok: world=5 pos=2,2 steps=6`, and the SDL launch still exits only because of the expected timeout.
+
+## [2026-04-09 18:57] scripting | PalletTown gained the first bounded outdoor movement-trigger seam
+Added a narrow movement-trigger result path to the native runtime and used it for the PalletTown north exit. Before `got_starter`, moving up into row `y == 1` now surfaces the short source-backed Oak warning text (`Hey! Wait! Don't go out!`) instead of behaving like a normal step.
+
+## [2026-04-09 18:57] verification | PalletTown Oak warning seam re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the new tests cover both the pre-starter warning trigger and the post-starter north-exit reopen behavior.

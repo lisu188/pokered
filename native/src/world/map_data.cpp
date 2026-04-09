@@ -395,6 +395,8 @@ std::string_view RawMessageText(MessageId message) {
       return generated::kOaksLabOak1WhichPokemonDoYouWantText;
     case MessageId::OaksLabOak1YourPokemonCanFight:
       return generated::kOaksLabOak1YourPokemonCanFightText;
+    case MessageId::PalletTownOakHeyWaitDontGoOut:
+      return generated::kPalletTownOakHeyWaitDontGoOutText;
     case MessageId::PalletTownOak:
       return generated::kPalletTownOakItsUnsafeText;
     case MessageId::PalletTownGirl:
@@ -435,6 +437,13 @@ int CountPages(std::string_view text) {
   return count;
 }
 
+std::string_view StripTextTerminator(std::string_view text) {
+  while (!text.empty() && text.back() == '@') {
+    text.remove_suffix(1);
+  }
+  return text;
+}
+
 std::string_view TextPage(std::string_view text, int page) {
   if (page < 0) {
     page = 0;
@@ -454,11 +463,11 @@ std::string_view TextPage(std::string_view text, int page) {
 }
 
 int MessagePageCount(MessageId message) {
-  return CountPages(RawMessageText(message));
+  return CountPages(StripTextTerminator(RawMessageText(message)));
 }
 
 std::string_view MessageText(MessageId message, int page) {
-  const std::string_view text = RawMessageText(message);
+  const std::string_view text = StripTextTerminator(RawMessageText(message));
   const int page_count = CountPages(text);
   if (page < 0 || page >= page_count) {
     return TextPage(text, 0);

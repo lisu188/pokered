@@ -49,6 +49,7 @@ enum class MessageId : std::uint8_t {
   OaksLabLastMon,
   OaksLabOak1WhichPokemonDoYouWant,
   OaksLabOak1YourPokemonCanFight,
+  PalletTownOakHeyWaitDontGoOut,
   PalletTownOak,
   PalletTownGirl,
   PalletTownFisher,
@@ -90,7 +91,13 @@ struct GameState {
   bool running = true;
 };
 
+struct MoveResult {
+  bool moved = false;
+  MessageId message = MessageId::None;
+};
+
 void StartNewGameShortcut(GameState& state);
+MoveResult TryMoveWithResult(WorldState& world, Facing facing);
 bool TryMove(WorldState& world, Facing facing);
 
 }  // namespace pokered

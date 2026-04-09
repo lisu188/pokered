@@ -38,15 +38,18 @@ void StartNewGameShortcut(GameState& state) {
   state.world.last_warp = 1;
 }
 
-bool TryMove(WorldState& world, Facing facing) {
+MoveResult TryMoveWithResult(WorldState& world, Facing facing) {
   world.player.facing = facing;
 
   const auto [dx, dy] = FacingOffset(facing);
   const int next_x = world.player.x + dx;
   const int next_y = world.player.y + dy;
   const MapData& map = GetMapData(world.map_id);
+  if (map.id == WorldId::PalletTown && !world.got_starter && facing == Facing::Up && next_y == 1) {
+    return {.moved = false, .message = MessageId::PalletTownOakHeyWaitDontGoOut};
+  }
   if (!CanMoveTo(map, next_x, next_y)) {
-    return false;
+    return {};
   }
 
   world.player.x = next_x;
@@ -84,17 +87,21 @@ bool TryMove(WorldState& world, Facing facing) {
 
     const MapData& target_map = GetMapData(world.map_id);
     if (warp.target_warp == 0 || warp.target_warp > target_map.warps.size()) {
-      return true;
+      return {.moved = true, .message = MessageId::None};
     }
 
     const Warp& target_warp = target_map.warps[warp.target_warp - 1];
     world.player.x = target_warp.x;
     world.player.y = target_warp.y;
     world.player.facing = Facing::Down;
-    return true;
+    return {.moved = true, .message = MessageId::None};
   }
 
-  return true;
+  return {.moved = true, .message = MessageId::None};
+}
+
+bool TryMove(WorldState& world, Facing facing) {
+  return TryMoveWithResult(world, facing).moved;
 }
 
 }  // namespace pokered
