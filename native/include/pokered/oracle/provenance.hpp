@@ -36,6 +36,11 @@ struct MessageProvenance {
   ProvenanceSymbol text;
 };
 
+struct MessageSourceProvenance {
+  MessageId message_id = MessageId::None;
+  ProvenanceSymbol source;
+};
+
 std::optional<MapProvenance> LookupMapProvenance(const SymbolTable& symbols,
                                                  const MapSections& sections,
                                                  WorldId world_id);
@@ -51,5 +56,8 @@ std::optional<WarpProvenance> LookupWarpProvenance(const SymbolTable& symbols,
 std::optional<MessageProvenance> LookupMessageProvenance(const SymbolTable& symbols,
                                                          const MapSections& sections,
                                                          MessageId message_id);
+std::optional<MessageSourceProvenance> LookupMessageSourceProvenance(const SymbolTable& symbols,
+                                                                     const MapSections& sections,
+                                                                     MessageId message_id);
 
 }  // namespace pokered::oracle

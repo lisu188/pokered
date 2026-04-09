@@ -94,6 +94,75 @@ std::optional<std::string_view> LabelForMessage(MessageId message_id) {
   return std::nullopt;
 }
 
+std::optional<std::string_view> SourceLabelForMessage(MessageId message_id) {
+  switch (message_id) {
+    case MessageId::None:
+    case MessageId::OaksLabRival:
+    case MessageId::OaksLabPokeBall:
+    case MessageId::OaksLabOak1:
+    case MessageId::SaveOk:
+    case MessageId::LoadOk:
+    case MessageId::SaveMissing:
+    case MessageId::SaveCorrupt:
+      return std::nullopt;
+    case MessageId::MomWakeUp:
+      return "RedsHouse1FMomText.WakeUpText";
+    case MessageId::MomRest:
+      return "RedsHouse1FMomYouShouldRestText";
+    case MessageId::TvMovie:
+      return "RedsHouse1FTVText.StandByMeMovieText";
+    case MessageId::TvWrongSide:
+      return "RedsHouse1FTVText.WrongSideText";
+    case MessageId::PewterSpeechHouseGambler:
+      return "PewterSpeechHouseGamblerText";
+    case MessageId::PewterSpeechHouseYoungster:
+      return "PewterSpeechHouseYoungsterText";
+    case MessageId::BluesHouseDaisyRivalAtLab:
+      return "BluesHouseDaisyRivalAtLabText";
+    case MessageId::BluesHouseDaisyWalking:
+      return "BluesHouseDaisyWalkingText";
+    case MessageId::BluesHouseTownMap:
+      return "BluesHouseTownMapText";
+    case MessageId::OaksLabPokedex:
+      return "OaksLabPokedexText";
+    case MessageId::OaksLabOak2:
+      return "OaksLabOak2Text";
+    case MessageId::OaksLabGirl:
+      return "OaksLabGirlText";
+    case MessageId::OaksLabScientist:
+      return "OaksLabScientistText";
+    case MessageId::OaksLabRivalGrampsIsntAround:
+      return "OaksLabRivalText.GrampsIsntAroundText";
+    case MessageId::OaksLabRivalMyPokemonLooksStronger:
+      return "OaksLabRivalText.MyPokemonLooksStrongerText";
+    case MessageId::OaksLabThoseArePokeBalls:
+      return "OaksLabThoseArePokeBallsText";
+    case MessageId::OaksLabLastMon:
+      return "OaksLabLastMonText";
+    case MessageId::OaksLabOak1WhichPokemonDoYouWant:
+      return "OaksLabOak1Text.WhichPokemonDoYouWantText";
+    case MessageId::OaksLabOak1YourPokemonCanFight:
+      return "OaksLabOak1Text.YourPokemonCanFightText";
+    case MessageId::PalletTownOakHeyWaitDontGoOut:
+      return "PalletTownOakText.HeyWaitDontGoOutText";
+    case MessageId::PalletTownOak:
+      return "PalletTownOakText.ItsUnsafeText";
+    case MessageId::PalletTownGirl:
+      return "PalletTownGirlText";
+    case MessageId::PalletTownFisher:
+      return "PalletTownFisherText";
+    case MessageId::PalletTownOaksLabSign:
+      return "PalletTownOaksLabSignText";
+    case MessageId::PalletTownSign:
+      return "PalletTownSignText";
+    case MessageId::PalletTownPlayersHouseSign:
+      return "PalletTownPlayersHouseSignText";
+    case MessageId::PalletTownRivalsHouseSign:
+      return "PalletTownRivalsHouseSignText";
+  }
+  return std::nullopt;
+}
+
 std::optional<ProvenanceSymbol> LookupSymbolProvenance(const SymbolTable& symbols,
                                                        const MapSections& sections,
                                                        std::string_view label) {
@@ -180,6 +249,25 @@ std::optional<MessageProvenance> LookupMessageProvenance(const SymbolTable& symb
   return MessageProvenance {
       .message_id = message_id,
       .text = *text,
+  };
+}
+
+std::optional<MessageSourceProvenance> LookupMessageSourceProvenance(const SymbolTable& symbols,
+                                                                     const MapSections& sections,
+                                                                     MessageId message_id) {
+  const auto label = SourceLabelForMessage(message_id);
+  if (!label) {
+    return std::nullopt;
+  }
+
+  const auto source = LookupSymbolProvenance(symbols, sections, *label);
+  if (!source) {
+    return std::nullopt;
+  }
+
+  return MessageSourceProvenance {
+      .message_id = message_id,
+      .source = *source,
   };
 }
 

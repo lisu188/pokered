@@ -64,6 +64,7 @@ enum class OverlayMode : std::uint8_t {
   MapProvenance = 1,
   WarpTrace = 2,
   MessageTrace = 3,
+  MessageSourceTrace = 4,
 };
 
 struct WarpTraceState {
@@ -170,6 +171,8 @@ OverlayMode NextOverlayMode(OverlayMode mode) {
     case OverlayMode::WarpTrace:
       return OverlayMode::MessageTrace;
     case OverlayMode::MessageTrace:
+      return OverlayMode::MessageSourceTrace;
+    case OverlayMode::MessageSourceTrace:
       return OverlayMode::Off;
   }
   return OverlayMode::Off;
@@ -285,6 +288,23 @@ std::string BuildMessageTraceText(const DebugOverlayState& debug_overlay, const 
   return provenance->text.label + "\n" + FormatSymbolLocation(provenance->text);
 }
 
+std::string BuildMessageSourceTraceText(const DebugOverlayState& debug_overlay, const OracleContext& oracle_context) {
+  if (!oracle_context.available) {
+    return "ORACLE DATA\nNOT FOUND";
+  }
+  if (debug_overlay.last_message == MessageId::None) {
+    return "TEXT SOURCE\nNONE YET";
+  }
+
+  const auto provenance = oracle::LookupMessageSourceProvenance(
+      oracle_context.symbols, oracle_context.sections, debug_overlay.last_message);
+  if (!provenance) {
+    return "TEXT SOURCE\nNO SOURCE";
+  }
+
+  return provenance->source.label + "\n" + FormatSymbolLocation(provenance->source);
+}
+
 std::string BuildOverlayText(const GameState& state,
                              const DebugOverlayState& debug_overlay,
                              const OracleContext& oracle_context) {
@@ -297,6 +317,8 @@ std::string BuildOverlayText(const GameState& state,
       return BuildWarpTraceText(debug_overlay, oracle_context);
     case OverlayMode::MessageTrace:
       return BuildMessageTraceText(debug_overlay, oracle_context);
+    case OverlayMode::MessageSourceTrace:
+      return BuildMessageSourceTraceText(debug_overlay, oracle_context);
   }
   return "ARROWS MOVE  Z TALK";
 }

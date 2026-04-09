@@ -197,8 +197,49 @@ int main() {
     std::cerr << "expected OaksLab pokedex message provenance lookup\n";
     return 1;
   }
+  const auto mom_source_provenance = pokered::oracle::LookupMessageSourceProvenance(
+      symbols, sections, pokered::MessageId::MomWakeUp);
+  if (!mom_source_provenance || mom_source_provenance->source.label != "RedsHouse1FMomText.WakeUpText" ||
+      mom_source_provenance->source.address.bank != 0x12 ||
+      mom_source_provenance->source.address.address != 0x4185 || !mom_source_provenance->source.section ||
+      mom_source_provenance->source.section->name != "Maps 8") {
+    std::cerr << "expected Mom wake-up source provenance lookup\n";
+    return 1;
+  }
+  const auto oak_warning_source_provenance = pokered::oracle::LookupMessageSourceProvenance(
+      symbols, sections, pokered::MessageId::PalletTownOakHeyWaitDontGoOut);
+  if (!oak_warning_source_provenance ||
+      oak_warning_source_provenance->source.label != "PalletTownOakText.HeyWaitDontGoOutText" ||
+      oak_warning_source_provenance->source.address.bank != 0x06 ||
+      oak_warning_source_provenance->source.address.address != 0x4FB0 ||
+      !oak_warning_source_provenance->source.section ||
+      oak_warning_source_provenance->source.section->name != "Maps 2") {
+    std::cerr << "expected PalletTown Oak warning source provenance lookup\n";
+    return 1;
+  }
+  const auto rival_source_provenance = pokered::oracle::LookupMessageSourceProvenance(
+      symbols, sections, pokered::MessageId::OaksLabRivalGrampsIsntAround);
+  if (!rival_source_provenance ||
+      rival_source_provenance->source.label != "OaksLabRivalText.GrampsIsntAroundText" ||
+      rival_source_provenance->source.address.bank != 0x07 ||
+      rival_source_provenance->source.address.address != 0x50F3 || !rival_source_provenance->source.section ||
+      rival_source_provenance->source.section->name != "Maps 4") {
+    std::cerr << "expected OaksLab rival source provenance lookup\n";
+    return 1;
+  }
+  const auto pokedex_source_provenance = pokered::oracle::LookupMessageSourceProvenance(
+      symbols, sections, pokered::MessageId::OaksLabPokedex);
+  if (!pokedex_source_provenance || pokedex_source_provenance->source.label != "OaksLabPokedexText" ||
+      pokedex_source_provenance->source.address.bank != 0x07 ||
+      pokedex_source_provenance->source.address.address != 0x5322 || !pokedex_source_provenance->source.section ||
+      pokedex_source_provenance->source.section->name != "Maps 4") {
+    std::cerr << "expected OaksLab pokedex source provenance lookup\n";
+    return 1;
+  }
   if (pokered::oracle::LookupMessageProvenance(symbols, sections, pokered::MessageId::SaveOk) ||
-      pokered::oracle::LookupMessageProvenance(symbols, sections, pokered::MessageId::OaksLabRival)) {
+      pokered::oracle::LookupMessageProvenance(symbols, sections, pokered::MessageId::OaksLabRival) ||
+      pokered::oracle::LookupMessageSourceProvenance(symbols, sections, pokered::MessageId::SaveOk) ||
+      pokered::oracle::LookupMessageSourceProvenance(symbols, sections, pokered::MessageId::OaksLabRival)) {
     std::cerr << "expected native-only and abstract message ids to have no oracle provenance\n";
     return 1;
   }
