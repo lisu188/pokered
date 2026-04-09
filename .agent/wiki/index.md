@@ -33,8 +33,8 @@ This directory is the compiled knowledge layer for the native port effort.
 - New-game path: `MainMenu -> StartNewGame -> OakSpeech -> SpecialEnterMap -> EnterMap`.
 - Overworld loop anchor: `EnterMap`, `OverworldLoop`, and `NewBattle` in `home/overworld.asm`.
 - Save/load anchor: `TryLoadSaveFile`, `SaveMenu`, `SaveGameData`, and SRAM checksum logic in `engine/menus/save.asm`.
-- Native runtime now builds and runs a title -> menu -> connected `RedsHouse1F` / `RedsHouse2F` / `PalletTown` / `BluesHouse` slice with deterministic save/load.
-- Current native verification passes: configure, build, unit tests, and `--smoke-test` (`smoke-ok: world=4 pos=3,4 steps=6`).
+- Native runtime now builds and runs a title -> menu -> connected `RedsHouse1F` / `RedsHouse2F` / `PalletTown` / `BluesHouse` / `OaksLab` slice with deterministic save/load.
+- Current native verification passes: configure, build, unit tests, and `--smoke-test` (`smoke-ok: world=5 pos=2,2 steps=6`).
 - `RedsHouse1F` now consumes the real `maps/RedsHouse1F.blk`, `gfx/blocksets/reds_house.bst`, and tileset collision metadata through the native map importer.
 - The Mom and TV room text now pages through the exact first-slice lines instead of truncating them to fit a single text box.
 - `RedsHouse1F` warps, bg events, NPC placement, and first-slice Mom/TV text now come from a generated metadata header sourced from `data/maps/objects/RedsHouse1F.asm` and `text/RedsHouse1F.asm`.
@@ -46,7 +46,9 @@ This directory is the compiled knowledge layer for the native port effort.
 - `LAST_MAP` door warps now resolve when the target exterior map exists natively, which makes the `RedsHouse1F` front door round-trip into `PalletTown` work for real.
 - The SDL renderer now uses a camera-based viewport so larger native maps remain playable at the Linux/WSL window size.
 - `BluesHouse` now imports from `maps/BluesHouse.blk`, `data/maps/objects/BluesHouse.asm`, `text/BluesHouse.asm`, `gfx/blocksets/house.bst`, and `House_Coll`, which makes the second PalletTown door live.
-- The current smoke path now verifies `RedsHouse1F -> PalletTown -> BluesHouse`, outdoor/interior interaction readiness, and save/load, producing `smoke-ok: world=4 pos=3,4 steps=6`.
-- `OaksLab`, `Route1`, and `Route21` are still missing, so the current PalletTown slice is broader but still a bounded playable hub.
+- `OaksLab` now imports from `maps/OaksLab.blk`, `data/maps/objects/OaksLab.asm`, `text/OaksLab.asm`, `gfx/blocksets/gym.bst` via the original `DOJO` alias, and `Dojo_Coll`, which makes the third PalletTown door live.
+- The current smoke path now verifies `RedsHouse1F -> PalletTown -> OaksLab`, outdoor/interior interaction readiness, and save/load, producing `smoke-ok: world=5 pos=2,2 steps=6`.
+- `Route1` and `Route21` are still missing, so the current PalletTown slice is broader but still a bounded playable hub.
 - `BluesHouse` Daisy currently uses the source-backed default Rival-at-lab text branch; the Town Map gift/event path is still intentionally deferred.
+- `OaksLab` currently uses source-backed safe default interaction branches keyed off `got_starter`; starter selection, rival battle, and Oak's wider lab sequence remain deferred.
 - Windows cross-build support now has a repo-local MinGW toolchain file plus a documented package/config path; local verification is still blocked by missing MinGW + SDL2 packages.

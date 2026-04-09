@@ -92,3 +92,12 @@ Imported the `BluesHouse` object/text pointers, but intentionally kept Daisy's s
 
 ## [2026-04-09 13:29] verification | BluesHouse-expanded PalletTown hub re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output is `smoke-ok: world=4 pos=3,4 steps=6`, and the SDL launch still exits only because of the expected timeout.
+
+## [2026-04-09 13:39] milestone | OaksLab added as the third live PalletTown interior
+Added a source-driven `OaksLab` native map using `maps/OaksLab.blk`, `data/maps/objects/OaksLab.asm`, `text/OaksLab.asm`, the original `DOJO -> gym.bst` blockset alias, and `Dojo_Coll`. The PalletTown lab door now enters `OaksLab`, and the lab returns to PalletTown through its `LAST_MAP` door warps.
+
+## [2026-04-09 13:39] scripting | OaksLab kept on safe default dialogue branches
+Imported `OaksLab` object and text pointers, but intentionally kept only the safe interaction subset live. Rival, Oak, and Pokeball interactions branch on `got_starter`, while Pokedex, Girl, Scientist, and Oak2 use direct source-backed text; starter selection, rival battle, Pokedex handoff, and later Oak progression remain deferred.
+
+## [2026-04-09 13:39] verification | OaksLab-expanded PalletTown hub re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake -S . -B build-native`, `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output is `smoke-ok: world=5 pos=2,2 steps=6`, and the SDL launch still exits only because of the expected timeout.

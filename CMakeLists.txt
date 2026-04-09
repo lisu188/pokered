@@ -69,6 +69,20 @@ add_custom_command(
 )
 
 add_custom_command(
+    OUTPUT "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_blk.hpp"
+    COMMAND "${CMAKE_COMMAND}"
+            -DINPUT=${CMAKE_CURRENT_SOURCE_DIR}/maps/OaksLab.blk
+            -DOUTPUT=${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_blk.hpp
+            -DVAR_NAME=kOaksLabBlocks
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateBinaryHeader.cmake"
+    DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/maps/OaksLab.blk"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateBinaryHeader.cmake"
+    COMMENT "Generating native header for OaksLab block data"
+    VERBATIM
+)
+
+add_custom_command(
     OUTPUT "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_blk.hpp"
     COMMAND "${CMAKE_COMMAND}"
             -DINPUT=${CMAKE_CURRENT_SOURCE_DIR}/maps/PalletTown.blk
@@ -107,6 +121,20 @@ add_custom_command(
         "${CMAKE_CURRENT_SOURCE_DIR}/gfx/blocksets/house.bst"
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateBinaryHeader.cmake"
     COMMENT "Generating native header for House blockset data"
+    VERBATIM
+)
+
+add_custom_command(
+    OUTPUT "${POKERED_NATIVE_GENERATED_DIR}/dojo_blockset.hpp"
+    COMMAND "${CMAKE_COMMAND}"
+            -DINPUT=${CMAKE_CURRENT_SOURCE_DIR}/gfx/blocksets/gym.bst
+            -DOUTPUT=${POKERED_NATIVE_GENERATED_DIR}/dojo_blockset.hpp
+            -DVAR_NAME=kDojoBlockset
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateBinaryHeader.cmake"
+    DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/gfx/blocksets/gym.bst"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateBinaryHeader.cmake"
+    COMMENT "Generating native header for Dojo blockset data"
     VERBATIM
 )
 
@@ -176,6 +204,23 @@ add_custom_command(
 )
 
 add_custom_command(
+    OUTPUT "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_metadata.hpp"
+    COMMAND "${CMAKE_COMMAND}"
+            -DOBJECTS_FILE=${CMAKE_CURRENT_SOURCE_DIR}/data/maps/objects/OaksLab.asm
+            -DTEXT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/text/OaksLab.asm
+            -DCOLLISION_FILE=${CMAKE_CURRENT_SOURCE_DIR}/data/tilesets/collision_tile_ids.asm
+            -DOUTPUT=${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_metadata.hpp
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateOaksLabMetadata.cmake"
+    DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/data/maps/objects/OaksLab.asm"
+        "${CMAKE_CURRENT_SOURCE_DIR}/text/OaksLab.asm"
+        "${CMAKE_CURRENT_SOURCE_DIR}/data/tilesets/collision_tile_ids.asm"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateOaksLabMetadata.cmake"
+    COMMENT "Generating native header for OaksLab metadata"
+    VERBATIM
+)
+
+add_custom_command(
     OUTPUT "${POKERED_NATIVE_GENERATED_DIR}/reds_house_2f_metadata.hpp"
     COMMAND "${CMAKE_COMMAND}"
             -DOBJECTS_FILE=${CMAKE_CURRENT_SOURCE_DIR}/data/maps/objects/RedsHouse2F.asm
@@ -211,13 +256,16 @@ add_custom_target(pokered_native_generated
         "${POKERED_NATIVE_GENERATED_DIR}/reds_house_2f_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/pewter_speech_house_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/blues_house_blk.hpp"
+        "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/reds_house_blockset.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/house_blockset.hpp"
+        "${POKERED_NATIVE_GENERATED_DIR}/dojo_blockset.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/overworld_blockset.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/reds_house_1f_metadata.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/pewter_speech_house_metadata.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/blues_house_metadata.hpp"
+        "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_metadata.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/reds_house_2f_metadata.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_metadata.hpp"
 )
@@ -246,13 +294,16 @@ add_executable(pokered_native
     "${POKERED_NATIVE_GENERATED_DIR}/reds_house_2f_blk.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/pewter_speech_house_blk.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/blues_house_blk.hpp"
+    "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_blk.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_blk.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/reds_house_blockset.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/house_blockset.hpp"
+    "${POKERED_NATIVE_GENERATED_DIR}/dojo_blockset.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/overworld_blockset.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/reds_house_1f_metadata.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/pewter_speech_house_metadata.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/blues_house_metadata.hpp"
+    "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_metadata.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/reds_house_2f_metadata.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_metadata.hpp"
 )
@@ -280,13 +331,16 @@ if(POKERED_NATIVE_BUILD_TESTS)
         "${POKERED_NATIVE_GENERATED_DIR}/reds_house_2f_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/pewter_speech_house_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/blues_house_blk.hpp"
+        "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/reds_house_blockset.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/house_blockset.hpp"
+        "${POKERED_NATIVE_GENERATED_DIR}/dojo_blockset.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/overworld_blockset.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/reds_house_1f_metadata.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/pewter_speech_house_metadata.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/blues_house_metadata.hpp"
+        "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_metadata.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/reds_house_2f_metadata.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_metadata.hpp"
     )

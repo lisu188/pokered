@@ -34,7 +34,7 @@
   - current result: `100% tests passed, 0 tests failed out of 2`
 - Native smoke run:
   - `./build-native/pokered_native --smoke-test`
-  - current result: `smoke-ok: world=4 pos=3,4 steps=6`
+  - current result: `smoke-ok: world=5 pos=2,2 steps=6`
   - note: the smoke temp path falls back to `/tmp` when `std::filesystem::temp_directory_path` is unavailable
   - native Linux SDL launch also still starts under WSL via `timeout 2s ./build-native/pokered_native`, with the expected timeout exit and no startup error
 - Save determinism coverage currently verifies:
@@ -48,21 +48,24 @@
   - imported `RedsHouse2F` block data, stair tile semantics, and stair warp target metadata
   - imported `PewterSpeechHouse` block data, `House_Coll` passability, deferred door-warp metadata, and NPC counts
   - imported `BluesHouse` block data, `House_Coll` passability, live PalletTown door-warp metadata, and NPC/object counts
+  - imported `OaksLab` block data, `Dojo_Coll` passability, live PalletTown door-warp metadata, and NPC/object counts
   - imported `PalletTown` block data, `Overworld_Coll` passability, door-warp metadata, sign/NPC counts, and outdoor message coverage
   - source-driven passability through `native/tests/save_system_tests.cpp`
   - paged Mom/TV message lookup behavior through `native/tests/save_system_tests.cpp`
-  - imported warp/bg-event/NPC counts for `RedsHouse1F`, `RedsHouse2F`, `PewterSpeechHouse`, `BluesHouse`, and `PalletTown`
+  - imported warp/bg-event/NPC counts for `RedsHouse1F`, `RedsHouse2F`, `PewterSpeechHouse`, `BluesHouse`, `OaksLab`, and `PalletTown`
   - render overlays for TV, stairs, door, and table cells after blockset expansion
   - stair traversal from `RedsHouse1F` -> `RedsHouse2F` -> `RedsHouse1F`
   - real `RedsHouse1F` front-door traversal into `PalletTown` and re-entry from `PalletTown`
   - static NPC interaction dispatch for `PewterSpeechHouse`
   - static interaction dispatch for the current `BluesHouse` Daisy/Town Map objects
+  - safe default interaction dispatch for the current `OaksLab` Rival / Oak / Pokeball branches plus Pokedex / Girl / Scientist text
   - static NPC/sign interaction dispatch for `PalletTown`
   - PalletTown <-> BluesHouse door traversal
+  - PalletTown <-> OaksLab door traversal
 - Oracle provenance coverage currently verifies:
   - `native/src/oracle/symbol_file.cpp` can load `pokered.sym`
   - `native/src/oracle/map_file.cpp` can load `pokered.map`
-  - symbol lookup for `EnterMap`, `OverworldLoop`, `PalletTown_h`, `BluesHouse_h`, `RedsHouse1F_h`, `RedsHouse2F_h`, `PewterSpeechHouse_h`, and `TryLoadSaveFile`
+  - symbol lookup for `EnterMap`, `OverworldLoop`, `PalletTown_h`, `BluesHouse_h`, `OaksLab_h`, `RedsHouse1F_h`, `RedsHouse2F_h`, `PewterSpeechHouse_h`, and `TryLoadSaveFile`
   - `.sym` + `.map` section containment for `Home`, `Maps 1`, `Maps 2`, `Maps 8`, `Maps 15`, `Maps 4`, and `bank1C`
 
 ## Confirmed Oracle Assets
@@ -78,7 +81,7 @@
 
 ## Next Verification Work
 - lift the existing `.sym` / `.map` plumbing into runtime-facing provenance hooks
-- add the next outdoor-adjacent scenario once `OaksLab` or another PalletTown door is live
+- add the next outdoor-adjacent scenario beyond the now-live `OaksLab` seam
 - add checks for deferred `LAST_MAP` door behavior on maps beyond the PalletTown seam
 - add importer regression checks for the lower-left representative tile rule used by overworld collision/warp semantics
 - later, add screenshot and structured trace comparisons for a multi-room indoor scenario

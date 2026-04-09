@@ -12,6 +12,13 @@
 - The first slice now imports `RedsHouse1F` object/text metadata directly from source asm, but the control-flow decisions around Mom/TV interaction are still expressed as a small native switch rather than a reusable script runner.
 - `PewterSpeechHouse` confirms a simpler script pattern: `scripts/PewterSpeechHouse.asm` only enables auto text-box drawing and routes static NPC text pointers, which the native runtime now reproduces through source-driven NPC message IDs rather than a per-map script interpreter.
 - `BluesHouse` adds the first small indoor script seam beyond static NPC text: `scripts/BluesHouse.asm` conditionally offers the Town Map through Daisy, but the current native runtime intentionally stays on the default pre-Pokedex dialogue branch until item/event state exists.
+- `OaksLab` is the next imported interior with much richer original script flow than the current runtime:
+  - `scripts/OaksLab.asm` covers starter selection, Oak movement, rival battle, Pokedex handoff, parcel progression, and later reward text.
+  - the current native runtime imports the object/text pointers and keeps only safe default interaction branches live:
+    - Rival: pre-starter vs post-starter ambient line
+    - Pokeballs: explanatory line vs last-mon line
+    - Oak: choose-your-#MON line vs post-starter battle tutorial line
+    - Pokedex, Girl, Scientist, and Oak2: direct source-backed static text
 - Expected source hotspots:
   - `scripts/`
   - `data/maps/objects/`

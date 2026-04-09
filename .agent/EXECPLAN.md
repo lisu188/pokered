@@ -26,7 +26,7 @@
 - [x] Add a minimal exterior slice so `LAST_MAP` door warps can transition for real
 - [x] Add camera-based SDL rendering so larger native maps remain navigable
 - [x] Import `BluesHouse` as the next PalletTown-adjacent live interior
-- [ ] Import `OaksLab` as the next PalletTown-adjacent live interior
+- [x] Import `OaksLab` as the next PalletTown-adjacent live interior
 - [ ] Decide whether Oak remains static text for now or gains the first PalletTown cutscene seam
 
 ## Current Working Assumptions
@@ -41,8 +41,8 @@
 - No emulator-backed trace harness yet
 - Runtime-facing provenance UI/trace hooks are still missing even though `.sym` and `.map` parsing now exist in native code
 - Map import is currently proven for the `RedsHouse*`, `HOUSE`, and one `OVERWORLD` slice, but not yet broader than that
-- `OaksLab`, `Route1`, and `Route21` are still not imported, so PalletTown is broader but still a bounded hub
-- Oak's PalletTown script chain and town-edge cutscene logic remain deferred
+- `Route1` and `Route21` are still not imported, so PalletTown is broader but still a bounded hub
+- Oak's PalletTown script chain and the `OaksLab` starter / rival sequence remain deferred
 - `BluesHouse` currently uses the source-backed default Daisy text branch only; the Town Map gift/event path is still deferred
 
 ## First Slice Decision
@@ -60,12 +60,12 @@
 - `./build-native/pokered_native_tests`
 - `./build-native/pokered_native --smoke-test`
 - Current result: `100% tests passed, 0 tests failed out of 2`
-- Current smoke output: `smoke-ok: world=4 pos=3,4 steps=6`
+- Current smoke output: `smoke-ok: world=5 pos=2,2 steps=6`
 - Native Linux SDL launch still starts under WSL via `timeout 2s ./build-native/pokered_native` with no startup error and an expected timeout exit.
 
 ## Next Focus
-- Import `OaksLab` so PalletTown becomes a broader playable hub.
 - Decide whether to keep Oak as a static blocker with source text or implement the first cutscene seam at the north exit.
+- Decide whether to keep `OaksLab` on safe default dialogue branches or implement the first starter / rival script seam.
 - Decide whether `BluesHouse` Daisy should remain a static-text simplification or become the first small indoor gift/event seam.
 - Lift the existing `.sym` / `.map` provenance plumbing into runtime-facing debug and trace hooks.
 - Broaden the importer to another tileset family after the exterior seam is stable.

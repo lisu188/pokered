@@ -47,18 +47,22 @@
 - Current generated-data bridge:
   - `cmake/GenerateBinaryHeader.cmake`
   - `cmake/GenerateBluesHouseMetadata.cmake`
+  - `cmake/GenerateOaksLabMetadata.cmake`
   - `cmake/GeneratePewterSpeechHouseMetadata.cmake`
   - `cmake/GenerateRedsHouse1FMetadata.cmake`
   - `cmake/GenerateRedsHouse2FMetadata.cmake`
   - `cmake/GeneratePalletTownMetadata.cmake`
   - `${build}/generated/blues_house_blk.hpp`
+  - `${build}/generated/oaks_lab_blk.hpp`
   - `${build}/generated/pewter_speech_house_blk.hpp`
   - `${build}/generated/reds_house_1f_blk.hpp`
   - `${build}/generated/reds_house_2f_blk.hpp`
   - `${build}/generated/pallet_town_blk.hpp`
+  - `${build}/generated/dojo_blockset.hpp`
   - `${build}/generated/house_blockset.hpp`
   - `${build}/generated/reds_house_blockset.hpp`
   - `${build}/generated/blues_house_metadata.hpp`
+  - `${build}/generated/oaks_lab_metadata.hpp`
   - `${build}/generated/pewter_speech_house_metadata.hpp`
   - `${build}/generated/reds_house_1f_metadata.hpp`
   - `${build}/generated/reds_house_2f_metadata.hpp`
@@ -76,6 +80,7 @@
   - source-driven `RedsHouse2F` map semantics via `.blk`, shared `reds_house.bst`, and asm warp metadata
   - source-driven `PewterSpeechHouse` semantics via `.blk`, `house.bst`, `House_Coll`, and asm/text metadata
   - source-driven `BluesHouse` semantics via `.blk`, `house.bst`, `House_Coll`, and asm/text metadata
+  - source-driven `OaksLab` semantics via `.blk`, the original `DOJO -> gym.bst` blockset alias, `Dojo_Coll`, and asm/text metadata
   - source-driven `PalletTown` semantics via `.blk`, `overworld.bst`, `Overworld_Coll`, and asm/text metadata
   - NPC-specific static text dispatch through source-driven `MessageId` values on `Npc` records
   - paged Mom/TV dialogue so the exact first-slice lines fit the current message box
@@ -88,9 +93,9 @@
 - Real `gfx/tilesets/reds_house.2bpp` graphics are not rendered yet; the first slice still uses semantic colors.
 - Runtime-facing provenance overlays and trace hooks are still missing even though `.sym` and `.map` parsing now exist.
 - The current control flow is still a native simplification of the original map script/text dispatch rather than a reusable generated script runtime.
-- `OaksLab`, `Route1`, and `Route21` are still not imported, so PalletTown is currently a broader bounded hub rather than a full outdoor progression map.
+- `Route1` and `Route21` are still not imported, so PalletTown is currently a broader bounded hub rather than a full outdoor progression map.
 - `BluesHouse` Daisy's Town Map gift path is still simplified to the default static-text branch; native item/event state does not exist yet.
-- Oak's PalletTown cutscene chain and town-edge blockers are still intentionally deferred; Oak currently works only as a static NPC interaction target.
+- Oak's PalletTown cutscene chain, town-edge blockers, and the `OaksLab` starter / rival sequence are still intentionally deferred; Oak currently works only as a static NPC interaction target.
 - Battle, broader overworld support, and audio are still intentionally deferred.
 
 ## Immediate Unknowns
@@ -145,19 +150,26 @@
 - The seated Daisy interaction currently resolves to the default pre-Pokedex branch (`Rival is out at Grandpa's lab`) rather than the later Town Map gift flow.
 - The walking Daisy and Town Map object both use source-backed text pointers imported from `scripts/BluesHouse.asm` and `text/BluesHouse.asm`.
 
+## Current Five-Room Coverage
+- `OaksLab` now loads through a source-driven `DOJO` importer path using the same blockset alias as the ROM (`Dojo_Block:: Gym_Block:: INCBIN "gfx/blocksets/gym.bst"`).
+- The PalletTown lab door is live in both directions through `LAST_MAP` door warps.
+- Rival, Oak, Pokeball, Pokedex, Girl, and Scientist interactions now use source-backed text, while only the safe default branches keyed off `world.got_starter` are live.
+
 ## Current PalletTown Slice
 - `PalletTown` is now playable as a native exterior map with `20 x 18` movement cells expanded from the original `10 x 9` block map.
 - `RedsHouse1F` front-door warps now exit into `PalletTown`, and the PalletTown house door re-enters `RedsHouse1F`.
-- The `BluesHouse` door is now live in both directions; the `OaksLab` door remains inert because that target map is not imported yet.
+- The `BluesHouse` and `OaksLab` doors are now live in both directions.
 - Girl, Fisher, Oak, and the PalletTown signs use source-backed message text without pulling in the map-script engine.
 - The SDL renderer now scrolls a centered camera viewport instead of trying to draw the full world unscaled.
 
 ## Current Data Model Notes
 - The importer now supports arbitrary compile-time block dimensions, not just `4 x 4` interiors.
 - `RedsHouse1F`, `RedsHouse2F`, and `PewterSpeechHouse` each use `8 x 8` movement-cell space expanded from `4 x 4` block maps.
+- `OaksLab` uses `10 x 12` movement-cell space expanded from its original `5 x 6` block map.
 - `PalletTown` uses `20 x 18` movement-cell space expanded from its original `10 x 9` block map.
 - Each movement cell is derived from the lower-left representative tile of the relevant `2 x 2` quadrant inside a `16`-byte `.bst` metatile block, matching the original collision sampling convention.
 - Passability for the `RedsHouse*` rooms comes from the shared `RedsHouse1_Coll` / `RedsHouse2_Coll` entries in `data/tilesets/collision_tile_ids.asm`.
 - `HOUSE` tileset passability now comes from `House_Coll` in `data/tilesets/collision_tile_ids.asm`.
+- `OaksLab` passability now comes from `Dojo_Coll` in `data/tilesets/collision_tile_ids.asm`, matching the original `DOJO` tileset alias.
 - `PalletTown` passability now comes from `Overworld_Coll` in `data/tilesets/collision_tile_ids.asm`.
 - TV and warp presentation remain layered from map-event data rather than a special-case room mask.

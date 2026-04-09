@@ -28,21 +28,23 @@
     "Switched the native SDL renderer to a scrolling camera for larger maps",
     "Re-verified the PalletTown slice on the Linux SDL CMake path",
     "Imported BluesHouse as the next PalletTown-adjacent live interior",
-    "Re-verified the expanded PalletTown hub with BluesHouse on the Linux SDL CMake path"
+    "Re-verified the expanded PalletTown hub with BluesHouse on the Linux SDL CMake path",
+    "Imported OaksLab as the next PalletTown-adjacent live interior",
+    "Re-verified the expanded PalletTown hub with OaksLab on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",
     "No MinGW SDL2 development package with SDL2Config.cmake is installed locally",
     "No emulator/debugger is installed locally yet for ROM-side differential traces",
     "Runtime-facing provenance overlays and trace hooks beyond the current oracle tests are still missing",
-    "OaksLab, Route1, and Route21 are still unimplemented even though PalletTown now has two live interior doors",
-    "Oak's PalletTown script chain and town-edge cutscene logic are still intentionally deferred",
+    "Route1 and Route21 are still unimplemented even though PalletTown now has three live interior doors",
+    "Oak's PalletTown script chain and OaksLab starter/rival sequence are still intentionally deferred",
     "BluesHouse Daisy's Town Map gift path is still intentionally simplified to the default static-text branch until native item/event state exists",
-    "The current importer is now validated for the RedsHouse, House, and Overworld tilesets used by the first town slice, but broader tileset coverage is still missing"
+    "The current importer is now validated for the RedsHouse, House, Overworld, and Dojo tilesets used by the first town slice, but broader tileset coverage is still missing"
   ],
   "next_actions": [
-    "Import OaksLab as the next PalletTown-adjacent live interior",
     "Decide whether Oak should remain static text for now or gain the first PalletTown cutscene seam",
+    "Decide whether OaksLab should stay on safe default dialogue branches or gain the first starter-selection / rival-battle seam",
     "Evaluate Route1/Route21 boundary handling once the next PalletTown door is live",
     "Decide whether BluesHouse Daisy should stay on the default dialogue branch or gain the first small indoor gift/event seam",
     "Lift current oracle provenance from test coverage into runtime-facing debug and trace hooks",

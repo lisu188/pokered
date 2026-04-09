@@ -176,6 +176,9 @@ void SetDebugMap(GameState& state, WorldId map_id) {
       state.world.last_warp = 2;
       break;
     case WorldId::OaksLab:
+      state.world.player = PlayerState {2, 2, Facing::Up};
+      state.world.last_map = static_cast<std::uint16_t>(WorldId::PalletTown);
+      state.world.last_warp = 3;
       break;
   }
 }
@@ -189,15 +192,15 @@ void CycleDebugMap(GameState& state) {
       SetDebugMap(state, WorldId::BluesHouse);
       break;
     case WorldId::BluesHouse:
+      SetDebugMap(state, WorldId::OaksLab);
+      break;
+    case WorldId::OaksLab:
       SetDebugMap(state, WorldId::RedsHouse2F);
       break;
     case WorldId::RedsHouse2F:
       SetDebugMap(state, WorldId::PewterSpeechHouse);
       break;
     case WorldId::PewterSpeechHouse:
-      SetDebugMap(state, WorldId::RedsHouse1F);
-      break;
-    case WorldId::OaksLab:
       SetDebugMap(state, WorldId::RedsHouse1F);
       break;
   }
@@ -496,17 +499,17 @@ int RunSmokeTest() {
     return 1;
   }
 
-  state.world.player = PlayerState {13, 6, Facing::Up};
-  if (!TryMove(state.world, Facing::Up) || state.world.map_id != WorldId::BluesHouse ||
-      state.world.player.x != 2 || state.world.player.y != 7 || state.world.player.facing != Facing::Down ||
-      state.world.last_map != static_cast<std::uint16_t>(WorldId::PalletTown) || state.world.last_warp != 2) {
-    std::cerr << "smoke: expected PalletTown door warp into BluesHouse\n";
+  state.world.player = PlayerState {12, 12, Facing::Up};
+  if (!TryMove(state.world, Facing::Up) || state.world.map_id != WorldId::OaksLab ||
+      state.world.player.x != 5 || state.world.player.y != 11 || state.world.player.facing != Facing::Down ||
+      state.world.last_map != static_cast<std::uint16_t>(WorldId::PalletTown) || state.world.last_warp != 3) {
+    std::cerr << "smoke: expected PalletTown door warp into OaksLab\n";
     return 1;
   }
 
-  state.world.player = PlayerState {3, 4, Facing::Up};
-  if (InteractionForFacingTile(GetMapData(state.world.map_id), state.world) != MessageId::BluesHouseTownMap) {
-    std::cerr << "smoke: expected BluesHouse town map interaction\n";
+  state.world.player = PlayerState {2, 2, Facing::Up};
+  if (InteractionForFacingTile(GetMapData(state.world.map_id), state.world) != MessageId::OaksLabPokedex) {
+    std::cerr << "smoke: expected OaksLab pokedex interaction\n";
     return 1;
   }
 

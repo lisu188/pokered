@@ -75,6 +75,8 @@ int main() {
       !ExpectSectionForSymbol(symbols, sections, "RedsHouse1F_Object", 0x12, 0x41E4, "ROMX", "Maps 8") ||
       !ExpectSectionForSymbol(symbols, sections, "RedsHouse2F_h", 0x17, 0x40A4, "ROMX", "Maps 15") ||
       !ExpectSectionForSymbol(symbols, sections, "RedsHouse2F_Object", 0x17, 0x40D0, "ROMX", "Maps 15") ||
+      !ExpectSectionForSymbol(symbols, sections, "OaksLab_h", 0x07, 0x4B02, "ROMX", "Maps 4") ||
+      !ExpectSectionForSymbol(symbols, sections, "OaksLab_Object", 0x07, 0x540A, "ROMX", "Maps 4") ||
       !ExpectSectionForSymbol(symbols, sections, "PewterSpeechHouse_h", 0x07, 0x563C, "ROMX", "Maps 4") ||
       !ExpectSectionForSymbol(symbols, sections, "PewterSpeechHouse_Object", 0x07, 0x5659, "ROMX", "Maps 4") ||
       !ExpectSectionForSymbol(symbols, sections, "TryLoadSaveFile", 0x1C, 0x75E8, "ROMX", "bank1C")) {
@@ -93,6 +95,7 @@ int main() {
   const pokered::MapData& map = pokered::GetMapData(pokered::WorldId::RedsHouse1F);
   const pokered::MapData& speech_house = pokered::GetMapData(pokered::WorldId::PewterSpeechHouse);
   const pokered::MapData& blues_house = pokered::GetMapData(pokered::WorldId::BluesHouse);
+  const pokered::MapData& oaks_lab = pokered::GetMapData(pokered::WorldId::OaksLab);
   const pokered::MapData& pallet_town = pokered::GetMapData(pokered::WorldId::PalletTown);
   if (map.width != 8 || map.height != 8 || map.block_ids.size() != 16 || map.cells.size() != 64 ||
       map.warps.size() != 3 || map.bg_events.size() != 1 || map.npcs.size() != 1) {
@@ -115,6 +118,12 @@ int main() {
       blues_house.cells.size() != 64 || blues_house.warps.size() != 2 || !blues_house.bg_events.empty() ||
       blues_house.npcs.size() != 3) {
     std::cerr << "BluesHouse import shape mismatch\n";
+    return 1;
+  }
+  if (oaks_lab.width != 10 || oaks_lab.height != 12 || oaks_lab.block_ids.size() != 30 ||
+      oaks_lab.cells.size() != 120 || oaks_lab.warps.size() != 2 || !oaks_lab.bg_events.empty() ||
+      oaks_lab.npcs.size() != 11) {
+    std::cerr << "OaksLab import shape mismatch\n";
     return 1;
   }
   if (pallet_town.width != 20 || pallet_town.height != 18 || pallet_town.tileset_id != 0 ||
@@ -172,6 +181,15 @@ int main() {
     std::cerr << "expected BluesHouse door and object metadata\n";
     return 1;
   }
+  if (!oaks_lab.warps.front().uses_last_map || oaks_lab.warps.front().target_warp != 3 ||
+      !oaks_lab.warps.back().uses_last_map || oaks_lab.warps.back().target_warp != 3 ||
+      pokered::RenderTileKind(oaks_lab, 4, 11) != pokered::TileKind::Door ||
+      pokered::RenderTileKind(oaks_lab, 5, 11) != pokered::TileKind::Door ||
+      pokered::CanMoveTo(oaks_lab, 4, 3) || pokered::CanMoveTo(oaks_lab, 6, 3) ||
+      pokered::CanMoveTo(oaks_lab, 2, 1) || pokered::CanMoveTo(oaks_lab, 1, 9)) {
+    std::cerr << "expected OaksLab door and object metadata\n";
+    return 1;
+  }
   if (pallet_town.warps[0].x != 5 || pallet_town.warps[0].y != 5 ||
       pallet_town.warps[0].target_map != pokered::WorldId::RedsHouse1F || pallet_town.warps[0].target_warp != 1 ||
       pallet_town.warps[1].x != 13 || pallet_town.warps[1].y != 5 ||
@@ -211,6 +229,29 @@ int main() {
       pokered::MessageText(pokered::MessageId::BluesHouseTownMap, 0) !=
           "It's a big map!\nThis is useful!") {
     std::cerr << "expected BluesHouse text import\n";
+    return 1;
+  }
+  if (pokered::MessageText(pokered::MessageId::OaksLabRivalGrampsIsntAround, 0) !=
+          "RIVAL: Yo\nPLAYER! Gramps\nisn't around!" ||
+      pokered::MessageText(pokered::MessageId::OaksLabRivalMyPokemonLooksStronger, 0) !=
+          "RIVAL: My\n#MON looks a\nlot stronger." ||
+      pokered::MessageText(pokered::MessageId::OaksLabThoseArePokeBalls, 0) !=
+          "Those are #\nBALLs. They\ncontain #MON!" ||
+      pokered::MessageText(pokered::MessageId::OaksLabLastMon, 0) !=
+          "That's PROF.OAK's\nlast #MON!" ||
+      pokered::MessageText(pokered::MessageId::OaksLabOak1WhichPokemonDoYouWant, 0) !=
+          "OAK: Now, PLAYER,\nwhich #MON do\nyou want?" ||
+      pokered::MessageText(pokered::MessageId::OaksLabOak1YourPokemonCanFight, 0) !=
+          "OAK: If a wild\n#MON appears,\nyour #MON can\nfight against it!" ||
+      pokered::MessageText(pokered::MessageId::OaksLabPokedex, 0) !=
+          "It's encyclopedia-\nlike, but the\npages are blank!" ||
+      pokered::MessageText(pokered::MessageId::OaksLabOak2, 0) != "?" ||
+      pokered::MessagePageCount(pokered::MessageId::OaksLabGirl) != 2 ||
+      pokered::MessageText(pokered::MessageId::OaksLabGirl, 1) !=
+          "Many #MON\ntrainers hold him\nin high regard!" ||
+      pokered::MessageText(pokered::MessageId::OaksLabScientist, 0) !=
+          "I study #MON as\nPROF.OAK's AIDE.") {
+    std::cerr << "expected OaksLab text import\n";
     return 1;
   }
   if (pokered::MessagePageCount(pokered::MessageId::PalletTownGirl) != 2 ||
@@ -275,6 +316,65 @@ int main() {
     return 1;
   }
 
+  pokered::WorldState oaks_world {};
+  oaks_world.map_id = pokered::WorldId::OaksLab;
+  oaks_world.player.x = 4;
+  oaks_world.player.y = 4;
+  oaks_world.player.facing = pokered::Facing::Up;
+  if (pokered::InteractionForFacingTile(oaks_lab, oaks_world) != pokered::MessageId::OaksLabRivalGrampsIsntAround) {
+    std::cerr << "expected OaksLab rival default interaction\n";
+    return 1;
+  }
+  oaks_world.got_starter = true;
+  if (pokered::InteractionForFacingTile(oaks_lab, oaks_world) != pokered::MessageId::OaksLabRivalMyPokemonLooksStronger) {
+    std::cerr << "expected OaksLab rival post-starter interaction\n";
+    return 1;
+  }
+  oaks_world.got_starter = false;
+  oaks_world.player.x = 6;
+  oaks_world.player.y = 4;
+  if (pokered::InteractionForFacingTile(oaks_lab, oaks_world) != pokered::MessageId::OaksLabThoseArePokeBalls) {
+    std::cerr << "expected OaksLab pokeball default interaction\n";
+    return 1;
+  }
+  oaks_world.got_starter = true;
+  if (pokered::InteractionForFacingTile(oaks_lab, oaks_world) != pokered::MessageId::OaksLabLastMon) {
+    std::cerr << "expected OaksLab pokeball post-starter interaction\n";
+    return 1;
+  }
+  oaks_world.got_starter = false;
+  oaks_world.player.x = 5;
+  oaks_world.player.y = 3;
+  if (pokered::InteractionForFacingTile(oaks_lab, oaks_world) != pokered::MessageId::OaksLabOak1WhichPokemonDoYouWant) {
+    std::cerr << "expected OaksLab Oak1 default interaction\n";
+    return 1;
+  }
+  oaks_world.got_starter = true;
+  if (pokered::InteractionForFacingTile(oaks_lab, oaks_world) != pokered::MessageId::OaksLabOak1YourPokemonCanFight) {
+    std::cerr << "expected OaksLab Oak1 post-starter interaction\n";
+    return 1;
+  }
+  oaks_world.player = {2, 2, pokered::Facing::Up};
+  if (pokered::InteractionForFacingTile(oaks_lab, oaks_world) != pokered::MessageId::OaksLabPokedex) {
+    std::cerr << "expected OaksLab pokedex interaction\n";
+    return 1;
+  }
+  oaks_world.player = {1, 10, pokered::Facing::Up};
+  if (pokered::InteractionForFacingTile(oaks_lab, oaks_world) != pokered::MessageId::OaksLabGirl) {
+    std::cerr << "expected OaksLab girl interaction\n";
+    return 1;
+  }
+  oaks_world.player.facing = pokered::Facing::Right;
+  if (pokered::InteractionForFacingTile(oaks_lab, oaks_world) != pokered::MessageId::OaksLabScientist) {
+    std::cerr << "expected OaksLab scientist interaction\n";
+    return 1;
+  }
+  oaks_world.player = {1, 10, pokered::Facing::Left};
+  if (pokered::InteractionForFacingTile(oaks_lab, oaks_world) != pokered::MessageId::None) {
+    std::cerr << "expected OaksLab off-axis interaction miss\n";
+    return 1;
+  }
+
   pokered::WorldState pallet_world {};
   pallet_world.map_id = pokered::WorldId::PalletTown;
   pallet_world.player.x = 5;
@@ -311,10 +411,28 @@ int main() {
       blues_entry.player.x != 13 || blues_entry.player.y != 5 ||
       blues_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::BluesHouse) ||
       blues_entry.last_warp != 1 || blues_entry.player.facing != pokered::Facing::Down) {
-    std::cerr << "expected BluesHouse door warp to return to PalletTown but got map="
-              << static_cast<int>(blues_entry.map_id) << " pos=" << blues_entry.player.x << "," << blues_entry.player.y
-              << " last_map=" << blues_entry.last_map << " last_warp=" << static_cast<int>(blues_entry.last_warp)
-              << " facing=" << static_cast<int>(blues_entry.player.facing) << "\n";
+    std::cerr << "expected BluesHouse door warp to return to PalletTown\n";
+    return 1;
+  }
+
+  pokered::WorldState oaks_entry {};
+  oaks_entry.map_id = pokered::WorldId::PalletTown;
+  oaks_entry.player.x = 12;
+  oaks_entry.player.y = 12;
+  oaks_entry.player.facing = pokered::Facing::Up;
+  if (!pokered::TryMove(oaks_entry, pokered::Facing::Up) ||
+      oaks_entry.map_id != pokered::WorldId::OaksLab || oaks_entry.player.x != 5 ||
+      oaks_entry.player.y != 11 ||
+      oaks_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
+      oaks_entry.last_warp != 3 || oaks_entry.player.facing != pokered::Facing::Down) {
+    std::cerr << "expected PalletTown door warp to enter OaksLab\n";
+    return 1;
+  }
+  if (!pokered::TryMove(oaks_entry, pokered::Facing::Left) || oaks_entry.map_id != pokered::WorldId::PalletTown ||
+      oaks_entry.player.x != 12 || oaks_entry.player.y != 11 ||
+      oaks_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::OaksLab) ||
+      oaks_entry.last_warp != 1 || oaks_entry.player.facing != pokered::Facing::Down) {
+    std::cerr << "expected OaksLab door warp to return to PalletTown\n";
     return 1;
   }
 
@@ -367,18 +485,6 @@ int main() {
   outdoor_walk.player.facing = pokered::Facing::Up;
   if (pokered::InteractionForFacingTile(pallet_town, outdoor_walk) != pokered::MessageId::PalletTownOaksLabSign) {
     std::cerr << "expected PalletTown sign interaction\n";
-    return 1;
-  }
-
-  pokered::WorldState unsupported_warp {};
-  unsupported_warp.map_id = pokered::WorldId::PalletTown;
-  unsupported_warp.player.x = 12;
-  unsupported_warp.player.y = 12;
-  unsupported_warp.player.facing = pokered::Facing::Up;
-  if (!pokered::TryMove(unsupported_warp, pokered::Facing::Up) ||
-      unsupported_warp.map_id != pokered::WorldId::PalletTown || unsupported_warp.player.x != 12 ||
-      unsupported_warp.player.y != 11) {
-    std::cerr << "expected unsupported OaksLab warp to remain local\n";
     return 1;
   }
 

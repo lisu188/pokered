@@ -5,6 +5,9 @@
 
 #include "blues_house_blk.hpp"
 #include "blues_house_metadata.hpp"
+#include "dojo_blockset.hpp"
+#include "oaks_lab_blk.hpp"
+#include "oaks_lab_metadata.hpp"
 #include "overworld_blockset.hpp"
 #include "pallet_town_blk.hpp"
 #include "pallet_town_metadata.hpp"
@@ -29,6 +32,10 @@ constexpr int kSmallIndoorBlockWidth = 4;
 constexpr int kSmallIndoorBlockHeight = 4;
 constexpr int kSmallIndoorWidth = kSmallIndoorBlockWidth * kCellsPerBlockEdge;
 constexpr int kSmallIndoorHeight = kSmallIndoorBlockHeight * kCellsPerBlockEdge;
+constexpr int kOaksLabBlockWidth = 5;
+constexpr int kOaksLabBlockHeight = 6;
+constexpr int kOaksLabWidth = kOaksLabBlockWidth * kCellsPerBlockEdge;
+constexpr int kOaksLabHeight = kOaksLabBlockHeight * kCellsPerBlockEdge;
 constexpr int kPalletTownBlockWidth = 10;
 constexpr int kPalletTownBlockHeight = 9;
 constexpr int kPalletTownWidth = kPalletTownBlockWidth * kCellsPerBlockEdge;
@@ -47,10 +54,13 @@ static_assert(generated::kPewterSpeechHouseBlocks.size() ==
               static_cast<std::size_t>(kSmallIndoorBlockWidth * kSmallIndoorBlockHeight));
 static_assert(generated::kBluesHouseBlocks.size() ==
               static_cast<std::size_t>(kSmallIndoorBlockWidth * kSmallIndoorBlockHeight));
+static_assert(generated::kOaksLabBlocks.size() ==
+              static_cast<std::size_t>(kOaksLabBlockWidth * kOaksLabBlockHeight));
 static_assert(generated::kPalletTownBlocks.size() ==
               static_cast<std::size_t>(kPalletTownBlockWidth * kPalletTownBlockHeight));
 static_assert(generated::kRedsHouseBlockset.size() % kTilesPerBlock == 0);
 static_assert(generated::kHouseBlockset.size() % kTilesPerBlock == 0);
+static_assert(generated::kDojoBlockset.size() % kTilesPerBlock == 0);
 static_assert(generated::kOverworldBlockset.size() % kTilesPerBlock == 0);
 
 template <std::size_t N>
@@ -121,6 +131,9 @@ constexpr std::array<MapCell, kSmallIndoorWidth * kSmallIndoorHeight> kPewterSpe
 constexpr std::array<MapCell, kSmallIndoorWidth * kSmallIndoorHeight> kBluesHouseCells =
     BuildCells<kSmallIndoorBlockWidth, kSmallIndoorBlockHeight>(
         generated::kBluesHouseBlocks, generated::kHouseBlockset, generated::kBluesHouseCollisionTiles);
+constexpr std::array<MapCell, kOaksLabWidth * kOaksLabHeight> kOaksLabCells =
+    BuildCells<kOaksLabBlockWidth, kOaksLabBlockHeight>(
+        generated::kOaksLabBlocks, generated::kDojoBlockset, generated::kDojoCollisionTiles);
 constexpr std::array<MapCell, kPalletTownWidth * kPalletTownHeight> kPalletTownCells =
     BuildCells<kPalletTownBlockWidth, kPalletTownBlockHeight>(
         generated::kPalletTownBlocks, generated::kOverworldBlockset, generated::kOverworldCollisionTiles);
@@ -181,6 +194,20 @@ constexpr MapData kBluesHouse = {
     generated::kBluesHouseNpcs,
 };
 
+constexpr MapData kOaksLab = {
+    WorldId::OaksLab,
+    "OAK'S LAB",
+    kOaksLabWidth,
+    kOaksLabHeight,
+    5,
+    generated::kOaksLabBorderBlock,
+    generated::kOaksLabBlocks,
+    kOaksLabCells,
+    generated::kOaksLabWarps,
+    generated::kOaksLabBgEvents,
+    generated::kOaksLabNpcs,
+};
+
 constexpr MapData kPalletTown = {
     WorldId::PalletTown,
     "PALLET TOWN",
@@ -219,10 +246,10 @@ const MapData* FindMapData(WorldId id) {
       return &kPewterSpeechHouse;
     case WorldId::BluesHouse:
       return &kBluesHouse;
+    case WorldId::OaksLab:
+      return &kOaksLab;
     case WorldId::PalletTown:
       return &kPalletTown;
-    case WorldId::OaksLab:
-      return nullptr;
   }
   return nullptr;
 }
@@ -295,6 +322,17 @@ MessageId InteractionForFacingTile(const MapData& map, const WorldState& world) 
       if (npc.message == MessageId::MomWakeUp && world.got_starter) {
         return MessageId::MomRest;
       }
+      if (npc.message == MessageId::OaksLabRival) {
+        return world.got_starter ? MessageId::OaksLabRivalMyPokemonLooksStronger
+                                 : MessageId::OaksLabRivalGrampsIsntAround;
+      }
+      if (npc.message == MessageId::OaksLabPokeBall) {
+        return world.got_starter ? MessageId::OaksLabLastMon : MessageId::OaksLabThoseArePokeBalls;
+      }
+      if (npc.message == MessageId::OaksLabOak1) {
+        return world.got_starter ? MessageId::OaksLabOak1YourPokemonCanFight
+                                 : MessageId::OaksLabOak1WhichPokemonDoYouWant;
+      }
       return npc.message;
     }
   }
@@ -333,6 +371,30 @@ std::string_view RawMessageText(MessageId message) {
       return generated::kBluesHouseDaisyWalkingText;
     case MessageId::BluesHouseTownMap:
       return generated::kBluesHouseTownMapText;
+    case MessageId::OaksLabRival:
+    case MessageId::OaksLabPokeBall:
+    case MessageId::OaksLabOak1:
+      return "";
+    case MessageId::OaksLabPokedex:
+      return generated::kOaksLabPokedexText;
+    case MessageId::OaksLabOak2:
+      return generated::kOaksLabOak2Text;
+    case MessageId::OaksLabGirl:
+      return generated::kOaksLabGirlText;
+    case MessageId::OaksLabScientist:
+      return generated::kOaksLabScientistText;
+    case MessageId::OaksLabRivalGrampsIsntAround:
+      return generated::kOaksLabRivalGrampsIsntAroundText;
+    case MessageId::OaksLabRivalMyPokemonLooksStronger:
+      return generated::kOaksLabRivalMyPokemonLooksStrongerText;
+    case MessageId::OaksLabThoseArePokeBalls:
+      return generated::kOaksLabThoseArePokeBallsText;
+    case MessageId::OaksLabLastMon:
+      return generated::kOaksLabLastMonText;
+    case MessageId::OaksLabOak1WhichPokemonDoYouWant:
+      return generated::kOaksLabOak1WhichPokemonDoYouWantText;
+    case MessageId::OaksLabOak1YourPokemonCanFight:
+      return generated::kOaksLabOak1YourPokemonCanFightText;
     case MessageId::PalletTownOak:
       return generated::kPalletTownOakItsUnsafeText;
     case MessageId::PalletTownGirl:
