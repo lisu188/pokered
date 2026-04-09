@@ -119,3 +119,9 @@ Extended the `F7` runtime provenance overlay so it now cycles through normal con
 
 ## [2026-04-09 20:10] verification | last-warp provenance tracing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies both shared warp provenance lookups and `TryMoveWithResult` warp metadata for real PalletTown/RedsHouse/OaksLab transitions.
+
+## [2026-04-09 20:20] provenance | last-message text trace page added to the SDL overlay
+Extended the `F7` runtime provenance overlay again so it now also records the most recent displayed source-backed text label. `native/src/oracle/provenance.cpp` now exposes `LookupMessageProvenance`, and the SDL app stores the last displayed `MessageId` so the overlay can point interactions and movement-trigger seams back to their original text symbols.
+
+## [2026-04-09 20:20] verification | last-message provenance tracing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies shared message provenance lookups for `MomWakeUp`, the PalletTown Oak warning, and `OaksLabPokedex` alongside the existing warp trace coverage.

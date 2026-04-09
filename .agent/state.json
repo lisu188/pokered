@@ -36,13 +36,15 @@
     "Lifted current oracle provenance into a runtime-facing current-map overlay",
     "Re-verified the runtime provenance overlay plumbing on the Linux SDL CMake path",
     "Extended the runtime provenance overlay with a last-warp trace page",
-    "Re-verified the last-warp provenance trace on the Linux SDL CMake path"
+    "Re-verified the last-warp provenance trace on the Linux SDL CMake path",
+    "Extended the runtime provenance overlay with a last-message text trace page",
+    "Re-verified the last-message provenance trace on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",
     "No MinGW SDL2 development package with SDL2Config.cmake is installed locally",
     "No emulator/debugger is installed locally yet for ROM-side differential traces",
-    "Runtime-facing provenance now covers the current map and the last successful warp, but broader movement/script trace hooks are still missing",
+    "Runtime-facing provenance now covers the current map, the last successful warp, and the last displayed source-backed message, but broader movement/script trace hooks are still missing",
     "Route1 and Route21 are still unimplemented even though PalletTown now has three live interior doors",
     "Oak's PalletTown follow-to-lab chain and OaksLab starter/rival sequence are still intentionally deferred",
     "BluesHouse Daisy's Town Map gift path is still intentionally simplified to the default static-text branch until native item/event state exists",
@@ -53,7 +55,7 @@
     "Decide whether the bounded PalletTown Oak warning should expand into the full follow-to-lab cutscene",
     "Evaluate Route1/Route21 boundary handling once the next PalletTown door is live",
     "Decide whether BluesHouse Daisy should stay on the default dialogue branch or gain the first small indoor gift/event seam",
-    "Extend runtime-facing provenance beyond the last-warp overlay into broader movement and script trace hooks",
+    "Extend runtime-facing provenance beyond the last-message overlay into broader movement and script trace hooks",
     "Broaden indoor metadata import beyond the current RedsHouse and House tilesets once the exterior seam is stable",
     "Verify the documented MinGW cross-build path once the compiler and SDL2 packages are available",
     "Pick the next small interior after OaksLab once the PalletTown hub is broader"

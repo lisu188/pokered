@@ -68,9 +68,11 @@
   - `native/src/oracle/map_file.cpp` can load `pokered.map`
   - `native/src/oracle/provenance.cpp` can join current-map header/object labels to symbol addresses and `.map` sections for runtime-facing use
   - `native/src/oracle/provenance.cpp` can also join source/target map object provenance for last-warp runtime traces
+  - `native/src/oracle/provenance.cpp` can also join surfaced `MessageId` values to source text labels and `.map` sections for last-message runtime traces
   - symbol lookup for `EnterMap`, `OverworldLoop`, `PalletTown_h`, `BluesHouse_h`, `OaksLab_h`, `RedsHouse1F_h`, `RedsHouse2F_h`, `PewterSpeechHouse_h`, and `TryLoadSaveFile`
   - `.sym` + `.map` section containment for `Home`, `Maps 1`, `Maps 2`, `Maps 8`, `Maps 15`, `Maps 4`, and `bank1C`
   - `TryMoveWithResult` warp metadata for PalletTown doors, OaksLab entry, and RedsHouse1F exit versus non-warp movement/script seams
+  - message provenance lookup for `MomWakeUp`, the PalletTown Oak warning seam, and `OaksLabPokedex`, plus null coverage for native-only or abstract message ids
 
 ## Confirmed Oracle Assets
 - `pokered.gbc`, `pokeblue.gbc`, `pokeblue_debug.gbc`
@@ -84,7 +86,7 @@
 - keep deterministic save/load as a native milestone requirement, not a later cleanup item
 
 ## Next Verification Work
-- extend the current runtime-facing provenance hooks past the last-warp page into broader movement/script tracing
+- extend the current runtime-facing provenance hooks past the last-message page into broader movement/script tracing
 - add the next outdoor-adjacent scenario beyond the now-live `OaksLab` seam
 - add checks for deferred `LAST_MAP` door behavior on maps beyond the PalletTown seam
 - add importer regression checks for the lower-left representative tile rule used by overworld collision/warp semantics

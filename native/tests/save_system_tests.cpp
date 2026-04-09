@@ -145,6 +145,63 @@ int main() {
     std::cerr << "expected RedsHouse1F -> PalletTown warp provenance lookup\n";
     return 1;
   }
+  const auto mom_provenance = pokered::oracle::LookupMessageProvenance(
+      symbols, sections, pokered::MessageId::MomWakeUp);
+  const bool mom_ok = mom_provenance && mom_provenance->message_id == pokered::MessageId::MomWakeUp &&
+                      mom_provenance->text.label == "_RedsHouse1FMomWakeUpText" &&
+                      mom_provenance->text.address.bank == 0x25 &&
+                      mom_provenance->text.address.address == 0x4B07 && mom_provenance->text.section &&
+                      mom_provenance->text.section->name == "Text 6";
+  if (!mom_ok) {
+    std::cerr << "expected Mom wake-up message provenance lookup";
+    if (mom_provenance) {
+      std::cerr << " got id=" << static_cast<int>(mom_provenance->message_id)
+                << " label=" << mom_provenance->text.label
+                << " bank=" << mom_provenance->text.address.bank
+                << " address=" << std::hex << mom_provenance->text.address.address << std::dec
+                << " section="
+                << (mom_provenance->text.section ? mom_provenance->text.section->name : std::string("<none>"));
+    } else {
+      std::cerr << " got <none>";
+    }
+    std::cerr << "\n";
+    return 1;
+  }
+  const auto oak_warning_provenance = pokered::oracle::LookupMessageProvenance(
+      symbols, sections, pokered::MessageId::PalletTownOakHeyWaitDontGoOut);
+  const bool oak_warning_ok =
+      oak_warning_provenance && oak_warning_provenance->text.label == "_PalletTownOakHeyWaitDontGoOutText" &&
+      oak_warning_provenance->text.address.bank == 0x29 &&
+      oak_warning_provenance->text.address.address == 0x4245 && oak_warning_provenance->text.section &&
+      oak_warning_provenance->text.section->name == "Text 10";
+  if (!oak_warning_ok) {
+    std::cerr << "expected PalletTown Oak warning message provenance lookup";
+    if (oak_warning_provenance) {
+      std::cerr << " got label=" << oak_warning_provenance->text.label
+                << " bank=" << oak_warning_provenance->text.address.bank
+                << " address=" << std::hex << oak_warning_provenance->text.address.address << std::dec
+                << " section="
+                << (oak_warning_provenance->text.section ? oak_warning_provenance->text.section->name
+                                                         : std::string("<none>"));
+    } else {
+      std::cerr << " got <none>";
+    }
+    std::cerr << "\n";
+    return 1;
+  }
+  const auto pokedex_provenance = pokered::oracle::LookupMessageProvenance(
+      symbols, sections, pokered::MessageId::OaksLabPokedex);
+  if (!pokedex_provenance || pokedex_provenance->text.label != "_OaksLabPokedexText" ||
+      pokedex_provenance->text.address.bank != 0x25 || pokedex_provenance->text.address.address != 0x5236 ||
+      !pokedex_provenance->text.section || pokedex_provenance->text.section->name != "Text 6") {
+    std::cerr << "expected OaksLab pokedex message provenance lookup\n";
+    return 1;
+  }
+  if (pokered::oracle::LookupMessageProvenance(symbols, sections, pokered::MessageId::SaveOk) ||
+      pokered::oracle::LookupMessageProvenance(symbols, sections, pokered::MessageId::OaksLabRival)) {
+    std::cerr << "expected native-only and abstract message ids to have no oracle provenance\n";
+    return 1;
+  }
 
   const pokered::MapData& map = pokered::GetMapData(pokered::WorldId::RedsHouse1F);
   const pokered::MapData& speech_house = pokered::GetMapData(pokered::WorldId::PewterSpeechHouse);

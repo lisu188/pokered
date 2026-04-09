@@ -63,6 +63,7 @@ enum class OverlayMode : std::uint8_t {
   Off = 0,
   MapProvenance = 1,
   WarpTrace = 2,
+  MessageTrace = 3,
 };
 
 struct WarpTraceState {
@@ -76,6 +77,7 @@ struct WarpTraceState {
 struct DebugOverlayState {
   OverlayMode mode = OverlayMode::Off;
   WarpTraceState last_warp {};
+  MessageId last_message = MessageId::None;
 };
 
 const std::filesystem::path& SavePath() {
@@ -146,13 +148,17 @@ void RefreshSaveAvailability(GameState& state) {
   state.has_save = SaveSystem::Exists(SavePath());
 }
 
-void ShowMessage(GameState& state, MessageId message) {
+void ShowMessage(GameState& state, MessageId message, DebugOverlayState* debug_overlay = nullptr) {
   state.active_message = message;
   state.active_message_page = 0;
+  if (message != MessageId::None && debug_overlay != nullptr) {
+    debug_overlay->last_message = message;
+  }
 }
 
-void ClearWarpTrace(DebugOverlayState& debug_overlay) {
+void ClearTraceHistory(DebugOverlayState& debug_overlay) {
   debug_overlay.last_warp = {};
+  debug_overlay.last_message = MessageId::None;
 }
 
 OverlayMode NextOverlayMode(OverlayMode mode) {
@@ -162,6 +168,8 @@ OverlayMode NextOverlayMode(OverlayMode mode) {
     case OverlayMode::MapProvenance:
       return OverlayMode::WarpTrace;
     case OverlayMode::WarpTrace:
+      return OverlayMode::MessageTrace;
+    case OverlayMode::MessageTrace:
       return OverlayMode::Off;
   }
   return OverlayMode::Off;
@@ -184,7 +192,7 @@ void AdvanceOrDismissMessage(GameState& state) {
 
 void StartNewGame(GameState& state, DebugOverlayState& debug_overlay) {
   StartNewGameShortcut(state);
-  ClearWarpTrace(debug_overlay);
+  ClearTraceHistory(debug_overlay);
   RefreshSaveAvailability(state);
 }
 
@@ -200,7 +208,7 @@ void HandleWorldMove(GameState& state, Facing facing, DebugOverlayState& debug_o
     };
   }
   if (result.message != MessageId::None) {
-    ShowMessage(state, result.message);
+    ShowMessage(state, result.message, &debug_overlay);
   }
 }
 
@@ -260,6 +268,23 @@ std::string BuildWarpTraceText(const DebugOverlayState& debug_overlay, const Ora
          FormatSymbolLocation(provenance->target_object);
 }
 
+std::string BuildMessageTraceText(const DebugOverlayState& debug_overlay, const OracleContext& oracle_context) {
+  if (!oracle_context.available) {
+    return "ORACLE DATA\nNOT FOUND";
+  }
+  if (debug_overlay.last_message == MessageId::None) {
+    return "TEXT TRACE\nNONE YET";
+  }
+
+  const auto provenance = oracle::LookupMessageProvenance(
+      oracle_context.symbols, oracle_context.sections, debug_overlay.last_message);
+  if (!provenance) {
+    return "TEXT TRACE\nNO SOURCE";
+  }
+
+  return provenance->text.label + "\n" + FormatSymbolLocation(provenance->text);
+}
+
 std::string BuildOverlayText(const GameState& state,
                              const DebugOverlayState& debug_overlay,
                              const OracleContext& oracle_context) {
@@ -270,6 +295,8 @@ std::string BuildOverlayText(const GameState& state,
       return BuildMapProvenanceText(state, oracle_context);
     case OverlayMode::WarpTrace:
       return BuildWarpTraceText(debug_overlay, oracle_context);
+    case OverlayMode::MessageTrace:
+      return BuildMessageTraceText(debug_overlay, oracle_context);
   }
   return "ARROWS MOVE  Z TALK";
 }
@@ -279,28 +306,28 @@ void TryLoadGame(GameState& state, DebugOverlayState& debug_overlay) {
   switch (result.status) {
     case LoadStatus::Ok:
       state = result.state;
-      ClearWarpTrace(debug_overlay);
-      ShowMessage(state, MessageId::LoadOk);
+      ClearTraceHistory(debug_overlay);
+      ShowMessage(state, MessageId::LoadOk, &debug_overlay);
       RefreshSaveAvailability(state);
       break;
     case LoadStatus::Missing:
-      ShowMessage(state, MessageId::SaveMissing);
+      ShowMessage(state, MessageId::SaveMissing, &debug_overlay);
       break;
     case LoadStatus::Corrupt:
-      ShowMessage(state, MessageId::SaveCorrupt);
+      ShowMessage(state, MessageId::SaveCorrupt, &debug_overlay);
       break;
     case LoadStatus::IoError:
-      ShowMessage(state, MessageId::SaveCorrupt);
+      ShowMessage(state, MessageId::SaveCorrupt, &debug_overlay);
       break;
   }
 }
 
-void TrySaveGame(GameState& state) {
+void TrySaveGame(GameState& state, DebugOverlayState& debug_overlay) {
   if (SaveSystem::Save(SavePath(), state)) {
-    ShowMessage(state, MessageId::SaveOk);
+    ShowMessage(state, MessageId::SaveOk, &debug_overlay);
     RefreshSaveAvailability(state);
   } else {
-    ShowMessage(state, MessageId::SaveCorrupt);
+    ShowMessage(state, MessageId::SaveCorrupt, &debug_overlay);
   }
 }
 
@@ -308,7 +335,7 @@ void SetDebugMap(GameState& state, WorldId map_id, DebugOverlayState& debug_over
   state.world.map_id = map_id;
   state.active_message = MessageId::None;
   state.active_message_page = 0;
-  ClearWarpTrace(debug_overlay);
+  ClearTraceHistory(debug_overlay);
 
   switch (map_id) {
     case WorldId::RedsHouse1F:
@@ -441,7 +468,7 @@ void UpdateTitle(GameState& state, const FrameInput& input, DebugOverlayState& d
   if (state.has_save) {
     TryLoadGame(state, debug_overlay);
   } else {
-    ShowMessage(state, MessageId::SaveMissing);
+    ShowMessage(state, MessageId::SaveMissing, &debug_overlay);
   }
 }
 
@@ -465,7 +492,7 @@ void UpdateWorld(GameState& state, const FrameInput& input, DebugOverlayState& d
   }
 
   if (input.save) {
-    TrySaveGame(state);
+    TrySaveGame(state, debug_overlay);
     return;
   }
   if (input.load) {
@@ -490,7 +517,7 @@ void UpdateWorld(GameState& state, const FrameInput& input, DebugOverlayState& d
     return;
   }
   if (input.confirm) {
-    ShowMessage(state, InteractionForFacingTile(GetMapData(state.world.map_id), state.world));
+    ShowMessage(state, InteractionForFacingTile(GetMapData(state.world.map_id), state.world), &debug_overlay);
   }
 }
 
