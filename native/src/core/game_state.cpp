@@ -84,17 +84,26 @@ MoveResult TryMoveWithResult(WorldState& world, Facing facing) {
     }
 
     world.map_id = *target_map_id;
+    MoveResult result {
+        .moved = true,
+        .message = MessageId::None,
+        .warped = true,
+        .source_map = map.id,
+        .source_warp = static_cast<std::uint8_t>(index + 1),
+        .target_map = *target_map_id,
+        .target_warp = warp.target_warp,
+    };
 
     const MapData& target_map = GetMapData(world.map_id);
     if (warp.target_warp == 0 || warp.target_warp > target_map.warps.size()) {
-      return {.moved = true, .message = MessageId::None};
+      return result;
     }
 
     const Warp& target_warp = target_map.warps[warp.target_warp - 1];
     world.player.x = target_warp.x;
     world.player.y = target_warp.y;
     world.player.facing = Facing::Down;
-    return {.moved = true, .message = MessageId::None};
+    return result;
   }
 
   return {.moved = true, .message = MessageId::None};

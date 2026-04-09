@@ -59,6 +59,25 @@ struct OracleContext {
   bool available = false;
 };
 
+enum class OverlayMode : std::uint8_t {
+  Off = 0,
+  MapProvenance = 1,
+  WarpTrace = 2,
+};
+
+struct WarpTraceState {
+  bool available = false;
+  WorldId source_map = WorldId::RedsHouse1F;
+  std::uint8_t source_warp = 0;
+  WorldId target_map = WorldId::RedsHouse1F;
+  std::uint8_t target_warp = 0;
+};
+
+struct DebugOverlayState {
+  OverlayMode mode = OverlayMode::Off;
+  WarpTraceState last_warp {};
+};
+
 const std::filesystem::path& SavePath() {
   static const std::filesystem::path path = "native-save.sav";
   return path;
@@ -132,6 +151,22 @@ void ShowMessage(GameState& state, MessageId message) {
   state.active_message_page = 0;
 }
 
+void ClearWarpTrace(DebugOverlayState& debug_overlay) {
+  debug_overlay.last_warp = {};
+}
+
+OverlayMode NextOverlayMode(OverlayMode mode) {
+  switch (mode) {
+    case OverlayMode::Off:
+      return OverlayMode::MapProvenance;
+    case OverlayMode::MapProvenance:
+      return OverlayMode::WarpTrace;
+    case OverlayMode::WarpTrace:
+      return OverlayMode::Off;
+  }
+  return OverlayMode::Off;
+}
+
 void AdvanceOrDismissMessage(GameState& state) {
   if (state.active_message == MessageId::None) {
     state.active_message_page = 0;
@@ -147,13 +182,23 @@ void AdvanceOrDismissMessage(GameState& state) {
   state.active_message_page = 0;
 }
 
-void StartNewGame(GameState& state) {
+void StartNewGame(GameState& state, DebugOverlayState& debug_overlay) {
   StartNewGameShortcut(state);
+  ClearWarpTrace(debug_overlay);
   RefreshSaveAvailability(state);
 }
 
-void HandleWorldMove(GameState& state, Facing facing) {
+void HandleWorldMove(GameState& state, Facing facing, DebugOverlayState& debug_overlay) {
   const MoveResult result = TryMoveWithResult(state.world, facing);
+  if (result.warped) {
+    debug_overlay.last_warp = {
+        .available = true,
+        .source_map = result.source_map,
+        .source_warp = result.source_warp,
+        .target_map = result.target_map,
+        .target_warp = result.target_warp,
+    };
+  }
   if (result.message != MessageId::None) {
     ShowMessage(state, result.message);
   }
@@ -173,7 +218,7 @@ std::string FormatSymbolLocation(const oracle::ProvenanceSymbol& symbol) {
   return text;
 }
 
-std::string BuildProvenanceText(const GameState& state, const OracleContext& oracle_context) {
+std::string BuildMapProvenanceText(const GameState& state, const OracleContext& oracle_context) {
   if (!oracle_context.available) {
     return "ORACLE DATA\nNOT FOUND";
   }
@@ -187,11 +232,54 @@ std::string BuildProvenanceText(const GameState& state, const OracleContext& ora
          provenance->object.label + "\n" + FormatSymbolLocation(provenance->object);
 }
 
-void TryLoadGame(GameState& state) {
+std::string FormatWarpLabel(const oracle::ProvenanceSymbol& symbol, std::uint8_t warp_index) {
+  return symbol.label + " #" + std::to_string(static_cast<int>(warp_index));
+}
+
+std::string BuildWarpTraceText(const DebugOverlayState& debug_overlay, const OracleContext& oracle_context) {
+  if (!oracle_context.available) {
+    return "ORACLE DATA\nNOT FOUND";
+  }
+  if (!debug_overlay.last_warp.available) {
+    return "WARP TRACE\nNONE YET";
+  }
+
+  const auto provenance = oracle::LookupWarpProvenance(oracle_context.symbols,
+                                                       oracle_context.sections,
+                                                       debug_overlay.last_warp.source_map,
+                                                       debug_overlay.last_warp.source_warp,
+                                                       debug_overlay.last_warp.target_map,
+                                                       debug_overlay.last_warp.target_warp);
+  if (!provenance) {
+    return "WARP TRACE\nUNAVAILABLE";
+  }
+
+  return FormatWarpLabel(provenance->source_object, provenance->source_warp) + "\n" +
+         FormatSymbolLocation(provenance->source_object) + "\n" +
+         FormatWarpLabel(provenance->target_object, provenance->target_warp) + "\n" +
+         FormatSymbolLocation(provenance->target_object);
+}
+
+std::string BuildOverlayText(const GameState& state,
+                             const DebugOverlayState& debug_overlay,
+                             const OracleContext& oracle_context) {
+  switch (debug_overlay.mode) {
+    case OverlayMode::Off:
+      return "ARROWS MOVE  Z TALK\nF5 SAVE  F9 LOAD\nF6 MAP  F7 ORCL\nG FLAG";
+    case OverlayMode::MapProvenance:
+      return BuildMapProvenanceText(state, oracle_context);
+    case OverlayMode::WarpTrace:
+      return BuildWarpTraceText(debug_overlay, oracle_context);
+  }
+  return "ARROWS MOVE  Z TALK";
+}
+
+void TryLoadGame(GameState& state, DebugOverlayState& debug_overlay) {
   const LoadResult result = SaveSystem::Load(SavePath());
   switch (result.status) {
     case LoadStatus::Ok:
       state = result.state;
+      ClearWarpTrace(debug_overlay);
       ShowMessage(state, MessageId::LoadOk);
       RefreshSaveAvailability(state);
       break;
@@ -216,10 +304,11 @@ void TrySaveGame(GameState& state) {
   }
 }
 
-void SetDebugMap(GameState& state, WorldId map_id) {
+void SetDebugMap(GameState& state, WorldId map_id, DebugOverlayState& debug_overlay) {
   state.world.map_id = map_id;
   state.active_message = MessageId::None;
   state.active_message_page = 0;
+  ClearWarpTrace(debug_overlay);
 
   switch (map_id) {
     case WorldId::RedsHouse1F:
@@ -255,25 +344,25 @@ void SetDebugMap(GameState& state, WorldId map_id) {
   }
 }
 
-void CycleDebugMap(GameState& state) {
+void CycleDebugMap(GameState& state, DebugOverlayState& debug_overlay) {
   switch (state.world.map_id) {
     case WorldId::RedsHouse1F:
-      SetDebugMap(state, WorldId::PalletTown);
+      SetDebugMap(state, WorldId::PalletTown, debug_overlay);
       break;
     case WorldId::PalletTown:
-      SetDebugMap(state, WorldId::BluesHouse);
+      SetDebugMap(state, WorldId::BluesHouse, debug_overlay);
       break;
     case WorldId::BluesHouse:
-      SetDebugMap(state, WorldId::OaksLab);
+      SetDebugMap(state, WorldId::OaksLab, debug_overlay);
       break;
     case WorldId::OaksLab:
-      SetDebugMap(state, WorldId::RedsHouse2F);
+      SetDebugMap(state, WorldId::RedsHouse2F, debug_overlay);
       break;
     case WorldId::RedsHouse2F:
-      SetDebugMap(state, WorldId::PewterSpeechHouse);
+      SetDebugMap(state, WorldId::PewterSpeechHouse, debug_overlay);
       break;
     case WorldId::PewterSpeechHouse:
-      SetDebugMap(state, WorldId::RedsHouse1F);
+      SetDebugMap(state, WorldId::RedsHouse1F, debug_overlay);
       break;
   }
 }
@@ -335,7 +424,7 @@ FrameInput PollInput(GameState& state) {
   return input;
 }
 
-void UpdateTitle(GameState& state, const FrameInput& input) {
+void UpdateTitle(GameState& state, const FrameInput& input, DebugOverlayState& debug_overlay) {
   if (input.up || input.down) {
     state.menu_index = state.menu_index == 0 ? 1 : 0;
   }
@@ -345,27 +434,27 @@ void UpdateTitle(GameState& state, const FrameInput& input) {
   }
 
   if (state.menu_index == 0) {
-    StartNewGame(state);
+    StartNewGame(state, debug_overlay);
     return;
   }
 
   if (state.has_save) {
-    TryLoadGame(state);
+    TryLoadGame(state, debug_overlay);
   } else {
     ShowMessage(state, MessageId::SaveMissing);
   }
 }
 
-void UpdateWorld(GameState& state, const FrameInput& input, bool& show_provenance) {
+void UpdateWorld(GameState& state, const FrameInput& input, DebugOverlayState& debug_overlay) {
   if (input.toggle_starter) {
     state.world.got_starter = !state.world.got_starter;
   }
   if (input.cycle_map) {
-    CycleDebugMap(state);
+    CycleDebugMap(state, debug_overlay);
     return;
   }
   if (input.toggle_provenance) {
-    show_provenance = !show_provenance;
+    debug_overlay.mode = NextOverlayMode(debug_overlay.mode);
   }
 
   if (state.active_message != MessageId::None) {
@@ -380,24 +469,24 @@ void UpdateWorld(GameState& state, const FrameInput& input, bool& show_provenanc
     return;
   }
   if (input.load) {
-    TryLoadGame(state);
+    TryLoadGame(state, debug_overlay);
     return;
   }
 
   if (input.up) {
-    HandleWorldMove(state, Facing::Up);
+    HandleWorldMove(state, Facing::Up, debug_overlay);
     return;
   }
   if (input.down) {
-    HandleWorldMove(state, Facing::Down);
+    HandleWorldMove(state, Facing::Down, debug_overlay);
     return;
   }
   if (input.left) {
-    HandleWorldMove(state, Facing::Left);
+    HandleWorldMove(state, Facing::Left, debug_overlay);
     return;
   }
   if (input.right) {
-    HandleWorldMove(state, Facing::Right);
+    HandleWorldMove(state, Facing::Right, debug_overlay);
     return;
   }
   if (input.confirm) {
@@ -425,7 +514,7 @@ SDL_Color TileColor(TileKind tile) {
 
 void DrawMessageBox(SDL_Renderer* renderer,
                     const GameState& state,
-                    bool show_provenance,
+                    const DebugOverlayState& debug_overlay,
                     const OracleContext& oracle_context) {
   if (state.active_message == MessageId::None) {
     SDL_SetRenderDrawColor(renderer, 24, 28, 36, 255);
@@ -433,8 +522,7 @@ void DrawMessageBox(SDL_Renderer* renderer,
     SDL_RenderFillRect(renderer, &info);
     SDL_SetRenderDrawColor(renderer, 205, 214, 221, 255);
     SDL_RenderDrawRect(renderer, &info);
-    const std::string text = show_provenance ? BuildProvenanceText(state, oracle_context)
-                                             : "ARROWS MOVE  Z TALK\nF5 SAVE  F9 LOAD\nF6 MAP  F7 ORCL\nG FLAG";
+    const std::string text = BuildOverlayText(state, debug_overlay, oracle_context);
     DrawText(renderer,
              8,
              kTextBoxY + 6,
@@ -475,7 +563,7 @@ void RenderTitle(SDL_Renderer* renderer, const GameState& state) {
            state.has_save ? (state.menu_index == 1 ? active : inactive) : disabled, 1);
 
   if (state.active_message != MessageId::None) {
-    DrawMessageBox(renderer, state, false, OracleContext {});
+    DrawMessageBox(renderer, state, DebugOverlayState {}, OracleContext {});
   } else {
     DrawText(renderer, 26, 126, "ENTER OR Z", SDL_Color {180, 180, 180, 255}, 1);
   }
@@ -483,7 +571,7 @@ void RenderTitle(SDL_Renderer* renderer, const GameState& state) {
 
 void RenderWorld(SDL_Renderer* renderer,
                  const GameState& state,
-                 bool show_provenance,
+                 const DebugOverlayState& debug_overlay,
                  const OracleContext& oracle_context) {
   SDL_SetRenderDrawColor(renderer, 140, 188, 216, 255);
   SDL_RenderClear(renderer);
@@ -548,12 +636,12 @@ void RenderWorld(SDL_Renderer* renderer,
     DrawText(renderer, 92, 4, "STARTER FLAG", SDL_Color {20, 20, 20, 255}, 1);
   }
 
-  DrawMessageBox(renderer, state, show_provenance, oracle_context);
+  DrawMessageBox(renderer, state, debug_overlay, oracle_context);
 }
 
 int RunSmokeTest() {
   GameState state {};
-  StartNewGame(state);
+  StartNewGameShortcut(state);
   if (state.scene != SceneId::World) {
     std::cerr << "smoke: failed to enter world\n";
     return 1;
@@ -676,7 +764,7 @@ int Application::Run(int argc, char** argv) const {
 
   GameState state {};
   const OracleContext oracle_context = LoadOracleContext();
-  bool show_provenance = false;
+  DebugOverlayState debug_overlay {};
   RefreshSaveAvailability(state);
 
   while (state.running) {
@@ -684,15 +772,15 @@ int Application::Run(int argc, char** argv) const {
     if (state.active_message != MessageId::None && state.scene == SceneId::Title && (input.confirm || input.back)) {
       AdvanceOrDismissMessage(state);
     } else if (state.scene == SceneId::Title) {
-      UpdateTitle(state, input);
+      UpdateTitle(state, input, debug_overlay);
     } else {
-      UpdateWorld(state, input, show_provenance);
+      UpdateWorld(state, input, debug_overlay);
     }
 
     if (state.scene == SceneId::Title) {
       RenderTitle(renderer, state);
     } else {
-      RenderWorld(renderer, state, show_provenance, oracle_context);
+      RenderWorld(renderer, state, debug_overlay, oracle_context);
     }
 
     SDL_RenderPresent(renderer);

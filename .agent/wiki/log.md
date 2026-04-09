@@ -113,3 +113,9 @@ Added `native/src/oracle/provenance.cpp` as a small bridge from `WorldId` to sou
 
 ## [2026-04-09 19:50] verification | runtime provenance overlay plumbing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake -S . -B build-native`, `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now also verifies shared `PalletTown` / `OaksLab` provenance lookups used by the runtime overlay.
+
+## [2026-04-09 20:10] provenance | last-warp trace page added to the SDL overlay
+Extended the `F7` runtime provenance overlay so it now cycles through normal controls, current-map provenance, and the last successful warp's source/target object provenance. `TryMoveWithResult` now carries warp metadata, and `native/src/oracle/provenance.cpp` exposes a small `LookupWarpProvenance` helper for the SDL app and tests.
+
+## [2026-04-09 20:10] verification | last-warp provenance tracing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies both shared warp provenance lookups and `TryMoveWithResult` warp metadata for real PalletTown/RedsHouse/OaksLab transitions.

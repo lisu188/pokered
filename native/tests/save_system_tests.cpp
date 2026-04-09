@@ -112,6 +112,39 @@ int main() {
     std::cerr << "expected OaksLab provenance lookup\n";
     return 1;
   }
+  const auto oaks_warp_provenance = pokered::oracle::LookupWarpProvenance(
+      symbols, sections, pokered::WorldId::PalletTown, 3, pokered::WorldId::OaksLab, 2);
+  if (!oaks_warp_provenance || oaks_warp_provenance->source_world_id != pokered::WorldId::PalletTown ||
+      oaks_warp_provenance->source_warp != 3 ||
+      oaks_warp_provenance->source_object.label != "PalletTown_Object" ||
+      oaks_warp_provenance->source_object.address.bank != 0x06 ||
+      oaks_warp_provenance->source_object.address.address != 0x42C3 ||
+      !oaks_warp_provenance->source_object.section || oaks_warp_provenance->source_object.section->name != "Maps 1" ||
+      oaks_warp_provenance->target_world_id != pokered::WorldId::OaksLab || oaks_warp_provenance->target_warp != 2 ||
+      oaks_warp_provenance->target_object.label != "OaksLab_Object" ||
+      oaks_warp_provenance->target_object.address.bank != 0x07 ||
+      oaks_warp_provenance->target_object.address.address != 0x540A ||
+      !oaks_warp_provenance->target_object.section || oaks_warp_provenance->target_object.section->name != "Maps 4") {
+    std::cerr << "expected PalletTown -> OaksLab warp provenance lookup\n";
+    return 1;
+  }
+  const auto house_warp_provenance = pokered::oracle::LookupWarpProvenance(
+      symbols, sections, pokered::WorldId::RedsHouse1F, 2, pokered::WorldId::PalletTown, 1);
+  if (!house_warp_provenance || house_warp_provenance->source_world_id != pokered::WorldId::RedsHouse1F ||
+      house_warp_provenance->source_warp != 2 ||
+      house_warp_provenance->source_object.label != "RedsHouse1F_Object" ||
+      house_warp_provenance->source_object.address.bank != 0x12 ||
+      house_warp_provenance->source_object.address.address != 0x41E4 ||
+      !house_warp_provenance->source_object.section || house_warp_provenance->source_object.section->name != "Maps 8" ||
+      house_warp_provenance->target_world_id != pokered::WorldId::PalletTown ||
+      house_warp_provenance->target_warp != 1 ||
+      house_warp_provenance->target_object.label != "PalletTown_Object" ||
+      house_warp_provenance->target_object.address.bank != 0x06 ||
+      house_warp_provenance->target_object.address.address != 0x42C3 ||
+      !house_warp_provenance->target_object.section || house_warp_provenance->target_object.section->name != "Maps 1") {
+    std::cerr << "expected RedsHouse1F -> PalletTown warp provenance lookup\n";
+    return 1;
+  }
 
   const pokered::MapData& map = pokered::GetMapData(pokered::WorldId::RedsHouse1F);
   const pokered::MapData& speech_house = pokered::GetMapData(pokered::WorldId::PewterSpeechHouse);
@@ -309,13 +342,14 @@ int main() {
   oak_trigger.player = {pallet_north_exit_x, 2, pokered::Facing::Up};
   const pokered::MoveResult oak_warning = pokered::TryMoveWithResult(oak_trigger, pokered::Facing::Up);
   if (oak_warning.moved || oak_warning.message != pokered::MessageId::PalletTownOakHeyWaitDontGoOut ||
+      oak_warning.warped || oak_warning.source_warp != 0 || oak_warning.target_warp != 0 ||
       oak_trigger.player.x != pallet_north_exit_x || oak_trigger.player.y != 2 || oak_trigger.step_counter != 0) {
     std::cerr << "expected PalletTown Oak north-exit warning seam\n";
     return 1;
   }
   oak_trigger.got_starter = true;
   const pokered::MoveResult route_progress = pokered::TryMoveWithResult(oak_trigger, pokered::Facing::Up);
-  if (!route_progress.moved || route_progress.message != pokered::MessageId::None ||
+  if (!route_progress.moved || route_progress.message != pokered::MessageId::None || route_progress.warped ||
       oak_trigger.player.x != pallet_north_exit_x || oak_trigger.player.y != 1 || oak_trigger.step_counter != 1) {
     std::cerr << "expected PalletTown north exit to reopen after starter flag\n";
     return 1;
@@ -432,7 +466,10 @@ int main() {
   pallet_world.player.x = 5;
   pallet_world.player.y = 6;
   pallet_world.player.facing = pokered::Facing::Up;
-  if (!pokered::TryMove(pallet_world, pokered::Facing::Up) ||
+  const pokered::MoveResult reds_entry = pokered::TryMoveWithResult(pallet_world, pokered::Facing::Up);
+  if (!reds_entry.moved || !reds_entry.warped || reds_entry.source_map != pokered::WorldId::PalletTown ||
+      reds_entry.source_warp != 1 || reds_entry.target_map != pokered::WorldId::RedsHouse1F ||
+      reds_entry.target_warp != 1 || reds_entry.message != pokered::MessageId::None ||
       pallet_world.map_id != pokered::WorldId::RedsHouse1F || pallet_world.player.x != 2 ||
       pallet_world.player.y != 7 ||
       pallet_world.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
@@ -472,7 +509,10 @@ int main() {
   oaks_entry.player.x = 12;
   oaks_entry.player.y = 12;
   oaks_entry.player.facing = pokered::Facing::Up;
-  if (!pokered::TryMove(oaks_entry, pokered::Facing::Up) ||
+  const pokered::MoveResult oaks_warp = pokered::TryMoveWithResult(oaks_entry, pokered::Facing::Up);
+  if (!oaks_warp.moved || !oaks_warp.warped || oaks_warp.source_map != pokered::WorldId::PalletTown ||
+      oaks_warp.source_warp != 3 || oaks_warp.target_map != pokered::WorldId::OaksLab ||
+      oaks_warp.target_warp != 2 || oaks_warp.message != pokered::MessageId::None ||
       oaks_entry.map_id != pokered::WorldId::OaksLab || oaks_entry.player.x != 5 ||
       oaks_entry.player.y != 11 ||
       oaks_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
@@ -495,7 +535,11 @@ int main() {
   warp_world.player.facing = pokered::Facing::Down;
   warp_world.last_map = static_cast<std::uint16_t>(pokered::WorldId::PalletTown);
   warp_world.last_warp = 1;
-  if (!pokered::TryMove(warp_world, pokered::Facing::Down) || warp_world.map_id != pokered::WorldId::PalletTown ||
+  const pokered::MoveResult house_exit = pokered::TryMoveWithResult(warp_world, pokered::Facing::Down);
+  if (!house_exit.moved || !house_exit.warped || house_exit.source_map != pokered::WorldId::RedsHouse1F ||
+      house_exit.source_warp != 2 || house_exit.target_map != pokered::WorldId::PalletTown ||
+      house_exit.target_warp != 1 || house_exit.message != pokered::MessageId::None ||
+      warp_world.map_id != pokered::WorldId::PalletTown ||
       warp_world.player.x != 5 || warp_world.player.y != 5 ||
       warp_world.last_map != static_cast<std::uint16_t>(pokered::WorldId::RedsHouse1F) ||
       warp_world.last_warp != 2 || warp_world.player.facing != pokered::Facing::Down ||
@@ -503,7 +547,9 @@ int main() {
     std::cerr << "expected RedsHouse1F door warp to exit into PalletTown\n";
     return 1;
   }
-  if (!pokered::TryMove(warp_world, pokered::Facing::Down) || warp_world.map_id != pokered::WorldId::PalletTown ||
+  const pokered::MoveResult pallet_step = pokered::TryMoveWithResult(warp_world, pokered::Facing::Down);
+  if (!pallet_step.moved || pallet_step.warped || pallet_step.message != pokered::MessageId::None ||
+      warp_world.map_id != pokered::WorldId::PalletTown ||
       warp_world.player.x != 5 || warp_world.player.y != 6) {
     std::cerr << "expected to step off the PalletTown house door\n";
     return 1;

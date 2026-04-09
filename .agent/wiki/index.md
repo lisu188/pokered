@@ -48,11 +48,11 @@ This directory is the compiled knowledge layer for the native port effort.
 - `BluesHouse` now imports from `maps/BluesHouse.blk`, `data/maps/objects/BluesHouse.asm`, `text/BluesHouse.asm`, `gfx/blocksets/house.bst`, and `House_Coll`, which makes the second PalletTown door live.
 - `OaksLab` now imports from `maps/OaksLab.blk`, `data/maps/objects/OaksLab.asm`, `text/OaksLab.asm`, `gfx/blocksets/gym.bst` via the original `DOJO` alias, and `Dojo_Coll`, which makes the third PalletTown door live.
 - `PalletTown` now has a bounded north-exit Oak warning seam before `got_starter`: directional movement into row `y == 1` surfaces the short source-backed “Hey! Wait! Don’t go out!” line instead of behaving like a normal step.
-- The SDL app now has a runtime-facing provenance toggle on `F7` that swaps the help box for the current map’s source header/object labels plus bank/section ownership loaded from `pokered.sym` and `pokered.map`.
+- The SDL app now has a runtime-facing provenance toggle on `F7` that cycles the help box between normal controls, the current map’s source header/object labels, and the last successful warp’s source/target object provenance loaded from `pokered.sym` and `pokered.map`.
 - The current smoke path now verifies `RedsHouse1F -> PalletTown -> OaksLab`, outdoor/interior interaction readiness, and save/load, producing `smoke-ok: world=5 pos=2,2 steps=6`.
 - `Route1` and `Route21` are still missing, so the current PalletTown slice is broader but still a bounded playable hub.
 - `BluesHouse` Daisy currently uses the source-backed default Rival-at-lab text branch; the Town Map gift/event path is still intentionally deferred.
 - `OaksLab` currently uses source-backed safe default interaction branches keyed off `got_starter`; starter selection, rival battle, and Oak's wider lab sequence remain deferred.
 - Oak's full follow-to-lab cutscene is still deferred; the current seam stops at the warning text and does not animate Oak or escort the player.
-- Runtime-facing provenance is still intentionally narrow: the overlay only covers the current map header/object anchors, not warp history or broader script traces.
+- Runtime-facing provenance is still intentionally narrow: the overlay now covers the current map plus the last successful warp, but not broader movement/script traces or object-state history.
 - Windows cross-build support now has a repo-local MinGW toolchain file plus a documented package/config path; local verification is still blocked by missing MinGW + SDL2 packages.

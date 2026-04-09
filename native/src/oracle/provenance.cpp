@@ -69,4 +69,30 @@ std::optional<MapProvenance> LookupMapProvenance(const std::filesystem::path& sy
   return LookupMapProvenance(SymbolFile::Load(sym_path), MapFile::Load(map_path), world_id);
 }
 
+std::optional<WarpProvenance> LookupWarpProvenance(const SymbolTable& symbols,
+                                                   const MapSections& sections,
+                                                   WorldId source_world_id,
+                                                   std::uint8_t source_warp,
+                                                   WorldId target_world_id,
+                                                   std::uint8_t target_warp) {
+  if (source_warp == 0 || target_warp == 0) {
+    return std::nullopt;
+  }
+
+  const auto source = LookupMapProvenance(symbols, sections, source_world_id);
+  const auto target = LookupMapProvenance(symbols, sections, target_world_id);
+  if (!source || !target) {
+    return std::nullopt;
+  }
+
+  return WarpProvenance {
+      .source_world_id = source_world_id,
+      .source_warp = source_warp,
+      .source_object = source->object,
+      .target_world_id = target_world_id,
+      .target_warp = target_warp,
+      .target_object = target->object,
+  };
+}
+
 }  // namespace pokered::oracle

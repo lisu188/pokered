@@ -94,6 +94,11 @@ struct GameState {
 struct MoveResult {
   bool moved = false;
   MessageId message = MessageId::None;
+  bool warped = false;
+  WorldId source_map = WorldId::RedsHouse1F;
+  std::uint8_t source_warp = 0;
+  WorldId target_map = WorldId::RedsHouse1F;
+  std::uint8_t target_warp = 0;
 };
 
 void StartNewGameShortcut(GameState& state);

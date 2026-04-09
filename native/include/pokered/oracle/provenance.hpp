@@ -22,11 +22,26 @@ struct MapProvenance {
   ProvenanceSymbol object;
 };
 
+struct WarpProvenance {
+  WorldId source_world_id = WorldId::RedsHouse1F;
+  std::uint8_t source_warp = 0;
+  ProvenanceSymbol source_object;
+  WorldId target_world_id = WorldId::RedsHouse1F;
+  std::uint8_t target_warp = 0;
+  ProvenanceSymbol target_object;
+};
+
 std::optional<MapProvenance> LookupMapProvenance(const SymbolTable& symbols,
                                                  const MapSections& sections,
                                                  WorldId world_id);
 std::optional<MapProvenance> LookupMapProvenance(const std::filesystem::path& sym_path,
                                                  const std::filesystem::path& map_path,
                                                  WorldId world_id);
+std::optional<WarpProvenance> LookupWarpProvenance(const SymbolTable& symbols,
+                                                   const MapSections& sections,
+                                                   WorldId source_world_id,
+                                                   std::uint8_t source_warp,
+                                                   WorldId target_world_id,
+                                                   std::uint8_t target_warp);
 
 }  // namespace pokered::oracle
