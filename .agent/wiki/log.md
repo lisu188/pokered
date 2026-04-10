@@ -185,3 +185,9 @@ Extended the `F7` runtime provenance overlay with a current facing gate-source p
 
 ## [2026-04-10 12:27] verification | live facing gate-source provenance tracing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies current facing gate-source provenance lookups for RedsHouse1F and OaksLab plus null coverage for static and empty facing targets.
+
+## [2026-04-10 14:37] provenance | live facing text trace page added to the SDL overlay
+Extended the `F7` runtime provenance overlay with a current facing text page. `native/src/oracle/provenance.cpp` now exposes `LookupFacingMessageProvenance`, which lets the runtime preview the exact source-backed text label that would surface for the current facing result before confirm is pressed.
+
+## [2026-04-10 14:37] verification | live facing text provenance tracing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies current facing text provenance lookups for PalletTown, RedsHouse1F, and OaksLab plus null coverage for empty facing targets.

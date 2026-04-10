@@ -358,6 +358,43 @@ int main() {
     std::cerr << "expected OaksLab rival facing provenance lookup\n";
     return 1;
   }
+  const auto girl_facing_message =
+      pokered::oracle::LookupFacingMessageProvenance(symbols, sections, girl_facing_world);
+  if (!girl_facing_message || girl_facing_message->world_id != pokered::WorldId::PalletTown ||
+      girl_facing_message->facing != pokered::Facing::Left ||
+      girl_facing_message->kind != pokered::InteractionKind::Npc || girl_facing_message->target_x != 3 ||
+      girl_facing_message->target_y != 8 ||
+      girl_facing_message->origin_message != pokered::MessageId::PalletTownGirl ||
+      girl_facing_message->message_id != pokered::MessageId::PalletTownGirl ||
+      girl_facing_message->text.label != "_PalletTownGirlText" ||
+      girl_facing_message->text.address.bank != 0x29 ||
+      girl_facing_message->text.address.address != 0x42DC || !girl_facing_message->text.section ||
+      girl_facing_message->text.section->name != "Text 10") {
+    std::cerr << "expected PalletTown girl facing message provenance lookup\n";
+    return 1;
+  }
+  const auto tv_facing_message =
+      pokered::oracle::LookupFacingMessageProvenance(symbols, sections, tv_facing_world);
+  if (!tv_facing_message || tv_facing_message->origin_message != pokered::MessageId::TvMovie ||
+      tv_facing_message->message_id != pokered::MessageId::TvWrongSide ||
+      tv_facing_message->text.label != "_RedsHouse1FTVWrongSideText" ||
+      tv_facing_message->text.address.bank != 0x25 ||
+      tv_facing_message->text.address.address != 0x4C29 || !tv_facing_message->text.section ||
+      tv_facing_message->text.section->name != "Text 6") {
+    std::cerr << "expected RedsHouse1F TV facing message provenance lookup\n";
+    return 1;
+  }
+  const auto rival_facing_message =
+      pokered::oracle::LookupFacingMessageProvenance(symbols, sections, rival_facing_world);
+  if (!rival_facing_message || rival_facing_message->origin_message != pokered::MessageId::OaksLabRival ||
+      rival_facing_message->message_id != pokered::MessageId::OaksLabRivalMyPokemonLooksStronger ||
+      rival_facing_message->text.label != "_OaksLabRivalMyPokemonLooksStrongerText" ||
+      rival_facing_message->text.address.bank != 0x25 ||
+      rival_facing_message->text.address.address != 0x4DBD || !rival_facing_message->text.section ||
+      rival_facing_message->text.section->name != "Text 6") {
+    std::cerr << "expected OaksLab rival facing message provenance lookup\n";
+    return 1;
+  }
   pokered::WorldState mom_default_facing_branch_world {};
   mom_default_facing_branch_world.map_id = pokered::WorldId::RedsHouse1F;
   mom_default_facing_branch_world.player = {5, 5, pokered::Facing::Up};
@@ -603,6 +640,10 @@ int main() {
           pokered::WorldId::PalletTown,
           pokered::MessageId::None,
           pokered::MessageId::None) ||
+      pokered::oracle::LookupFacingMessageProvenance(symbols, sections, pokered::WorldState {
+                                                                       .map_id = pokered::WorldId::PalletTown,
+                                                                       .player = {10, 10, pokered::Facing::Right},
+                                                                   }) ||
       pokered::oracle::LookupFacingProvenance(symbols, sections, pokered::WorldState {
                                                                 .map_id = pokered::WorldId::PalletTown,
                                                                 .player = {10, 10, pokered::Facing::Right},
