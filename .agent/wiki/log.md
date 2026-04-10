@@ -161,3 +161,9 @@ Extended the `F7` runtime provenance overlay with a current `LAST_MAP` state pag
 
 ## [2026-04-10 10:59] verification | last-map-state provenance tracing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now also verifies current `LAST_MAP` provenance lookups plus null coverage for unset and invalid warp ids.
+
+## [2026-04-10 11:45] provenance | gate-source trace page added to the SDL overlay
+Extended the `F7` runtime provenance overlay with a page that resolves the latest native state gate back to the source gate it stands in for. `native/src/oracle/provenance.cpp` now exposes move/interact gate provenance helpers that map the current bounded slice to `EVENT_FOLLOWED_OAK_INTO_LAB`, `wStatusFlags4` / `BIT_GOT_STARTER`, and `wSpritePlayerStateData1FacingDirection` / `SPRITE_FACING_UP`.
+
+## [2026-04-10 11:45] verification | gate-source provenance tracing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies move/interact gate provenance lookups plus null coverage for non-script moves and static interactions.

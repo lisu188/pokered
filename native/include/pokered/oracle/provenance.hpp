@@ -37,6 +37,14 @@ struct LastMapProvenance {
   ProvenanceSymbol object;
 };
 
+struct StateGateProvenance {
+  WorldId world_id = WorldId::RedsHouse1F;
+  StateGate gate = StateGate::None;
+  std::string condition_label;
+  std::optional<ProvenanceSymbol> state_symbol;
+  std::optional<ProvenanceSymbol> context_symbol;
+};
+
 struct MessageProvenance {
   MessageId message_id = MessageId::None;
   ProvenanceSymbol text;
@@ -85,6 +93,18 @@ std::optional<LastMapProvenance> LookupLastMapProvenance(const SymbolTable& symb
                                                          const MapSections& sections,
                                                          WorldId world_id,
                                                          std::uint8_t warp_id);
+std::optional<StateGateProvenance> LookupMoveStateGateProvenance(const SymbolTable& symbols,
+                                                                 const MapSections& sections,
+                                                                 WorldId world_id,
+                                                                 MoveBlocker blocker,
+                                                                 MessageId message_id,
+                                                                 StateGate gate);
+std::optional<StateGateProvenance> LookupInteractionStateGateProvenance(const SymbolTable& symbols,
+                                                                        const MapSections& sections,
+                                                                        WorldId world_id,
+                                                                        MessageId origin_message,
+                                                                        MessageId message_id,
+                                                                        StateGate gate);
 std::optional<MessageProvenance> LookupMessageProvenance(const SymbolTable& symbols,
                                                          const MapSections& sections,
                                                          MessageId message_id);

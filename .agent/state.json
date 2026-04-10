@@ -50,13 +50,15 @@
     "Extended the runtime provenance overlay with a last-state-gate trace page",
     "Re-verified the last-state-gate provenance trace on the Linux SDL CMake path",
     "Extended the runtime provenance overlay with a last-map-state trace page",
-    "Re-verified the last-map-state provenance trace on the Linux SDL CMake path"
+    "Re-verified the last-map-state provenance trace on the Linux SDL CMake path",
+    "Extended the runtime provenance overlay with a gate-source trace page",
+    "Re-verified the gate-source provenance trace on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",
     "No MinGW SDL2 development package with SDL2Config.cmake is installed locally",
     "No emulator/debugger is installed locally yet for ROM-side differential traces",
-    "Runtime-facing provenance now covers the current map, the current LAST_MAP return anchor, the last successful warp, the last move attempt, the last confirm-based interaction, the last interaction branch/handler state, the last evaluated native state gate behind scripted branches, the last displayed source-backed message, and the last displayed message's source label, but broader object-state/script-state trace hooks are still missing",
+    "Runtime-facing provenance now covers the current map, the current LAST_MAP return anchor, the last successful warp, the last move attempt, the last confirm-based interaction, the last interaction branch/handler state, the last evaluated native state gate and its current source backing state, the last displayed source-backed message, and the last displayed message's source label, but broader object-state/script-state trace hooks are still missing",
     "Route1 and Route21 are still unimplemented even though PalletTown now has three live interior doors",
     "Oak's PalletTown follow-to-lab chain and OaksLab starter/rival sequence are still intentionally deferred",
     "BluesHouse Daisy's Town Map gift path is still intentionally simplified to the default static-text branch until native item/event state exists",
@@ -67,7 +69,7 @@
     "Decide whether the bounded PalletTown Oak warning should expand into the full follow-to-lab cutscene",
     "Evaluate Route1/Route21 boundary handling once the next PalletTown door is live",
     "Decide whether BluesHouse Daisy should stay on the default dialogue branch or gain the first small indoor gift/event seam",
-    "Extend runtime-facing provenance beyond the current-map, last-map-state, last-state-gate, last-interaction-branch, last-interaction, last-move, and last-message source overlays into broader object-state and script-state trace hooks",
+    "Extend runtime-facing provenance beyond the current-map, last-map-state, last-state-gate, last-state-gate-source, last-interaction-branch, last-interaction, last-move, and last-message source overlays into broader object-state and script-state trace hooks",
     "Broaden indoor metadata import beyond the current RedsHouse and House tilesets once the exterior seam is stable",
     "Verify the documented MinGW cross-build path once the compiler and SDL2 packages are available",
     "Pick the next small interior after OaksLab once the PalletTown hub is broader"

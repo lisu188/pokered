@@ -375,12 +375,71 @@ int main() {
     std::cerr << "expected OaksLab Oak1 branch provenance lookup\n";
     return 1;
   }
+  const auto oak_gate_provenance = pokered::oracle::LookupMoveStateGateProvenance(symbols,
+                                                                                   sections,
+                                                                                   pokered::WorldId::PalletTown,
+                                                                                   pokered::MoveBlocker::Script,
+                                                                                   pokered::MessageId::PalletTownOakHeyWaitDontGoOut,
+                                                                                   pokered::StateGate::GotStarter);
+  if (!oak_gate_provenance || oak_gate_provenance->condition_label != "EVENT_FOLLOWED_OAK_INTO_LAB" ||
+      oak_gate_provenance->state_symbol || !oak_gate_provenance->context_symbol ||
+      oak_gate_provenance->context_symbol->label != "PalletTownDefaultScript" ||
+      oak_gate_provenance->context_symbol->address.bank != 0x06 ||
+      oak_gate_provenance->context_symbol->address.address != 0x4E81 ||
+      !oak_gate_provenance->context_symbol->section ||
+      oak_gate_provenance->context_symbol->section->name != "Maps 2") {
+    std::cerr << "expected PalletTown Oak gate provenance lookup\n";
+    return 1;
+  }
+  const auto mom_gate_provenance = pokered::oracle::LookupInteractionStateGateProvenance(
+      symbols,
+      sections,
+      pokered::WorldId::RedsHouse1F,
+      pokered::MessageId::MomWakeUp,
+      pokered::MessageId::MomRest,
+      pokered::StateGate::GotStarter);
+  if (!mom_gate_provenance || mom_gate_provenance->condition_label != "BIT_GOT_STARTER" ||
+      !mom_gate_provenance->state_symbol || mom_gate_provenance->context_symbol ||
+      mom_gate_provenance->state_symbol->label != "wStatusFlags4" ||
+      mom_gate_provenance->state_symbol->address.bank != 0x00 ||
+      mom_gate_provenance->state_symbol->address.address != 0xD72E ||
+      !mom_gate_provenance->state_symbol->section ||
+      mom_gate_provenance->state_symbol->section->memory_region != "WRAM0" ||
+      mom_gate_provenance->state_symbol->section->name != "Main Data") {
+    std::cerr << "expected RedsHouse1F mom gate provenance lookup\n";
+    return 1;
+  }
+  const auto tv_gate_provenance = pokered::oracle::LookupInteractionStateGateProvenance(
+      symbols,
+      sections,
+      pokered::WorldId::RedsHouse1F,
+      pokered::MessageId::TvMovie,
+      pokered::MessageId::TvWrongSide,
+      pokered::StateGate::FacingUp);
+  if (!tv_gate_provenance || tv_gate_provenance->condition_label != "SPRITE_FACING_UP" ||
+      !tv_gate_provenance->state_symbol || tv_gate_provenance->context_symbol ||
+      tv_gate_provenance->state_symbol->label != "wSpritePlayerStateData1FacingDirection" ||
+      tv_gate_provenance->state_symbol->address.bank != 0x00 ||
+      tv_gate_provenance->state_symbol->address.address != 0xC109 ||
+      !tv_gate_provenance->state_symbol->section ||
+      tv_gate_provenance->state_symbol->section->memory_region != "WRAM0" ||
+      tv_gate_provenance->state_symbol->section->name != "Sprite State Data") {
+    std::cerr << "expected RedsHouse1F TV gate provenance lookup\n";
+    return 1;
+  }
   if (pokered::oracle::LookupMessageProvenance(symbols, sections, pokered::MessageId::SaveOk) ||
       pokered::oracle::LookupMessageProvenance(symbols, sections, pokered::MessageId::OaksLabRival) ||
       pokered::oracle::LookupMessageSourceProvenance(symbols, sections, pokered::MessageId::SaveOk) ||
       pokered::oracle::LookupMessageSourceProvenance(symbols, sections, pokered::MessageId::OaksLabRival) ||
       pokered::oracle::LookupMoveScriptProvenance(
           symbols, sections, pokered::WorldId::PalletTown, pokered::MoveBlocker::Collision, pokered::MessageId::None) ||
+      pokered::oracle::LookupMoveStateGateProvenance(
+          symbols,
+          sections,
+          pokered::WorldId::PalletTown,
+          pokered::MoveBlocker::Collision,
+          pokered::MessageId::None,
+          pokered::StateGate::GotStarter) ||
       pokered::oracle::LookupMoveScriptProvenance(
           symbols, sections, pokered::WorldId::OaksLab, pokered::MoveBlocker::Script, pokered::MessageId::OaksLabPokedex) ||
       pokered::oracle::LookupLastMapProvenance(symbols, sections, pokered::WorldId::PalletTown, 0) ||
@@ -408,7 +467,21 @@ int main() {
           sections,
           pokered::WorldId::PalletTown,
           pokered::MessageId::None,
-          pokered::MessageId::None)) {
+          pokered::MessageId::None) ||
+      pokered::oracle::LookupInteractionStateGateProvenance(
+          symbols,
+          sections,
+          pokered::WorldId::PalletTown,
+          pokered::MessageId::PalletTownGirl,
+          pokered::MessageId::PalletTownGirl,
+          pokered::StateGate::GotStarter) ||
+      pokered::oracle::LookupInteractionStateGateProvenance(
+          symbols,
+          sections,
+          pokered::WorldId::RedsHouse1F,
+          pokered::MessageId::SaveOk,
+          pokered::MessageId::SaveOk,
+          pokered::StateGate::GotStarter)) {
     std::cerr << "expected native-only and abstract message ids to have no oracle provenance\n";
     return 1;
   }

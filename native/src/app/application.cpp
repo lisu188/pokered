@@ -68,8 +68,9 @@ enum class OverlayMode : std::uint8_t {
   InteractionTrace = 5,
   InteractionBranchTrace = 6,
   StateTrace = 7,
-  MessageTrace = 8,
-  MessageSourceTrace = 9,
+  StateGateSourceTrace = 8,
+  MessageTrace = 9,
+  MessageSourceTrace = 10,
 };
 
 enum class StateTraceSource : std::uint8_t {
@@ -222,6 +223,8 @@ OverlayMode NextOverlayMode(OverlayMode mode) {
     case OverlayMode::InteractionBranchTrace:
       return OverlayMode::StateTrace;
     case OverlayMode::StateTrace:
+      return OverlayMode::StateGateSourceTrace;
+    case OverlayMode::StateGateSourceTrace:
       return OverlayMode::MessageTrace;
     case OverlayMode::MessageTrace:
       return OverlayMode::MessageSourceTrace;
@@ -572,6 +575,48 @@ std::string BuildStateTraceText(const DebugOverlayState& debug_overlay, const Or
   return header + "\n" + gate + "\n" + std::string(GetMapData(trace.map_id).name);
 }
 
+std::string BuildStateGateSourceTraceText(const DebugOverlayState& debug_overlay,
+                                          const OracleContext& oracle_context) {
+  if (!oracle_context.available) {
+    return "ORACLE DATA\nNOT FOUND";
+  }
+  if (!debug_overlay.last_state.available) {
+    return "GATE SRC\nNONE YET";
+  }
+
+  const StateTraceState& trace = debug_overlay.last_state;
+  if (trace.gate == StateGate::None) {
+    return "GATE SRC\nNO GATE";
+  }
+
+  std::optional<oracle::StateGateProvenance> provenance;
+  if (trace.source == StateTraceSource::Move) {
+    provenance = oracle::LookupMoveStateGateProvenance(
+        oracle_context.symbols, oracle_context.sections, trace.map_id, trace.blocker, trace.message, trace.gate);
+  } else {
+    provenance = oracle::LookupInteractionStateGateProvenance(oracle_context.symbols,
+                                                              oracle_context.sections,
+                                                              trace.map_id,
+                                                              trace.origin_message,
+                                                              trace.message,
+                                                              trace.gate);
+  }
+  if (!provenance) {
+    return "GATE SRC\nNO SOURCE";
+  }
+
+  const std::string header = "GATE SRC " + FormatCoords(trace.target_x, trace.target_y);
+  if (provenance->state_symbol) {
+    return header + "\n" + provenance->condition_label + "\n" + provenance->state_symbol->label + "\n" +
+           FormatSymbolLocation(*provenance->state_symbol);
+  }
+  if (provenance->context_symbol) {
+    return header + "\n" + provenance->condition_label + "\n" + provenance->context_symbol->label + "\n" +
+           FormatSymbolLocation(*provenance->context_symbol);
+  }
+  return header + "\n" + provenance->condition_label;
+}
+
 std::string BuildOverlayText(const GameState& state,
                              const DebugOverlayState& debug_overlay,
                              const OracleContext& oracle_context) {
@@ -592,6 +637,8 @@ std::string BuildOverlayText(const GameState& state,
       return BuildInteractionBranchTraceText(debug_overlay, oracle_context);
     case OverlayMode::StateTrace:
       return BuildStateTraceText(debug_overlay, oracle_context);
+    case OverlayMode::StateGateSourceTrace:
+      return BuildStateGateSourceTraceText(debug_overlay, oracle_context);
     case OverlayMode::MessageTrace:
       return BuildMessageTraceText(debug_overlay, oracle_context);
     case OverlayMode::MessageSourceTrace:

@@ -189,6 +189,94 @@ std::optional<std::string_view> LabelForMoveScript(WorldId world_id,
   return std::nullopt;
 }
 
+std::optional<std::string_view> ConditionLabelForMoveStateGate(WorldId world_id,
+                                                               MoveBlocker blocker,
+                                                               MessageId message_id,
+                                                               StateGate gate) {
+  if (gate != StateGate::GotStarter) {
+    return std::nullopt;
+  }
+
+  if (world_id == WorldId::PalletTown && blocker == MoveBlocker::Script &&
+      message_id == MessageId::PalletTownOakHeyWaitDontGoOut) {
+    return "EVENT_FOLLOWED_OAK_INTO_LAB";
+  }
+
+  return std::nullopt;
+}
+
+std::optional<std::string_view> ConditionLabelForInteractionStateGate(WorldId world_id,
+                                                                      MessageId origin_message,
+                                                                      StateGate gate) {
+  switch (gate) {
+    case StateGate::GotStarter:
+      switch (world_id) {
+        case WorldId::RedsHouse1F:
+          if (origin_message == MessageId::MomWakeUp) {
+            return "BIT_GOT_STARTER";
+          }
+          break;
+        case WorldId::OaksLab:
+          if (origin_message == MessageId::OaksLabRival || origin_message == MessageId::OaksLabPokeBall ||
+              origin_message == MessageId::OaksLabOak1) {
+            return "BIT_GOT_STARTER";
+          }
+          break;
+        case WorldId::RedsHouse2F:
+        case WorldId::PewterSpeechHouse:
+        case WorldId::PalletTown:
+        case WorldId::BluesHouse:
+          break;
+      }
+      break;
+    case StateGate::FacingUp:
+      if (world_id == WorldId::RedsHouse1F && origin_message == MessageId::TvMovie) {
+        return "SPRITE_FACING_UP";
+      }
+      break;
+    case StateGate::None:
+      break;
+  }
+
+  return std::nullopt;
+}
+
+std::optional<std::string_view> StorageLabelForInteractionStateGate(WorldId world_id,
+                                                                    MessageId origin_message,
+                                                                    StateGate gate) {
+  switch (gate) {
+    case StateGate::GotStarter:
+      switch (world_id) {
+        case WorldId::RedsHouse1F:
+          if (origin_message == MessageId::MomWakeUp) {
+            return "wStatusFlags4";
+          }
+          break;
+        case WorldId::OaksLab:
+          if (origin_message == MessageId::OaksLabRival || origin_message == MessageId::OaksLabPokeBall ||
+              origin_message == MessageId::OaksLabOak1) {
+            return "wStatusFlags4";
+          }
+          break;
+        case WorldId::RedsHouse2F:
+        case WorldId::PewterSpeechHouse:
+        case WorldId::PalletTown:
+        case WorldId::BluesHouse:
+          break;
+      }
+      break;
+    case StateGate::FacingUp:
+      if (world_id == WorldId::RedsHouse1F && origin_message == MessageId::TvMovie) {
+        return "wSpritePlayerStateData1FacingDirection";
+      }
+      break;
+    case StateGate::None:
+      break;
+  }
+
+  return std::nullopt;
+}
+
 std::optional<std::string_view> LabelForInteractionBranch(WorldId world_id,
                                                           MessageId origin_message,
                                                           MessageId message_id) {
@@ -340,6 +428,59 @@ std::optional<LastMapProvenance> LookupLastMapProvenance(const SymbolTable& symb
       .world_id = world_id,
       .warp_id = warp_id,
       .object = provenance->object,
+  };
+}
+
+std::optional<StateGateProvenance> LookupMoveStateGateProvenance(const SymbolTable& symbols,
+                                                                 const MapSections& sections,
+                                                                 WorldId world_id,
+                                                                 MoveBlocker blocker,
+                                                                 MessageId message_id,
+                                                                 StateGate gate) {
+  const auto condition = ConditionLabelForMoveStateGate(world_id, blocker, message_id, gate);
+  if (!condition) {
+    return std::nullopt;
+  }
+
+  std::optional<ProvenanceSymbol> context_symbol;
+  if (const auto label = LabelForMoveScript(world_id, blocker, message_id)) {
+    context_symbol = LookupSymbolProvenance(symbols, sections, *label);
+  }
+
+  return StateGateProvenance {
+      .world_id = world_id,
+      .gate = gate,
+      .condition_label = std::string(*condition),
+      .state_symbol = std::nullopt,
+      .context_symbol = context_symbol,
+  };
+}
+
+std::optional<StateGateProvenance> LookupInteractionStateGateProvenance(const SymbolTable& symbols,
+                                                                        const MapSections& sections,
+                                                                        WorldId world_id,
+                                                                        MessageId origin_message,
+                                                                        MessageId message_id,
+                                                                        StateGate gate) {
+  (void)message_id;
+
+  const auto condition = ConditionLabelForInteractionStateGate(world_id, origin_message, gate);
+  const auto storage = StorageLabelForInteractionStateGate(world_id, origin_message, gate);
+  if (!condition || !storage) {
+    return std::nullopt;
+  }
+
+  const auto state_symbol = LookupSymbolProvenance(symbols, sections, *storage);
+  if (!state_symbol) {
+    return std::nullopt;
+  }
+
+  return StateGateProvenance {
+      .world_id = world_id,
+      .gate = gate,
+      .condition_label = std::string(*condition),
+      .state_symbol = *state_symbol,
+      .context_symbol = std::nullopt,
   };
 }
 

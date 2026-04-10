@@ -73,6 +73,7 @@
   - `native/src/oracle/provenance.cpp` can also join confirm-based interactions to the current map object label plus local source label for last-interaction runtime traces
   - `native/src/oracle/provenance.cpp` can also join conditional interaction outcomes back to asm-local branch labels for last-interaction-branch runtime traces
   - the runtime now also preserves evaluated native branch predicates (`got_starter`, `facing == up`) for a last-state-gate overlay page alongside the existing oracle-backed handler lookups
+  - `native/src/oracle/provenance.cpp` can also join those native branch predicates back to the source gate they stand in for, including `EVENT_FOLLOWED_OAK_INTO_LAB`, `wStatusFlags4`, and `wSpritePlayerStateData1FacingDirection`
   - `native/src/oracle/provenance.cpp` can also join surfaced `MessageId` values to source text labels and `.map` sections for last-message runtime traces
   - `native/src/oracle/provenance.cpp` can also join surfaced `MessageId` values to script/local source labels and `.map` sections for last-message-source runtime traces
   - symbol lookup for `EnterMap`, `OverworldLoop`, `PalletTown_h`, `BluesHouse_h`, `OaksLab_h`, `RedsHouse1F_h`, `RedsHouse2F_h`, `PewterSpeechHouse_h`, and `TryLoadSaveFile`
@@ -84,6 +85,7 @@
   - move-script provenance lookup for the PalletTown Oak warning seam back to `PalletTownDefaultScript`, plus null coverage for non-script blockers and unrelated maps/messages
   - interaction provenance lookup joining `PalletTown_Object` + `PalletTownGirlText` and `OaksLab_Object` + `OaksLabPokedexText`, plus branch provenance lookup for `RedsHouse1FMomText`, `RedsHouse1FMomText.heal`, `RedsHouse1FTVText`, `OaksLabRivalText.afterChooseMon`, and `OaksLabOak1Text.check_for_poke_balls`, plus null coverage for native-only, static no-branch, or empty interactions
   - current `LAST_MAP` provenance lookup for `PalletTown_Object #1` and `RedsHouse1F_Object #2`, plus null coverage for unset/invalid warp ids
+  - state-gate provenance lookup for the PalletTown Oak seam event gate, `wStatusFlags4` / `BIT_GOT_STARTER`, and `wSpritePlayerStateData1FacingDirection` / `SPRITE_FACING_UP`, plus null coverage for non-script moves and static interactions
 
 ## Confirmed Oracle Assets
 - `pokered.gbc`, `pokeblue.gbc`, `pokeblue_debug.gbc`
@@ -97,7 +99,7 @@
 - keep deterministic save/load as a native milestone requirement, not a later cleanup item
 
 ## Next Verification Work
-- extend the current runtime-facing provenance hooks past the current-map, last-map-state, last-state-gate, last-interaction-branch, last-interaction, last-move, and last-message-source pages into broader object-state and script-state tracing
+- extend the current runtime-facing provenance hooks past the current-map, last-map-state, last-state-gate, last-state-gate-source, last-interaction-branch, last-interaction, last-move, and last-message-source pages into broader object-state and script-state tracing
 - add the next outdoor-adjacent scenario beyond the now-live `OaksLab` seam
 - add checks for deferred `LAST_MAP` door behavior on maps beyond the PalletTown seam
 - add importer regression checks for the lower-left representative tile rule used by overworld collision/warp semantics
