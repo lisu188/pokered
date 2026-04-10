@@ -203,3 +203,9 @@ Updated `native/src/core/game_state.cpp` so supported `LAST_MAP` returns that la
 
 ## [2026-04-10 16:21] verification | PalletTown door connectivity re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output is now `smoke-ok: world=5 pos=2,2 steps=5`, and the test binary now verifies PalletTown exterior auto-step behavior for `RedsHouse1F`, `BluesHouse`, and `OaksLab` door round-trips.
+
+## [2026-04-10 16:31] implementation | PalletTown door warp traces now keep landing coordinates
+Updated `native/src/core/game_state.cpp` so successful warps overwrite `MoveResult::to_x` / `to_y` with the final connected landing tile after any PalletTown exterior auto-step. `native/src/app/application.cpp` now uses that final coordinate in the move trace text for warped transitions instead of only naming the destination map.
+
+## [2026-04-10 16:31] verification | PalletTown door warp metadata re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=5`, and the test binary now verifies final landing-coordinate metadata for PalletTown door entries/exits across `RedsHouse1F`, `BluesHouse`, and `OaksLab`.

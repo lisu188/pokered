@@ -64,7 +64,9 @@
     "Extended the runtime provenance overlay with a current map-script state trace page",
     "Re-verified the current map-script provenance trace on the Linux SDL CMake path",
     "Aligned PalletTown exterior door exits with the original auto step-out flow",
-    "Re-verified PalletTown door connectivity on the Linux SDL CMake path"
+    "Re-verified PalletTown door connectivity on the Linux SDL CMake path",
+    "Preserved final landing coordinates in PalletTown door warp move traces",
+    "Re-verified PalletTown door warp metadata on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",

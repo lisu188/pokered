@@ -61,6 +61,7 @@ This directory is the compiled knowledge layer for the native port effort.
 - The new last-interaction-branch page preserves each interaction’s origin `MessageId` before native branching so conditional handlers can point back to asm-local branch labels such as `RedsHouse1FMomText.heal` and `OaksLabRivalText.afterChooseMon`.
 - The new last-state-gate page records the latest native branch predicate and value, which makes gates like `GOT_STARTER=0/1` and `FACING_UP=0/1` visible next to source-backed handlers such as `PalletTownDefaultScript`, `RedsHouse1FMomText`, and `RedsHouse1FTVText`.
 - Exiting `RedsHouse1F`, `BluesHouse`, or `OaksLab` into `PalletTown` now auto-steps the player one tile below the exterior door, which matches the original outside-door flow more closely and removes the extra manual step from the native smoke path.
+- Warped `MoveResult` traces now preserve the final landing coordinates instead of the pre-warp doorway tile, which makes PalletTown door round-trips report the real connected arrival tile in tests and the runtime move trace.
 - The current smoke path now verifies `RedsHouse1F -> PalletTown -> OaksLab`, outdoor/interior interaction readiness, and save/load, producing `smoke-ok: world=5 pos=2,2 steps=5`.
 - `Route1` and `Route21` are still missing, so the current PalletTown slice is broader but still a bounded playable hub.
 - `BluesHouse` Daisy currently uses the source-backed default Rival-at-lab text branch; the Town Map gift/event path is still intentionally deferred.

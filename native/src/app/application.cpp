@@ -624,8 +624,10 @@ std::string BuildMoveTraceText(const DebugOverlayState& debug_overlay, const Ora
     }
   }
 
-  const std::string destination =
-      result.warped ? std::string(GetMapData(result.target_map).name) : FormatCoords(result.to_x, result.to_y);
+  const std::string destination = result.warped
+                                      ? std::string(GetMapData(result.target_map).name) + " " +
+                                            FormatCoords(result.to_x, result.to_y)
+                                      : FormatCoords(result.to_x, result.to_y);
   return header + "\n" + map_name + "\n" + FormatCoords(result.from_x, result.from_y) + " -> " + destination +
          "\n" + FormatFacing(result.facing);
 }

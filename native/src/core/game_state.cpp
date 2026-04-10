@@ -126,6 +126,8 @@ MoveResult TryMoveWithResult(WorldState& world, Facing facing) {
     if (warp.uses_last_map && ShouldAutoStepDoorExit(target_map, target_warp.x, target_warp.y)) {
       world.player.y += 1;
     }
+    result.to_x = world.player.x;
+    result.to_y = world.player.y;
     return result;
   }
 
