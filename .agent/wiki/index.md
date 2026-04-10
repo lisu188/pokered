@@ -63,6 +63,8 @@ This directory is the compiled knowledge layer for the native port effort.
 - Exiting `RedsHouse1F`, `BluesHouse`, or `OaksLab` into `PalletTown` now auto-steps the player one tile below the exterior door, which matches the original outside-door flow more closely and removes the extra manual step from the native smoke path.
 - Warped `MoveResult` traces now preserve the final landing coordinates instead of the pre-warp doorway tile, which makes PalletTown door round-trips report the real connected arrival tile in tests and the runtime move trace.
 - Standing on the current interior PalletTown doorway tiles and pressing into the blocked exit direction now re-exits correctly, which restores the original collision-on-warp door feel for `RedsHouse1F`, `BluesHouse`, and `OaksLab` without needing a sideways step first.
+- Blocked collision re-warps are now limited to door tiles, which keeps the restored PalletTown doorway behavior intact without letting unrelated stair warps retrigger on blocked moves.
+- PalletTown door coverage now explicitly includes the `BluesHouse` second doorway tile, so both interior exit tiles are verified against the same outdoor return anchor.
 - The current smoke path now verifies `RedsHouse1F -> PalletTown -> OaksLab`, outdoor/interior interaction readiness, and save/load, producing `smoke-ok: world=5 pos=2,2 steps=5`.
 - `Route1` and `Route21` are still missing, so the current PalletTown slice is broader but still a bounded playable hub.
 - `BluesHouse` Daisy currently uses the source-backed default Rival-at-lab text branch; the Town Map gift/event path is still intentionally deferred.

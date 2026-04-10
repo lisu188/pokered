@@ -215,3 +215,9 @@ Updated `native/src/core/game_state.cpp` so a blocked move while already standin
 
 ## [2026-04-10 16:40] verification | PalletTown interior doorway re-exits re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=5`, and the test binary now verifies collision-triggered immediate re-exits for the indoor door tiles in `RedsHouse1F`, `BluesHouse`, and `OaksLab` alongside the existing PalletTown door round-trips.
+
+## [2026-04-10 16:46] implementation | PalletTown blocked door re-warps now stay door-specific
+Updated `native/src/core/game_state.cpp` so the blocked-move re-warp fallback only runs when the player is already standing on a rendered door tile. This keeps the restored PalletTown doorway behavior for `RedsHouse1F`, `BluesHouse`, and `OaksLab` while avoiding accidental blocked-move retriggers on unrelated stair warps. `native/tests/save_system_tests.cpp` also now covers the second `BluesHouse` doorway tile.
+
+## [2026-04-10 16:46] verification | PalletTown door specificity re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=5`, and the test binary now verifies the `BluesHouse` second doorway tile plus a blocked-stair non-regression alongside the existing PalletTown door round-trips.

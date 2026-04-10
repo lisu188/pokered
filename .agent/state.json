@@ -68,7 +68,10 @@
     "Preserved final landing coordinates in PalletTown door warp move traces",
     "Re-verified PalletTown door warp metadata on the Linux SDL CMake path",
     "Restored collision-triggered immediate PalletTown door re-exits from indoor warp tiles",
-    "Re-verified PalletTown interior doorway re-exits on the Linux SDL CMake path"
+    "Re-verified PalletTown interior doorway re-exits on the Linux SDL CMake path",
+    "Constrained blocked PalletTown re-warps to rendered door tiles",
+    "Extended PalletTown door coverage to the BluesHouse second doorway tile and a blocked-stair non-regression",
+    "Re-verified PalletTown door specificity on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",

@@ -79,6 +79,10 @@ bool TryWarpFromCurrentTile(WorldState& world, const MapData& map, MoveResult& r
   return false;
 }
 
+bool IsDoorWarpTile(const MapData& map, int x, int y) {
+  return RenderTileKind(map, x, y) == TileKind::Door;
+}
+
 }  // namespace
 
 void StartNewGameShortcut(GameState& state) {
@@ -129,7 +133,9 @@ MoveResult TryMoveWithResult(WorldState& world, Facing facing) {
   }
   result.blocker = BlockerAt(map, next_x, next_y);
   if (result.blocker != MoveBlocker::None) {
-    TryWarpFromCurrentTile(world, map, result);
+    if (IsDoorWarpTile(map, from_x, from_y)) {
+      TryWarpFromCurrentTile(world, map, result);
+    }
     return result;
   }
 

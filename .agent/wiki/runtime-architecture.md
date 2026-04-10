@@ -89,6 +89,7 @@
   - `.sym` + `.map` oracle parsing in native code for provenance-oriented tests
   - a runtime-facing `F7` overlay that cycles between the current map's header/object provenance, the current map-script state, the current `LAST_MAP` return anchor, the current facing source-backed interaction target, the current facing source-backed text label, the current facing branch/handler preview, the current facing gate source/backing state, the last successful warp's source/target object provenance, the last move attempt, the last confirm-based interaction, the last interaction branch/handler provenance, the last evaluated native state gate, the exact source gate backing that native predicate, the last displayed source-backed text provenance, and that message's source/local script-label provenance from `pokered.sym` and `pokered.map`
   - `LAST_MAP` door traversal for supported native maps
+  - blocked re-warp fallback limited to door tiles so PalletTown-style doorway exits do not leak onto unrelated stair warps
   - camera-based SDL world rendering for larger maps on the Linux/WSL window size
 
 ## Current Gaps

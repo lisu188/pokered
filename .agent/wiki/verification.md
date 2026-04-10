@@ -61,11 +61,11 @@
   - safe default interaction dispatch for the current `OaksLab` Rival / Oak / Pokeball branches plus Pokedex / Girl / Scientist text
   - static NPC/sign interaction dispatch for `PalletTown`
   - movement-triggered `PalletTown` Oak warning coverage before `got_starter`, plus reopening of the north exit once the starter flag is set
-  - PalletTown <-> BluesHouse door traversal
+  - PalletTown <-> BluesHouse door traversal, including the second interior doorway tile
   - PalletTown <-> OaksLab door traversal
   - exterior PalletTown door auto-step behavior after `RedsHouse1F`, `BluesHouse`, and `OaksLab` exits
   - final landing-coordinate `MoveResult` metadata for PalletTown door entries and exits, including `RedsHouse1F`, `BluesHouse`, and `OaksLab` round-trips
-  - collision-triggered immediate re-exit while standing on the indoor doorway warp tiles for `RedsHouse1F`, `BluesHouse`, and `OaksLab`
+  - collision-triggered immediate re-exit while standing on the indoor doorway warp tiles for `RedsHouse1F`, `BluesHouse`, and `OaksLab`, while keeping blocked stair movement local
 - Oracle provenance coverage currently verifies:
   - `native/src/oracle/symbol_file.cpp` can load `pokered.sym`
   - `native/src/oracle/map_file.cpp` can load `pokered.map`

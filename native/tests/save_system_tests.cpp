@@ -1216,6 +1216,25 @@ int main() {
     std::cerr << "expected to step off the BluesHouse door tile\n";
     return 1;
   }
+  pokered::WorldState blues_right_exit {};
+  blues_right_exit.map_id = pokered::WorldId::BluesHouse;
+  blues_right_exit.player = {3, 6, pokered::Facing::Down};
+  blues_right_exit.last_map = static_cast<std::uint16_t>(pokered::WorldId::PalletTown);
+  blues_right_exit.last_warp = 2;
+  const pokered::MoveResult blues_right_warp = pokered::TryMoveWithResult(blues_right_exit, pokered::Facing::Down);
+  if (!blues_right_warp.moved || !blues_right_warp.warped ||
+      blues_right_warp.source_map != pokered::WorldId::BluesHouse ||
+      blues_right_warp.source_warp != 2 || blues_right_warp.target_map != pokered::WorldId::PalletTown ||
+      blues_right_warp.target_warp != 2 || blues_right_warp.message != pokered::MessageId::None ||
+      blues_right_warp.to_x != 13 || blues_right_warp.to_y != 6 ||
+      blues_right_exit.map_id != pokered::WorldId::PalletTown || blues_right_exit.player.x != 13 ||
+      blues_right_exit.player.y != 6 ||
+      blues_right_exit.last_map != static_cast<std::uint16_t>(pokered::WorldId::BluesHouse) ||
+      blues_right_exit.last_warp != 2 || blues_right_exit.player.facing != pokered::Facing::Down ||
+      blues_right_exit.step_counter != 1) {
+    std::cerr << "expected BluesHouse right-hand door tile to exit into PalletTown\n";
+    return 1;
+  }
 
   pokered::WorldState oaks_entry {};
   oaks_entry.map_id = pokered::WorldId::PalletTown;
@@ -1446,6 +1465,19 @@ int main() {
       stairs_world.last_map != static_cast<std::uint16_t>(pokered::WorldId::RedsHouse1F) ||
       stairs_world.last_warp != 3 || stairs_world.player.facing != pokered::Facing::Down) {
     std::cerr << "expected RedsHouse1F stair warp to enter RedsHouse2F\n";
+    return 1;
+  }
+  const pokered::MoveResult blocked_stair = pokered::TryMoveWithResult(stairs_world, pokered::Facing::Right);
+  if (blocked_stair.moved || blocked_stair.warped || blocked_stair.source_map != pokered::WorldId::RedsHouse2F ||
+      blocked_stair.source_warp != 0 || blocked_stair.target_map != pokered::WorldId::RedsHouse2F ||
+      blocked_stair.target_warp != 0 || blocked_stair.message != pokered::MessageId::None ||
+      blocked_stair.from_x != 7 || blocked_stair.from_y != 1 || blocked_stair.to_x != 8 || blocked_stair.to_y != 1 ||
+      blocked_stair.blocker != pokered::MoveBlocker::Bounds || stairs_world.map_id != pokered::WorldId::RedsHouse2F ||
+      stairs_world.player.x != 7 || stairs_world.player.y != 1 ||
+      stairs_world.last_map != static_cast<std::uint16_t>(pokered::WorldId::RedsHouse1F) ||
+      stairs_world.last_warp != 3 || stairs_world.player.facing != pokered::Facing::Right ||
+      stairs_world.step_counter != 1) {
+    std::cerr << "expected blocked movement on RedsHouse2F stairs to stay local\n";
     return 1;
   }
   if (!pokered::TryMove(stairs_world, pokered::Facing::Down) ||

@@ -46,6 +46,7 @@
 - [x] Align PalletTown exterior door exits with the original auto step-out flow
 - [x] Preserve final landing coordinates in PalletTown door warp move traces
 - [x] Restore collision-triggered immediate PalletTown door re-exits from indoor warp tiles
+- [x] Constrain blocked PalletTown re-warps to door tiles and cover the remaining BluesHouse doorway tile
 
 ## Current Working Assumptions
 - The disassembly remains the authoritative behavior specification.
