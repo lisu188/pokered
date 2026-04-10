@@ -63,6 +63,14 @@ enum class MessageId : std::uint8_t {
   SaveCorrupt,
 };
 
+enum class MoveBlocker : std::uint8_t {
+  None = 0,
+  Bounds,
+  Collision,
+  Npc,
+  Script,
+};
+
 inline constexpr std::uint16_t kNoLastMap = 0xFFFFu;
 
 struct PlayerState {
@@ -99,6 +107,12 @@ struct MoveResult {
   std::uint8_t source_warp = 0;
   WorldId target_map = WorldId::RedsHouse1F;
   std::uint8_t target_warp = 0;
+  Facing facing = Facing::Up;
+  int from_x = 0;
+  int from_y = 0;
+  int to_x = 0;
+  int to_y = 0;
+  MoveBlocker blocker = MoveBlocker::None;
 };
 
 void StartNewGameShortcut(GameState& state);

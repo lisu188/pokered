@@ -87,13 +87,13 @@
   - paged Mom/TV dialogue so the exact first-slice lines fit the current message box
   - source-backed `RedsHouse1F` warps/bg events/NPC placement and Mom/TV text imported from asm
   - `.sym` + `.map` oracle parsing in native code for provenance-oriented tests
-  - a runtime-facing `F7` overlay that cycles between the current map's header/object provenance, the last successful warp's source/target object provenance, the last displayed source-backed text provenance, and that message's source/local script-label provenance from `pokered.sym` and `pokered.map`
+  - a runtime-facing `F7` overlay that cycles between the current map's header/object provenance, the last successful warp's source/target object provenance, the last move attempt, the last displayed source-backed text provenance, and that message's source/local script-label provenance from `pokered.sym` and `pokered.map`
   - `LAST_MAP` door traversal for supported native maps
   - camera-based SDL world rendering for larger maps on the Linux/WSL window size
 
 ## Current Gaps
 - Real `gfx/tilesets/reds_house.2bpp` graphics are not rendered yet; the first slice still uses semantic colors.
-- Runtime-facing provenance now includes last-warp, last-message, and last-message-source trace pages, but broader movement/script trace hooks are still missing.
+- Runtime-facing provenance now includes last-warp, last-move, last-message, and last-message-source trace pages, but broader interaction/object-state/script trace hooks are still missing.
 - The current control flow is still a native simplification of the original map script/text dispatch rather than a reusable generated script runtime.
 - `Route1` and `Route21` are still not imported, so PalletTown is currently a broader bounded hub rather than a full outdoor progression map.
 - `BluesHouse` Daisy's Town Map gift path is still simplified to the default static-text branch; native item/event state does not exist yet.
@@ -163,7 +163,8 @@
 - The `BluesHouse` and `OaksLab` doors are now live in both directions.
 - A bounded Oak warning seam now intercepts north-exit movement before `got_starter` and surfaces the short source-backed “Hey! Wait! Don’t go out!” text.
 - Girl, Fisher, Oak, and the PalletTown signs use source-backed message text without pulling in the map-script engine.
-- Pressing `F7` now cycles the world help box between controls, current-map provenance lines, last-warp provenance lines, the most recent displayed source-backed text label, and the source/local script label that emitted it.
+- Pressing `F7` now cycles the world help box between controls, current-map provenance lines, last-warp provenance lines, last-move trace lines, the most recent displayed source-backed text label, and the source/local script label that emitted it.
+- The last-move page preserves blocker-aware `MoveResult` details for steps, walls, NPC collisions, warps, and scripted seams, and can resolve the current PalletTown north-exit seam back to `PalletTownDefaultScript`.
 - The SDL renderer now scrolls a centered camera viewport instead of trying to draw the full world unscaled.
 
 ## Current Data Model Notes

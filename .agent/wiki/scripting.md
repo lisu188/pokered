@@ -61,4 +61,6 @@
 
 ## Provenance Note
 - Runtime-facing provenance is no longer test-only: the SDL app can now display the current map's source header/object labels and section ownership through the existing `.sym` / `.map` plumbing.
-- The current overlay now also records the last successful warp's source/target object provenance, the most recent displayed source-backed text label, and the corresponding source/local script label that emitted it, but it is still intentionally observational only and does not yet trace broader script-state transitions or object toggles.
+- The current overlay now also records the last successful warp's source/target object provenance, the last move attempt, the most recent displayed source-backed text label, and the corresponding source/local script label that emitted it.
+- For the current bounded PalletTown seam, the last-move page can resolve the blocked north-exit trigger back to `PalletTownDefaultScript`, which complements the message-source page's `PalletTownOakText.HeyWaitDontGoOutText` lookup.
+- The overlay is still intentionally observational only and does not yet trace broader script-state transitions, object toggles, or multi-step cutscene progress.

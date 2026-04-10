@@ -236,10 +236,27 @@ int main() {
     std::cerr << "expected OaksLab pokedex source provenance lookup\n";
     return 1;
   }
+  const auto oak_move_script_provenance = pokered::oracle::LookupMoveScriptProvenance(
+      symbols,
+      sections,
+      pokered::WorldId::PalletTown,
+      pokered::MoveBlocker::Script,
+      pokered::MessageId::PalletTownOakHeyWaitDontGoOut);
+  if (!oak_move_script_provenance || oak_move_script_provenance->script.label != "PalletTownDefaultScript" ||
+      oak_move_script_provenance->script.address.bank != 0x06 ||
+      oak_move_script_provenance->script.address.address != 0x4E81 ||
+      !oak_move_script_provenance->script.section || oak_move_script_provenance->script.section->name != "Maps 2") {
+    std::cerr << "expected PalletTown move-script provenance lookup\n";
+    return 1;
+  }
   if (pokered::oracle::LookupMessageProvenance(symbols, sections, pokered::MessageId::SaveOk) ||
       pokered::oracle::LookupMessageProvenance(symbols, sections, pokered::MessageId::OaksLabRival) ||
       pokered::oracle::LookupMessageSourceProvenance(symbols, sections, pokered::MessageId::SaveOk) ||
-      pokered::oracle::LookupMessageSourceProvenance(symbols, sections, pokered::MessageId::OaksLabRival)) {
+      pokered::oracle::LookupMessageSourceProvenance(symbols, sections, pokered::MessageId::OaksLabRival) ||
+      pokered::oracle::LookupMoveScriptProvenance(
+          symbols, sections, pokered::WorldId::PalletTown, pokered::MoveBlocker::Collision, pokered::MessageId::None) ||
+      pokered::oracle::LookupMoveScriptProvenance(
+          symbols, sections, pokered::WorldId::OaksLab, pokered::MoveBlocker::Script, pokered::MessageId::OaksLabPokedex)) {
     std::cerr << "expected native-only and abstract message ids to have no oracle provenance\n";
     return 1;
   }
@@ -440,16 +457,47 @@ int main() {
   oak_trigger.player = {pallet_north_exit_x, 2, pokered::Facing::Up};
   const pokered::MoveResult oak_warning = pokered::TryMoveWithResult(oak_trigger, pokered::Facing::Up);
   if (oak_warning.moved || oak_warning.message != pokered::MessageId::PalletTownOakHeyWaitDontGoOut ||
-      oak_warning.warped || oak_warning.source_warp != 0 || oak_warning.target_warp != 0 ||
-      oak_trigger.player.x != pallet_north_exit_x || oak_trigger.player.y != 2 || oak_trigger.step_counter != 0) {
+      oak_warning.warped || oak_warning.source_map != pokered::WorldId::PalletTown ||
+      oak_warning.source_warp != 0 || oak_warning.target_map != pokered::WorldId::PalletTown ||
+      oak_warning.target_warp != 0 || oak_warning.facing != pokered::Facing::Up ||
+      oak_warning.from_x != pallet_north_exit_x || oak_warning.from_y != 2 || oak_warning.to_x != pallet_north_exit_x ||
+      oak_warning.to_y != 1 || oak_warning.blocker != pokered::MoveBlocker::Script || oak_trigger.player.x != pallet_north_exit_x ||
+      oak_trigger.player.y != 2 || oak_trigger.step_counter != 0) {
     std::cerr << "expected PalletTown Oak north-exit warning seam\n";
     return 1;
   }
   oak_trigger.got_starter = true;
   const pokered::MoveResult route_progress = pokered::TryMoveWithResult(oak_trigger, pokered::Facing::Up);
   if (!route_progress.moved || route_progress.message != pokered::MessageId::None || route_progress.warped ||
-      oak_trigger.player.x != pallet_north_exit_x || oak_trigger.player.y != 1 || oak_trigger.step_counter != 1) {
+      route_progress.source_map != pokered::WorldId::PalletTown ||
+      route_progress.target_map != pokered::WorldId::PalletTown || route_progress.facing != pokered::Facing::Up ||
+      route_progress.from_x != pallet_north_exit_x || route_progress.from_y != 2 ||
+      route_progress.to_x != pallet_north_exit_x || route_progress.to_y != 1 ||
+      route_progress.blocker != pokered::MoveBlocker::None || oak_trigger.player.x != pallet_north_exit_x ||
+      oak_trigger.player.y != 1 || oak_trigger.step_counter != 1) {
     std::cerr << "expected PalletTown north exit to reopen after starter flag\n";
+    return 1;
+  }
+  pokered::WorldState wall_block {};
+  wall_block.map_id = pokered::WorldId::RedsHouse1F;
+  wall_block.player = {3, 2, pokered::Facing::Up};
+  const pokered::MoveResult tv_block = pokered::TryMoveWithResult(wall_block, pokered::Facing::Up);
+  if (tv_block.moved || tv_block.warped || tv_block.message != pokered::MessageId::None ||
+      tv_block.source_map != pokered::WorldId::RedsHouse1F || tv_block.target_map != pokered::WorldId::RedsHouse1F ||
+      tv_block.blocker != pokered::MoveBlocker::Collision || tv_block.from_x != 3 || tv_block.from_y != 2 ||
+      tv_block.to_x != 3 || tv_block.to_y != 1 || wall_block.player.x != 3 || wall_block.player.y != 2) {
+    std::cerr << "expected solid-tile move result blocker metadata\n";
+    return 1;
+  }
+  pokered::WorldState npc_block {};
+  npc_block.map_id = pokered::WorldId::PalletTown;
+  npc_block.player = {8, 6, pokered::Facing::Up};
+  const pokered::MoveResult girl_block = pokered::TryMoveWithResult(npc_block, pokered::Facing::Up);
+  if (girl_block.moved || girl_block.warped || girl_block.message != pokered::MessageId::None ||
+      girl_block.source_map != pokered::WorldId::PalletTown || girl_block.target_map != pokered::WorldId::PalletTown ||
+      girl_block.blocker != pokered::MoveBlocker::Npc || girl_block.from_x != 8 || girl_block.from_y != 6 ||
+      girl_block.to_x != 8 || girl_block.to_y != 5 || npc_block.player.x != 8 || npc_block.player.y != 6) {
+    std::cerr << "expected NPC move result blocker metadata\n";
     return 1;
   }
 

@@ -163,6 +163,30 @@ std::optional<std::string_view> SourceLabelForMessage(MessageId message_id) {
   return std::nullopt;
 }
 
+std::optional<std::string_view> LabelForMoveScript(WorldId world_id,
+                                                   MoveBlocker blocker,
+                                                   MessageId message_id) {
+  if (blocker != MoveBlocker::Script) {
+    return std::nullopt;
+  }
+
+  switch (world_id) {
+    case WorldId::PalletTown:
+      if (message_id == MessageId::PalletTownOakHeyWaitDontGoOut) {
+        return "PalletTownDefaultScript";
+      }
+      break;
+    case WorldId::RedsHouse1F:
+    case WorldId::RedsHouse2F:
+    case WorldId::PewterSpeechHouse:
+    case WorldId::BluesHouse:
+    case WorldId::OaksLab:
+      break;
+  }
+
+  return std::nullopt;
+}
+
 std::optional<ProvenanceSymbol> LookupSymbolProvenance(const SymbolTable& symbols,
                                                        const MapSections& sections,
                                                        std::string_view label) {
@@ -268,6 +292,29 @@ std::optional<MessageSourceProvenance> LookupMessageSourceProvenance(const Symbo
   return MessageSourceProvenance {
       .message_id = message_id,
       .source = *source,
+  };
+}
+
+std::optional<MoveScriptProvenance> LookupMoveScriptProvenance(const SymbolTable& symbols,
+                                                               const MapSections& sections,
+                                                               WorldId world_id,
+                                                               MoveBlocker blocker,
+                                                               MessageId message_id) {
+  const auto label = LabelForMoveScript(world_id, blocker, message_id);
+  if (!label) {
+    return std::nullopt;
+  }
+
+  const auto script = LookupSymbolProvenance(symbols, sections, *label);
+  if (!script) {
+    return std::nullopt;
+  }
+
+  return MoveScriptProvenance {
+      .world_id = world_id,
+      .blocker = blocker,
+      .message_id = message_id,
+      .script = *script,
   };
 }
 

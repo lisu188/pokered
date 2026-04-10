@@ -41,6 +41,13 @@ struct MessageSourceProvenance {
   ProvenanceSymbol source;
 };
 
+struct MoveScriptProvenance {
+  WorldId world_id = WorldId::RedsHouse1F;
+  MoveBlocker blocker = MoveBlocker::None;
+  MessageId message_id = MessageId::None;
+  ProvenanceSymbol script;
+};
+
 std::optional<MapProvenance> LookupMapProvenance(const SymbolTable& symbols,
                                                  const MapSections& sections,
                                                  WorldId world_id);
@@ -59,5 +66,10 @@ std::optional<MessageProvenance> LookupMessageProvenance(const SymbolTable& symb
 std::optional<MessageSourceProvenance> LookupMessageSourceProvenance(const SymbolTable& symbols,
                                                                      const MapSections& sections,
                                                                      MessageId message_id);
+std::optional<MoveScriptProvenance> LookupMoveScriptProvenance(const SymbolTable& symbols,
+                                                               const MapSections& sections,
+                                                               WorldId world_id,
+                                                               MoveBlocker blocker,
+                                                               MessageId message_id);
 
 }  // namespace pokered::oracle

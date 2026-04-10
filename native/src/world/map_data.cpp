@@ -294,22 +294,26 @@ TileKind RenderTileKind(const MapData& map, int x, int y) {
   return TileKind::Wall;
 }
 
-bool CanMoveTo(const MapData& map, int x, int y) {
+MoveBlocker BlockerAt(const MapData& map, int x, int y) {
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) {
-    return false;
+    return MoveBlocker::Bounds;
   }
 
   if (!GetCell(map, x, y).passable) {
-    return false;
+    return MoveBlocker::Collision;
   }
 
   for (const Npc& npc : map.npcs) {
     if (npc.x == x && npc.y == y) {
-      return false;
+      return MoveBlocker::Npc;
     }
   }
 
-  return true;
+  return MoveBlocker::None;
+}
+
+bool CanMoveTo(const MapData& map, int x, int y) {
+  return BlockerAt(map, x, y) == MoveBlocker::None;
 }
 
 MessageId InteractionForFacingTile(const MapData& map, const WorldState& world) {

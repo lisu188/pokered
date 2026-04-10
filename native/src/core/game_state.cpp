@@ -42,19 +42,40 @@ MoveResult TryMoveWithResult(WorldState& world, Facing facing) {
   world.player.facing = facing;
 
   const auto [dx, dy] = FacingOffset(facing);
-  const int next_x = world.player.x + dx;
-  const int next_y = world.player.y + dy;
+  const int from_x = world.player.x;
+  const int from_y = world.player.y;
+  const int next_x = from_x + dx;
+  const int next_y = from_y + dy;
   const MapData& map = GetMapData(world.map_id);
+  MoveResult result {
+      .moved = false,
+      .message = MessageId::None,
+      .warped = false,
+      .source_map = map.id,
+      .source_warp = 0,
+      .target_map = map.id,
+      .target_warp = 0,
+      .facing = facing,
+      .from_x = from_x,
+      .from_y = from_y,
+      .to_x = next_x,
+      .to_y = next_y,
+      .blocker = MoveBlocker::None,
+  };
   if (map.id == WorldId::PalletTown && !world.got_starter && facing == Facing::Up && next_y == 1) {
-    return {.moved = false, .message = MessageId::PalletTownOakHeyWaitDontGoOut};
+    result.message = MessageId::PalletTownOakHeyWaitDontGoOut;
+    result.blocker = MoveBlocker::Script;
+    return result;
   }
-  if (!CanMoveTo(map, next_x, next_y)) {
-    return {};
+  result.blocker = BlockerAt(map, next_x, next_y);
+  if (result.blocker != MoveBlocker::None) {
+    return result;
   }
 
   world.player.x = next_x;
   world.player.y = next_y;
   ++world.step_counter;
+  result.moved = true;
 
   for (std::size_t index = 0; index < map.warps.size(); ++index) {
     const Warp& warp = map.warps[index];
@@ -84,15 +105,10 @@ MoveResult TryMoveWithResult(WorldState& world, Facing facing) {
     }
 
     world.map_id = *target_map_id;
-    MoveResult result {
-        .moved = true,
-        .message = MessageId::None,
-        .warped = true,
-        .source_map = map.id,
-        .source_warp = static_cast<std::uint8_t>(index + 1),
-        .target_map = *target_map_id,
-        .target_warp = warp.target_warp,
-    };
+    result.warped = true;
+    result.source_warp = static_cast<std::uint8_t>(index + 1);
+    result.target_map = *target_map_id;
+    result.target_warp = warp.target_warp;
 
     const MapData& target_map = GetMapData(world.map_id);
     if (warp.target_warp == 0 || warp.target_warp > target_map.warps.size()) {
@@ -106,7 +122,7 @@ MoveResult TryMoveWithResult(WorldState& world, Facing facing) {
     return result;
   }
 
-  return {.moved = true, .message = MessageId::None};
+  return result;
 }
 
 bool TryMove(WorldState& world, Facing facing) {

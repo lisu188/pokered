@@ -62,6 +62,7 @@ const MapData& GetMapData(WorldId id);
 bool HasMapData(WorldId id);
 const MapCell& GetCell(const MapData& map, int x, int y);
 TileKind RenderTileKind(const MapData& map, int x, int y);
+MoveBlocker BlockerAt(const MapData& map, int x, int y);
 bool CanMoveTo(const MapData& map, int x, int y);
 MessageId InteractionForFacingTile(const MapData& map, const WorldState& world);
 int MessagePageCount(MessageId message);

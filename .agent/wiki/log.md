@@ -131,3 +131,9 @@ Extended the `F7` runtime provenance overlay again so it now also records the so
 
 ## [2026-04-09 20:28] verification | last-message source provenance tracing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies source-label provenance lookups for `MomWakeUp`, the PalletTown Oak warning seam, `OaksLabRivalText.GrampsIsntAroundText`, and `OaksLabPokedex`, plus null coverage for native-only or abstract message ids.
+
+## [2026-04-10 09:12] provenance | last-move trace page added to the SDL overlay
+Extended the `F7` runtime provenance overlay with a blocker-aware last-move page. `TryMoveWithResult` now records source map, attempted coordinates, facing, and blocker kind, while `native/src/oracle/provenance.cpp` can resolve the current scripted PalletTown north-exit seam back to `PalletTownDefaultScript`.
+
+## [2026-04-10 09:12] verification | last-move provenance tracing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies blocker-aware move metadata for scripted seams, solid tiles, NPC collisions, and reopened movement plus move-script provenance for `PalletTownDefaultScript`.

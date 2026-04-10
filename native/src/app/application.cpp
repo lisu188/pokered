@@ -63,8 +63,9 @@ enum class OverlayMode : std::uint8_t {
   Off = 0,
   MapProvenance = 1,
   WarpTrace = 2,
-  MessageTrace = 3,
-  MessageSourceTrace = 4,
+  MoveTrace = 3,
+  MessageTrace = 4,
+  MessageSourceTrace = 5,
 };
 
 struct WarpTraceState {
@@ -75,9 +76,15 @@ struct WarpTraceState {
   std::uint8_t target_warp = 0;
 };
 
+struct MoveTraceState {
+  bool available = false;
+  MoveResult result {};
+};
+
 struct DebugOverlayState {
   OverlayMode mode = OverlayMode::Off;
   WarpTraceState last_warp {};
+  MoveTraceState last_move {};
   MessageId last_message = MessageId::None;
 };
 
@@ -159,6 +166,7 @@ void ShowMessage(GameState& state, MessageId message, DebugOverlayState* debug_o
 
 void ClearTraceHistory(DebugOverlayState& debug_overlay) {
   debug_overlay.last_warp = {};
+  debug_overlay.last_move = {};
   debug_overlay.last_message = MessageId::None;
 }
 
@@ -169,6 +177,8 @@ OverlayMode NextOverlayMode(OverlayMode mode) {
     case OverlayMode::MapProvenance:
       return OverlayMode::WarpTrace;
     case OverlayMode::WarpTrace:
+      return OverlayMode::MoveTrace;
+    case OverlayMode::MoveTrace:
       return OverlayMode::MessageTrace;
     case OverlayMode::MessageTrace:
       return OverlayMode::MessageSourceTrace;
@@ -201,6 +211,10 @@ void StartNewGame(GameState& state, DebugOverlayState& debug_overlay) {
 
 void HandleWorldMove(GameState& state, Facing facing, DebugOverlayState& debug_overlay) {
   const MoveResult result = TryMoveWithResult(state.world, facing);
+  debug_overlay.last_move = {
+      .available = true,
+      .result = result,
+  };
   if (result.warped) {
     debug_overlay.last_warp = {
         .available = true,
@@ -305,6 +319,70 @@ std::string BuildMessageSourceTraceText(const DebugOverlayState& debug_overlay, 
   return provenance->source.label + "\n" + FormatSymbolLocation(provenance->source);
 }
 
+std::string FormatFacing(Facing facing) {
+  switch (facing) {
+    case Facing::Up:
+      return "UP";
+    case Facing::Down:
+      return "DOWN";
+    case Facing::Left:
+      return "LEFT";
+    case Facing::Right:
+      return "RIGHT";
+  }
+  return "?";
+}
+
+std::string FormatCoords(int x, int y) {
+  return std::to_string(x) + "," + std::to_string(y);
+}
+
+std::string BuildMoveTraceHeading(const MoveResult& result) {
+  if (result.warped) {
+    return "MOVE WARP";
+  }
+  if (result.moved) {
+    return "MOVE STEP";
+  }
+
+  switch (result.blocker) {
+    case MoveBlocker::Bounds:
+      return "MOVE BOUNDS";
+    case MoveBlocker::Collision:
+      return "MOVE WALL";
+    case MoveBlocker::Npc:
+      return "MOVE NPC";
+    case MoveBlocker::Script:
+      return "MOVE SCRIPT";
+    case MoveBlocker::None:
+      break;
+  }
+  return "MOVE BLOCK";
+}
+
+std::string BuildMoveTraceText(const DebugOverlayState& debug_overlay, const OracleContext& oracle_context) {
+  if (!debug_overlay.last_move.available) {
+    return "MOVE TRACE\nNONE YET";
+  }
+
+  const MoveResult& result = debug_overlay.last_move.result;
+  const std::string header = BuildMoveTraceHeading(result);
+  const std::string map_name(GetMapData(result.source_map).name);
+  if (result.blocker == MoveBlocker::Script && oracle_context.available) {
+    const auto provenance = oracle::LookupMoveScriptProvenance(
+        oracle_context.symbols, oracle_context.sections, result.source_map, result.blocker, result.message);
+    if (provenance) {
+      return header + "\n" + map_name + "\n" + provenance->script.label + "\n" +
+             FormatSymbolLocation(provenance->script);
+    }
+  }
+
+  const std::string destination =
+      result.warped ? std::string(GetMapData(result.target_map).name) : FormatCoords(result.to_x, result.to_y);
+  return header + "\n" + map_name + "\n" + FormatCoords(result.from_x, result.from_y) + " -> " + destination +
+         "\n" + FormatFacing(result.facing);
+}
+
 std::string BuildOverlayText(const GameState& state,
                              const DebugOverlayState& debug_overlay,
                              const OracleContext& oracle_context) {
@@ -315,6 +393,8 @@ std::string BuildOverlayText(const GameState& state,
       return BuildMapProvenanceText(state, oracle_context);
     case OverlayMode::WarpTrace:
       return BuildWarpTraceText(debug_overlay, oracle_context);
+    case OverlayMode::MoveTrace:
+      return BuildMoveTraceText(debug_overlay, oracle_context);
     case OverlayMode::MessageTrace:
       return BuildMessageTraceText(debug_overlay, oracle_context);
     case OverlayMode::MessageSourceTrace:
@@ -730,6 +810,7 @@ int RunSmokeTest() {
   state.world.player = PlayerState {north_exit_x, 2, Facing::Up};
   const MoveResult oak_warning = TryMoveWithResult(state.world, Facing::Up);
   if (oak_warning.moved || oak_warning.message != MessageId::PalletTownOakHeyWaitDontGoOut ||
+      oak_warning.blocker != MoveBlocker::Script ||
       state.world.player.x != north_exit_x || state.world.player.y != 2 || state.world.step_counter != 5) {
     std::cerr << "smoke: expected PalletTown Oak north-exit warning\n";
     return 1;
