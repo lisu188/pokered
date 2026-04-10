@@ -137,3 +137,9 @@ Extended the `F7` runtime provenance overlay with a blocker-aware last-move page
 
 ## [2026-04-10 09:12] verification | last-move provenance tracing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies blocker-aware move metadata for scripted seams, solid tiles, NPC collisions, and reopened movement plus move-script provenance for `PalletTownDefaultScript`.
+
+## [2026-04-10 10:17] provenance | last-interaction trace page added to the SDL overlay
+Extended the `F7` runtime provenance overlay with a confirm-driven last-interaction page. Confirm-based interactions now preserve NPC/bg-event versus miss context plus target coordinates, and `native/src/oracle/provenance.cpp` can join source-backed interactions to the current map object label and local source label.
+
+## [2026-04-10 10:17] verification | last-interaction provenance tracing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies interaction-result metadata for NPC, bg-event, and miss cases plus shared interaction provenance for `PalletTownGirlText` and `OaksLabPokedexText`.

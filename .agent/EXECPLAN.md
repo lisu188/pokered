@@ -33,6 +33,7 @@
 - [x] Extend the runtime-facing provenance overlay with a last-message text trace page
 - [x] Extend the runtime-facing provenance overlay with a last-message source-label trace page
 - [x] Extend the runtime-facing provenance overlay with a last-move trace page
+- [x] Extend the runtime-facing provenance overlay with a last-interaction trace page
 
 ## Current Working Assumptions
 - The disassembly remains the authoritative behavior specification.
@@ -44,7 +45,7 @@
 - No MinGW cross-toolchain installed locally yet
 - No MinGW SDL2 package installed locally yet
 - No emulator-backed trace harness yet
-- Runtime-facing provenance now covers the current map, the last successful warp, the last move attempt, the last displayed source-backed message, and the last displayed message's source label, but broader interaction/object-state/script trace hooks are still missing
+- Runtime-facing provenance now covers the current map, the last successful warp, the last move attempt, the last confirm-based interaction, the last displayed source-backed message, and the last displayed message's source label, but broader object-state/script-state trace hooks are still missing
 - Map import is currently proven for the `RedsHouse*`, `HOUSE`, and one `OVERWORLD` slice, but not yet broader than that
 - `Route1` and `Route21` are still not imported, so PalletTown is broader but still a bounded hub
 - Oak's PalletTown follow-to-lab chain and the `OaksLab` starter / rival sequence remain deferred
@@ -72,6 +73,6 @@
 - Decide whether to keep `OaksLab` on safe default dialogue branches or implement the first starter / rival script seam.
 - Decide whether to extend the bounded `PalletTown` Oak warning into the full follow-to-lab cutscene.
 - Decide whether `BluesHouse` Daisy should remain a static-text simplification or become the first small indoor gift/event seam.
-- Extend the current `.sym` / `.map` overlay past the last-move and last-message-source pages into broader interaction, object-state, and script trace hooks.
+- Extend the current `.sym` / `.map` overlay past the last-interaction, last-move, and last-message-source pages into broader object-state and script-state trace hooks.
 - Broaden the importer to another tileset family after the exterior seam is stable.
 - Validate the documented WSL -> MinGW -> `.exe` flow once the missing compiler and SDL2 packages are available.

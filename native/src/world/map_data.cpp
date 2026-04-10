@@ -316,41 +316,67 @@ bool CanMoveTo(const MapData& map, int x, int y) {
   return BlockerAt(map, x, y) == MoveBlocker::None;
 }
 
-MessageId InteractionForFacingTile(const MapData& map, const WorldState& world) {
+InteractionResult InspectFacingTile(const MapData& map, const WorldState& world) {
   const auto [dx, dy] = FacingOffset(world.player.facing);
   const int target_x = world.player.x + dx;
   const int target_y = world.player.y + dy;
 
   for (const Npc& npc : map.npcs) {
     if (npc.x == target_x && npc.y == target_y) {
+      InteractionResult result {
+          .kind = InteractionKind::Npc,
+          .message = npc.message,
+          .target_x = target_x,
+          .target_y = target_y,
+      };
       if (npc.message == MessageId::MomWakeUp && world.got_starter) {
-        return MessageId::MomRest;
+        result.message = MessageId::MomRest;
+        return result;
       }
       if (npc.message == MessageId::OaksLabRival) {
-        return world.got_starter ? MessageId::OaksLabRivalMyPokemonLooksStronger
-                                 : MessageId::OaksLabRivalGrampsIsntAround;
+        result.message = world.got_starter ? MessageId::OaksLabRivalMyPokemonLooksStronger
+                                           : MessageId::OaksLabRivalGrampsIsntAround;
+        return result;
       }
       if (npc.message == MessageId::OaksLabPokeBall) {
-        return world.got_starter ? MessageId::OaksLabLastMon : MessageId::OaksLabThoseArePokeBalls;
+        result.message = world.got_starter ? MessageId::OaksLabLastMon : MessageId::OaksLabThoseArePokeBalls;
+        return result;
       }
       if (npc.message == MessageId::OaksLabOak1) {
-        return world.got_starter ? MessageId::OaksLabOak1YourPokemonCanFight
-                                 : MessageId::OaksLabOak1WhichPokemonDoYouWant;
+        result.message = world.got_starter ? MessageId::OaksLabOak1YourPokemonCanFight
+                                           : MessageId::OaksLabOak1WhichPokemonDoYouWant;
+        return result;
       }
-      return npc.message;
+      return result;
     }
   }
 
   for (const BgEvent& event : map.bg_events) {
     if (event.x == target_x && event.y == target_y) {
+      InteractionResult result {
+          .kind = InteractionKind::BgEvent,
+          .message = event.message,
+          .target_x = target_x,
+          .target_y = target_y,
+      };
       if (event.message == MessageId::TvMovie && world.player.facing != Facing::Up) {
-        return MessageId::TvWrongSide;
+        result.message = MessageId::TvWrongSide;
+        return result;
       }
-      return event.message;
+      return result;
     }
   }
 
-  return MessageId::None;
+  return InteractionResult {
+      .kind = InteractionKind::None,
+      .message = MessageId::None,
+      .target_x = target_x,
+      .target_y = target_y,
+  };
+}
+
+MessageId InteractionForFacingTile(const MapData& map, const WorldState& world) {
+  return InspectFacingTile(map, world).message;
 }
 
 std::string_view RawMessageText(MessageId message) {

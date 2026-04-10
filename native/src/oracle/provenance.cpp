@@ -318,4 +318,22 @@ std::optional<MoveScriptProvenance> LookupMoveScriptProvenance(const SymbolTable
   };
 }
 
+std::optional<InteractionProvenance> LookupInteractionProvenance(const SymbolTable& symbols,
+                                                                 const MapSections& sections,
+                                                                 WorldId world_id,
+                                                                 MessageId message_id) {
+  const auto map = LookupMapProvenance(symbols, sections, world_id);
+  const auto source = LookupMessageSourceProvenance(symbols, sections, message_id);
+  if (!map || !source) {
+    return std::nullopt;
+  }
+
+  return InteractionProvenance {
+      .world_id = world_id,
+      .message_id = message_id,
+      .object = map->object,
+      .source = source->source,
+  };
+}
+
 }  // namespace pokered::oracle

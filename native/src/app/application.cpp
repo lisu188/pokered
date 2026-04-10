@@ -64,8 +64,9 @@ enum class OverlayMode : std::uint8_t {
   MapProvenance = 1,
   WarpTrace = 2,
   MoveTrace = 3,
-  MessageTrace = 4,
-  MessageSourceTrace = 5,
+  InteractionTrace = 4,
+  MessageTrace = 5,
+  MessageSourceTrace = 6,
 };
 
 struct WarpTraceState {
@@ -81,10 +82,20 @@ struct MoveTraceState {
   MoveResult result {};
 };
 
+struct InteractionTraceState {
+  bool available = false;
+  WorldId map_id = WorldId::RedsHouse1F;
+  int player_x = 0;
+  int player_y = 0;
+  Facing facing = Facing::Up;
+  InteractionResult result {};
+};
+
 struct DebugOverlayState {
   OverlayMode mode = OverlayMode::Off;
   WarpTraceState last_warp {};
   MoveTraceState last_move {};
+  InteractionTraceState last_interaction {};
   MessageId last_message = MessageId::None;
 };
 
@@ -167,6 +178,7 @@ void ShowMessage(GameState& state, MessageId message, DebugOverlayState* debug_o
 void ClearTraceHistory(DebugOverlayState& debug_overlay) {
   debug_overlay.last_warp = {};
   debug_overlay.last_move = {};
+  debug_overlay.last_interaction = {};
   debug_overlay.last_message = MessageId::None;
 }
 
@@ -179,6 +191,8 @@ OverlayMode NextOverlayMode(OverlayMode mode) {
     case OverlayMode::WarpTrace:
       return OverlayMode::MoveTrace;
     case OverlayMode::MoveTrace:
+      return OverlayMode::InteractionTrace;
+    case OverlayMode::InteractionTrace:
       return OverlayMode::MessageTrace;
     case OverlayMode::MessageTrace:
       return OverlayMode::MessageSourceTrace;
@@ -383,6 +397,48 @@ std::string BuildMoveTraceText(const DebugOverlayState& debug_overlay, const Ora
          "\n" + FormatFacing(result.facing);
 }
 
+std::string FormatInteractionKind(InteractionKind kind) {
+  switch (kind) {
+    case InteractionKind::None:
+      return "MISS";
+    case InteractionKind::Npc:
+      return "NPC";
+    case InteractionKind::BgEvent:
+      return "BG";
+  }
+  return "?";
+}
+
+std::string BuildInteractionTraceText(const DebugOverlayState& debug_overlay, const OracleContext& oracle_context) {
+  if (!debug_overlay.last_interaction.available) {
+    return "INTERACT\nNONE YET";
+  }
+
+  const InteractionTraceState& trace = debug_overlay.last_interaction;
+  const InteractionResult& result = trace.result;
+  const std::string header = "INTERACT " + FormatInteractionKind(result.kind);
+  if (result.kind == InteractionKind::None || result.message == MessageId::None) {
+    return header + "\n" + std::string(GetMapData(trace.map_id).name) + "\n" +
+           FormatCoords(trace.player_x, trace.player_y) + " -> " + FormatCoords(result.target_x, result.target_y) +
+           "\n" + FormatFacing(trace.facing);
+  }
+
+  if (!oracle_context.available) {
+    return header + "\n" + std::string(GetMapData(trace.map_id).name) + "\n" +
+           FormatCoords(result.target_x, result.target_y) + "\n" + FormatFacing(trace.facing);
+  }
+
+  const auto provenance = oracle::LookupInteractionProvenance(
+      oracle_context.symbols, oracle_context.sections, trace.map_id, result.message);
+  if (!provenance) {
+    return header + "\n" + std::string(GetMapData(trace.map_id).name) + "\n" +
+           FormatCoords(result.target_x, result.target_y) + "\n" + FormatFacing(trace.facing);
+  }
+
+  return header + " " + FormatCoords(result.target_x, result.target_y) + "\n" + provenance->object.label + "\n" +
+         provenance->source.label + "\n" + FormatSymbolLocation(provenance->source);
+}
+
 std::string BuildOverlayText(const GameState& state,
                              const DebugOverlayState& debug_overlay,
                              const OracleContext& oracle_context) {
@@ -395,6 +451,8 @@ std::string BuildOverlayText(const GameState& state,
       return BuildWarpTraceText(debug_overlay, oracle_context);
     case OverlayMode::MoveTrace:
       return BuildMoveTraceText(debug_overlay, oracle_context);
+    case OverlayMode::InteractionTrace:
+      return BuildInteractionTraceText(debug_overlay, oracle_context);
     case OverlayMode::MessageTrace:
       return BuildMessageTraceText(debug_overlay, oracle_context);
     case OverlayMode::MessageSourceTrace:
@@ -619,7 +677,16 @@ void UpdateWorld(GameState& state, const FrameInput& input, DebugOverlayState& d
     return;
   }
   if (input.confirm) {
-    ShowMessage(state, InteractionForFacingTile(GetMapData(state.world.map_id), state.world), &debug_overlay);
+    const InteractionResult interaction = InspectFacingTile(GetMapData(state.world.map_id), state.world);
+    debug_overlay.last_interaction = {
+        .available = true,
+        .map_id = state.world.map_id,
+        .player_x = state.world.player.x,
+        .player_y = state.world.player.y,
+        .facing = state.world.player.facing,
+        .result = interaction,
+    };
+    ShowMessage(state, interaction.message, &debug_overlay);
   }
 }
 

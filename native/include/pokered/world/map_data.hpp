@@ -44,6 +44,19 @@ struct Npc {
   MessageId message;
 };
 
+enum class InteractionKind : std::uint8_t {
+  None = 0,
+  Npc,
+  BgEvent,
+};
+
+struct InteractionResult {
+  InteractionKind kind = InteractionKind::None;
+  MessageId message = MessageId::None;
+  int target_x = 0;
+  int target_y = 0;
+};
+
 struct MapData {
   WorldId id;
   std::string_view name;
@@ -64,6 +77,7 @@ const MapCell& GetCell(const MapData& map, int x, int y);
 TileKind RenderTileKind(const MapData& map, int x, int y);
 MoveBlocker BlockerAt(const MapData& map, int x, int y);
 bool CanMoveTo(const MapData& map, int x, int y);
+InteractionResult InspectFacingTile(const MapData& map, const WorldState& world);
 MessageId InteractionForFacingTile(const MapData& map, const WorldState& world);
 int MessagePageCount(MessageId message);
 std::string_view MessageText(MessageId message, int page = 0);

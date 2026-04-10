@@ -249,6 +249,34 @@ int main() {
     std::cerr << "expected PalletTown move-script provenance lookup\n";
     return 1;
   }
+  const auto girl_interaction_provenance = pokered::oracle::LookupInteractionProvenance(
+      symbols, sections, pokered::WorldId::PalletTown, pokered::MessageId::PalletTownGirl);
+  if (!girl_interaction_provenance || girl_interaction_provenance->object.label != "PalletTown_Object" ||
+      girl_interaction_provenance->object.address.bank != 0x06 ||
+      girl_interaction_provenance->object.address.address != 0x42C3 ||
+      !girl_interaction_provenance->object.section || girl_interaction_provenance->object.section->name != "Maps 1" ||
+      girl_interaction_provenance->source.label != "PalletTownGirlText" ||
+      girl_interaction_provenance->source.address.bank != 0x06 ||
+      girl_interaction_provenance->source.address.address != 0x4FD3 ||
+      !girl_interaction_provenance->source.section || girl_interaction_provenance->source.section->name != "Maps 2") {
+    std::cerr << "expected PalletTown interaction provenance lookup\n";
+    return 1;
+  }
+  const auto pokedex_interaction_provenance = pokered::oracle::LookupInteractionProvenance(
+      symbols, sections, pokered::WorldId::OaksLab, pokered::MessageId::OaksLabPokedex);
+  if (!pokedex_interaction_provenance || pokedex_interaction_provenance->object.label != "OaksLab_Object" ||
+      pokedex_interaction_provenance->object.address.bank != 0x07 ||
+      pokedex_interaction_provenance->object.address.address != 0x540A ||
+      !pokedex_interaction_provenance->object.section ||
+      pokedex_interaction_provenance->object.section->name != "Maps 4" ||
+      pokedex_interaction_provenance->source.label != "OaksLabPokedexText" ||
+      pokedex_interaction_provenance->source.address.bank != 0x07 ||
+      pokedex_interaction_provenance->source.address.address != 0x5322 ||
+      !pokedex_interaction_provenance->source.section ||
+      pokedex_interaction_provenance->source.section->name != "Maps 4") {
+    std::cerr << "expected OaksLab interaction provenance lookup\n";
+    return 1;
+  }
   if (pokered::oracle::LookupMessageProvenance(symbols, sections, pokered::MessageId::SaveOk) ||
       pokered::oracle::LookupMessageProvenance(symbols, sections, pokered::MessageId::OaksLabRival) ||
       pokered::oracle::LookupMessageSourceProvenance(symbols, sections, pokered::MessageId::SaveOk) ||
@@ -256,7 +284,11 @@ int main() {
       pokered::oracle::LookupMoveScriptProvenance(
           symbols, sections, pokered::WorldId::PalletTown, pokered::MoveBlocker::Collision, pokered::MessageId::None) ||
       pokered::oracle::LookupMoveScriptProvenance(
-          symbols, sections, pokered::WorldId::OaksLab, pokered::MoveBlocker::Script, pokered::MessageId::OaksLabPokedex)) {
+          symbols, sections, pokered::WorldId::OaksLab, pokered::MoveBlocker::Script, pokered::MessageId::OaksLabPokedex) ||
+      pokered::oracle::LookupInteractionProvenance(
+          symbols, sections, pokered::WorldId::PalletTown, pokered::MessageId::SaveOk) ||
+      pokered::oracle::LookupInteractionProvenance(
+          symbols, sections, pokered::WorldId::PalletTown, pokered::MessageId::None)) {
     std::cerr << "expected native-only and abstract message ids to have no oracle provenance\n";
     return 1;
   }
@@ -713,6 +745,13 @@ int main() {
   outdoor_walk.player.x = 4;
   outdoor_walk.player.y = 8;
   outdoor_walk.player.facing = pokered::Facing::Left;
+  const pokered::InteractionResult girl_interaction = pokered::InspectFacingTile(pallet_town, outdoor_walk);
+  if (girl_interaction.kind != pokered::InteractionKind::Npc ||
+      girl_interaction.message != pokered::MessageId::PalletTownGirl || girl_interaction.target_x != 3 ||
+      girl_interaction.target_y != 8) {
+    std::cerr << "expected PalletTown girl interaction result metadata\n";
+    return 1;
+  }
   if (pokered::InteractionForFacingTile(pallet_town, outdoor_walk) != pokered::MessageId::PalletTownGirl) {
     std::cerr << "expected PalletTown girl interaction\n";
     return 1;
@@ -720,6 +759,13 @@ int main() {
   outdoor_walk.player.x = 10;
   outdoor_walk.player.y = 14;
   outdoor_walk.player.facing = pokered::Facing::Right;
+  const pokered::InteractionResult fisher_interaction = pokered::InspectFacingTile(pallet_town, outdoor_walk);
+  if (fisher_interaction.kind != pokered::InteractionKind::Npc ||
+      fisher_interaction.message != pokered::MessageId::PalletTownFisher || fisher_interaction.target_x != 11 ||
+      fisher_interaction.target_y != 14) {
+    std::cerr << "expected PalletTown fisher interaction result metadata\n";
+    return 1;
+  }
   if (pokered::InteractionForFacingTile(pallet_town, outdoor_walk) != pokered::MessageId::PalletTownFisher) {
     std::cerr << "expected PalletTown fisher interaction\n";
     return 1;
@@ -727,8 +773,25 @@ int main() {
   outdoor_walk.player.x = 13;
   outdoor_walk.player.y = 14;
   outdoor_walk.player.facing = pokered::Facing::Up;
+  const pokered::InteractionResult sign_interaction = pokered::InspectFacingTile(pallet_town, outdoor_walk);
+  if (sign_interaction.kind != pokered::InteractionKind::BgEvent ||
+      sign_interaction.message != pokered::MessageId::PalletTownOaksLabSign || sign_interaction.target_x != 13 ||
+      sign_interaction.target_y != 13) {
+    std::cerr << "expected PalletTown sign interaction result metadata\n";
+    return 1;
+  }
   if (pokered::InteractionForFacingTile(pallet_town, outdoor_walk) != pokered::MessageId::PalletTownOaksLabSign) {
     std::cerr << "expected PalletTown sign interaction\n";
+    return 1;
+  }
+  outdoor_walk.player.x = 10;
+  outdoor_walk.player.y = 10;
+  outdoor_walk.player.facing = pokered::Facing::Right;
+  const pokered::InteractionResult miss_interaction = pokered::InspectFacingTile(pallet_town, outdoor_walk);
+  if (miss_interaction.kind != pokered::InteractionKind::None ||
+      miss_interaction.message != pokered::MessageId::None || miss_interaction.target_x != 11 ||
+      miss_interaction.target_y != 10) {
+    std::cerr << "expected empty interaction result metadata\n";
     return 1;
   }
 
