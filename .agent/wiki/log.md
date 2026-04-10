@@ -155,3 +155,9 @@ Extended the `F7` runtime provenance overlay with a state-gate page that records
 
 ## [2026-04-10 10:50] verification | last-state-gate provenance tracing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies preserved state-gate metadata for the PalletTown Oak seam, RedsHouse1F Mom/TV interactions, OaksLab conditional interactions, and unchanged no-gate paths for static blockers and interactions.
+
+## [2026-04-10 10:59] provenance | last-map-state trace page added to the SDL overlay
+Extended the `F7` runtime provenance overlay with a current `LAST_MAP` state page. `native/src/oracle/provenance.cpp` now exposes `LookupLastMapProvenance`, which lets the runtime resolve the live return anchor held in `GameState::world.last_map` / `last_warp` back to source map object labels such as `PalletTown_Object #1` and `RedsHouse1F_Object #2`.
+
+## [2026-04-10 10:59] verification | last-map-state provenance tracing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now also verifies current `LAST_MAP` provenance lookups plus null coverage for unset and invalid warp ids.

@@ -145,6 +145,26 @@ int main() {
     std::cerr << "expected RedsHouse1F -> PalletTown warp provenance lookup\n";
     return 1;
   }
+  const auto pallet_last_map_provenance = pokered::oracle::LookupLastMapProvenance(
+      symbols, sections, pokered::WorldId::PalletTown, 1);
+  if (!pallet_last_map_provenance || pallet_last_map_provenance->world_id != pokered::WorldId::PalletTown ||
+      pallet_last_map_provenance->warp_id != 1 || pallet_last_map_provenance->object.label != "PalletTown_Object" ||
+      pallet_last_map_provenance->object.address.bank != 0x06 ||
+      pallet_last_map_provenance->object.address.address != 0x42C3 ||
+      !pallet_last_map_provenance->object.section || pallet_last_map_provenance->object.section->name != "Maps 1") {
+    std::cerr << "expected PalletTown last-map provenance lookup\n";
+    return 1;
+  }
+  const auto house_last_map_provenance = pokered::oracle::LookupLastMapProvenance(
+      symbols, sections, pokered::WorldId::RedsHouse1F, 2);
+  if (!house_last_map_provenance || house_last_map_provenance->world_id != pokered::WorldId::RedsHouse1F ||
+      house_last_map_provenance->warp_id != 2 || house_last_map_provenance->object.label != "RedsHouse1F_Object" ||
+      house_last_map_provenance->object.address.bank != 0x12 ||
+      house_last_map_provenance->object.address.address != 0x41E4 ||
+      !house_last_map_provenance->object.section || house_last_map_provenance->object.section->name != "Maps 8") {
+    std::cerr << "expected RedsHouse1F last-map provenance lookup\n";
+    return 1;
+  }
   const auto mom_provenance = pokered::oracle::LookupMessageProvenance(
       symbols, sections, pokered::MessageId::MomWakeUp);
   const bool mom_ok = mom_provenance && mom_provenance->message_id == pokered::MessageId::MomWakeUp &&
@@ -363,6 +383,8 @@ int main() {
           symbols, sections, pokered::WorldId::PalletTown, pokered::MoveBlocker::Collision, pokered::MessageId::None) ||
       pokered::oracle::LookupMoveScriptProvenance(
           symbols, sections, pokered::WorldId::OaksLab, pokered::MoveBlocker::Script, pokered::MessageId::OaksLabPokedex) ||
+      pokered::oracle::LookupLastMapProvenance(symbols, sections, pokered::WorldId::PalletTown, 0) ||
+      pokered::oracle::LookupLastMapProvenance(symbols, sections, pokered::WorldId::PalletTown, 4) ||
       pokered::oracle::LookupInteractionProvenance(
           symbols,
           sections,

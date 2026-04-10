@@ -67,6 +67,7 @@
   - `native/src/oracle/symbol_file.cpp` can load `pokered.sym`
   - `native/src/oracle/map_file.cpp` can load `pokered.map`
   - `native/src/oracle/provenance.cpp` can join current-map header/object labels to symbol addresses and `.map` sections for runtime-facing use
+  - `native/src/oracle/provenance.cpp` can also join the current `LAST_MAP` return anchor to the owning map object label and `.map` section for runtime-facing state traces
   - `native/src/oracle/provenance.cpp` can also join source/target map object provenance for last-warp runtime traces
   - `native/src/oracle/provenance.cpp` can also join blocker-tagged movement seams to script labels and `.map` sections for last-move runtime traces when a source-backed seam is known
   - `native/src/oracle/provenance.cpp` can also join confirm-based interactions to the current map object label plus local source label for last-interaction runtime traces
@@ -82,6 +83,7 @@
   - message provenance lookup for `MomWakeUp`, the PalletTown Oak warning seam, and `OaksLabPokedex`, plus source-label provenance lookup for `MomWakeUp`, the PalletTown Oak warning seam, `OaksLabRivalText.GrampsIsntAroundText`, and `OaksLabPokedex`, alongside null coverage for native-only or abstract message ids
   - move-script provenance lookup for the PalletTown Oak warning seam back to `PalletTownDefaultScript`, plus null coverage for non-script blockers and unrelated maps/messages
   - interaction provenance lookup joining `PalletTown_Object` + `PalletTownGirlText` and `OaksLab_Object` + `OaksLabPokedexText`, plus branch provenance lookup for `RedsHouse1FMomText`, `RedsHouse1FMomText.heal`, `RedsHouse1FTVText`, `OaksLabRivalText.afterChooseMon`, and `OaksLabOak1Text.check_for_poke_balls`, plus null coverage for native-only, static no-branch, or empty interactions
+  - current `LAST_MAP` provenance lookup for `PalletTown_Object #1` and `RedsHouse1F_Object #2`, plus null coverage for unset/invalid warp ids
 
 ## Confirmed Oracle Assets
 - `pokered.gbc`, `pokeblue.gbc`, `pokeblue_debug.gbc`
@@ -95,7 +97,7 @@
 - keep deterministic save/load as a native milestone requirement, not a later cleanup item
 
 ## Next Verification Work
-- extend the current runtime-facing provenance hooks past the last-state-gate, last-interaction-branch, last-interaction, last-move, and last-message-source pages into broader object-state and script-state tracing
+- extend the current runtime-facing provenance hooks past the current-map, last-map-state, last-state-gate, last-interaction-branch, last-interaction, last-move, and last-message-source pages into broader object-state and script-state tracing
 - add the next outdoor-adjacent scenario beyond the now-live `OaksLab` seam
 - add checks for deferred `LAST_MAP` door behavior on maps beyond the PalletTown seam
 - add importer regression checks for the lower-left representative tile rule used by overworld collision/warp semantics

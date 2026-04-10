@@ -31,6 +31,12 @@ struct WarpProvenance {
   ProvenanceSymbol target_object;
 };
 
+struct LastMapProvenance {
+  WorldId world_id = WorldId::RedsHouse1F;
+  std::uint8_t warp_id = 0;
+  ProvenanceSymbol object;
+};
+
 struct MessageProvenance {
   MessageId message_id = MessageId::None;
   ProvenanceSymbol text;
@@ -75,6 +81,10 @@ std::optional<WarpProvenance> LookupWarpProvenance(const SymbolTable& symbols,
                                                    std::uint8_t source_warp,
                                                    WorldId target_world_id,
                                                    std::uint8_t target_warp);
+std::optional<LastMapProvenance> LookupLastMapProvenance(const SymbolTable& symbols,
+                                                         const MapSections& sections,
+                                                         WorldId world_id,
+                                                         std::uint8_t warp_id);
 std::optional<MessageProvenance> LookupMessageProvenance(const SymbolTable& symbols,
                                                          const MapSections& sections,
                                                          MessageId message_id);

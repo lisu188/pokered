@@ -62,13 +62,14 @@ struct OracleContext {
 enum class OverlayMode : std::uint8_t {
   Off = 0,
   MapProvenance = 1,
-  WarpTrace = 2,
-  MoveTrace = 3,
-  InteractionTrace = 4,
-  InteractionBranchTrace = 5,
-  StateTrace = 6,
-  MessageTrace = 7,
-  MessageSourceTrace = 8,
+  LastMapState = 2,
+  WarpTrace = 3,
+  MoveTrace = 4,
+  InteractionTrace = 5,
+  InteractionBranchTrace = 6,
+  StateTrace = 7,
+  MessageTrace = 8,
+  MessageSourceTrace = 9,
 };
 
 enum class StateTraceSource : std::uint8_t {
@@ -209,6 +210,8 @@ OverlayMode NextOverlayMode(OverlayMode mode) {
     case OverlayMode::Off:
       return OverlayMode::MapProvenance;
     case OverlayMode::MapProvenance:
+      return OverlayMode::LastMapState;
+    case OverlayMode::LastMapState:
       return OverlayMode::WarpTrace;
     case OverlayMode::WarpTrace:
       return OverlayMode::MoveTrace;
@@ -311,6 +314,31 @@ std::string BuildMapProvenanceText(const GameState& state, const OracleContext& 
 
 std::string FormatWarpLabel(const oracle::ProvenanceSymbol& symbol, std::uint8_t warp_index) {
   return symbol.label + " #" + std::to_string(static_cast<int>(warp_index));
+}
+
+std::string BuildLastMapStateText(const GameState& state, const OracleContext& oracle_context) {
+  if (state.world.last_map == kNoLastMap) {
+    return "LAST MAP\nNONE SET";
+  }
+
+  const WorldId last_map = static_cast<WorldId>(state.world.last_map);
+  if (!HasMapData(last_map) || state.world.last_warp == 0) {
+    return "LAST MAP\nINVALID";
+  }
+
+  if (!oracle_context.available) {
+    return "LAST MAP\n" + std::string(GetMapData(last_map).name) + " #" +
+           std::to_string(static_cast<int>(state.world.last_warp));
+  }
+
+  const auto provenance = oracle::LookupLastMapProvenance(
+      oracle_context.symbols, oracle_context.sections, last_map, state.world.last_warp);
+  if (!provenance) {
+    return "LAST MAP\nINVALID";
+  }
+
+  return "LAST MAP\n" + FormatWarpLabel(provenance->object, provenance->warp_id) + "\n" +
+         FormatSymbolLocation(provenance->object);
 }
 
 std::string BuildWarpTraceText(const DebugOverlayState& debug_overlay, const OracleContext& oracle_context) {
@@ -552,6 +580,8 @@ std::string BuildOverlayText(const GameState& state,
       return "ARROWS MOVE  Z TALK\nF5 SAVE  F9 LOAD\nF6 MAP  F7 ORCL\nG FLAG";
     case OverlayMode::MapProvenance:
       return BuildMapProvenanceText(state, oracle_context);
+    case OverlayMode::LastMapState:
+      return BuildLastMapStateText(state, oracle_context);
     case OverlayMode::WarpTrace:
       return BuildWarpTraceText(debug_overlay, oracle_context);
     case OverlayMode::MoveTrace:

@@ -4,6 +4,8 @@
 #include <string_view>
 #include <utility>
 
+#include "pokered/world/map_data.hpp"
+
 namespace pokered::oracle {
 namespace {
 
@@ -313,6 +315,31 @@ std::optional<WarpProvenance> LookupWarpProvenance(const SymbolTable& symbols,
       .target_world_id = target_world_id,
       .target_warp = target_warp,
       .target_object = target->object,
+  };
+}
+
+std::optional<LastMapProvenance> LookupLastMapProvenance(const SymbolTable& symbols,
+                                                         const MapSections& sections,
+                                                         WorldId world_id,
+                                                         std::uint8_t warp_id) {
+  if (warp_id == 0 || !HasMapData(world_id)) {
+    return std::nullopt;
+  }
+
+  const MapData& map = GetMapData(world_id);
+  if (warp_id > map.warps.size()) {
+    return std::nullopt;
+  }
+
+  const auto provenance = LookupMapProvenance(symbols, sections, world_id);
+  if (!provenance) {
+    return std::nullopt;
+  }
+
+  return LastMapProvenance {
+      .world_id = world_id,
+      .warp_id = warp_id,
+      .object = provenance->object,
   };
 }
 
