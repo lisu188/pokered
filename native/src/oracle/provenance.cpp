@@ -484,6 +484,37 @@ std::optional<StateGateProvenance> LookupInteractionStateGateProvenance(const Sy
   };
 }
 
+std::optional<FacingProvenance> LookupFacingProvenance(const SymbolTable& symbols,
+                                                       const MapSections& sections,
+                                                       const WorldState& world) {
+  if (!HasMapData(world.map_id)) {
+    return std::nullopt;
+  }
+
+  const InteractionResult result = InspectFacingTile(GetMapData(world.map_id), world);
+  if (result.kind == InteractionKind::None || result.message == MessageId::None) {
+    return std::nullopt;
+  }
+
+  const auto provenance =
+      LookupInteractionProvenance(symbols, sections, world.map_id, result.origin_message, result.message);
+  if (!provenance) {
+    return std::nullopt;
+  }
+
+  return FacingProvenance {
+      .world_id = world.map_id,
+      .facing = world.player.facing,
+      .kind = result.kind,
+      .target_x = result.target_x,
+      .target_y = result.target_y,
+      .origin_message = result.origin_message,
+      .message_id = result.message,
+      .object = provenance->object,
+      .source = provenance->source,
+  };
+}
+
 std::optional<MessageProvenance> LookupMessageProvenance(const SymbolTable& symbols,
                                                          const MapSections& sections,
                                                          MessageId message_id) {

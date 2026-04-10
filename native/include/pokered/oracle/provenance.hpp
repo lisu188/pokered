@@ -7,6 +7,7 @@
 #include "pokered/core/game_state.hpp"
 #include "pokered/oracle/map_file.hpp"
 #include "pokered/oracle/symbol_file.hpp"
+#include "pokered/world/map_data.hpp"
 
 namespace pokered::oracle {
 
@@ -43,6 +44,18 @@ struct StateGateProvenance {
   std::string condition_label;
   std::optional<ProvenanceSymbol> state_symbol;
   std::optional<ProvenanceSymbol> context_symbol;
+};
+
+struct FacingProvenance {
+  WorldId world_id = WorldId::RedsHouse1F;
+  Facing facing = Facing::Up;
+  InteractionKind kind = InteractionKind::None;
+  int target_x = 0;
+  int target_y = 0;
+  MessageId origin_message = MessageId::None;
+  MessageId message_id = MessageId::None;
+  ProvenanceSymbol object;
+  ProvenanceSymbol source;
 };
 
 struct MessageProvenance {
@@ -105,6 +118,9 @@ std::optional<StateGateProvenance> LookupInteractionStateGateProvenance(const Sy
                                                                         MessageId origin_message,
                                                                         MessageId message_id,
                                                                         StateGate gate);
+std::optional<FacingProvenance> LookupFacingProvenance(const SymbolTable& symbols,
+                                                       const MapSections& sections,
+                                                       const WorldState& world);
 std::optional<MessageProvenance> LookupMessageProvenance(const SymbolTable& symbols,
                                                          const MapSections& sections,
                                                          MessageId message_id);

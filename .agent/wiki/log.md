@@ -167,3 +167,9 @@ Extended the `F7` runtime provenance overlay with a page that resolves the lates
 
 ## [2026-04-10 11:45] verification | gate-source provenance tracing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies move/interact gate provenance lookups plus null coverage for non-script moves and static interactions.
+
+## [2026-04-10 11:57] provenance | live facing-target trace page added to the SDL overlay
+Extended the `F7` runtime provenance overlay with a current facing-target page. `native/src/oracle/provenance.cpp` now exposes `LookupFacingProvenance`, which lets the runtime resolve the live NPC/bg-event the player is pointing at back to the current map object label plus the current source label, including branched live results such as `RedsHouse1FTVText.WrongSideText` and `OaksLabRivalText.MyPokemonLooksStrongerText`.
+
+## [2026-04-10 11:57] verification | live facing-target provenance tracing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies current facing provenance lookups for PalletTown, RedsHouse1F, and OaksLab plus null coverage for empty facing targets.
