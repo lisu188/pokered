@@ -70,6 +70,7 @@
   - `native/src/oracle/provenance.cpp` can also join the current `LAST_MAP` return anchor to the owning map object label and `.map` section for runtime-facing state traces
   - `native/src/oracle/provenance.cpp` can also join the current facing NPC/bg-event target from `WorldState` to the current map object label plus local source label for live runtime traces
   - `native/src/oracle/provenance.cpp` can also join the current facing interaction from `WorldState` to the current asm-local branch handler for live runtime previews
+  - `native/src/oracle/provenance.cpp` can also join the current facing interaction gate from `WorldState` to the source gate/storage symbols that back the live runtime preview
   - `native/src/oracle/provenance.cpp` can also join source/target map object provenance for last-warp runtime traces
   - `native/src/oracle/provenance.cpp` can also join blocker-tagged movement seams to script labels and `.map` sections for last-move runtime traces when a source-backed seam is known
   - `native/src/oracle/provenance.cpp` can also join confirm-based interactions to the current map object label plus local source label for last-interaction runtime traces
@@ -90,6 +91,7 @@
   - state-gate provenance lookup for the PalletTown Oak seam event gate, `wStatusFlags4` / `BIT_GOT_STARTER`, and `wSpritePlayerStateData1FacingDirection` / `SPRITE_FACING_UP`, plus null coverage for non-script moves and static interactions
   - current facing provenance lookup for the PalletTown girl, the branched RedsHouse1F TV wrong-side text, and the post-starter OaksLab rival line, plus null coverage for empty facing targets
   - current facing-branch provenance lookup for the RedsHouse1F Mom default/rest handlers, the RedsHouse1F TV handler, and the post-starter OaksLab rival handler, plus null coverage for static or empty facing targets
+  - current facing gate-source provenance lookup for the RedsHouse1F Mom gate, the RedsHouse1F TV facing gate, and the post-starter OaksLab rival gate, plus null coverage for static or empty facing targets
 
 ## Confirmed Oracle Assets
 - `pokered.gbc`, `pokeblue.gbc`, `pokeblue_debug.gbc`
@@ -103,7 +105,7 @@
 - keep deterministic save/load as a native milestone requirement, not a later cleanup item
 
 ## Next Verification Work
-- extend the current runtime-facing provenance hooks past the current-map, last-map-state, live-facing-target, live-facing-branch, last-state-gate, last-state-gate-source, last-interaction-branch, last-interaction, last-move, and last-message-source pages into broader object-state and script-state tracing
+- extend the current runtime-facing provenance hooks past the current-map, last-map-state, live-facing-target, live-facing-branch, live-facing-gate-source, last-state-gate, last-state-gate-source, last-interaction-branch, last-interaction, last-move, and last-message-source pages into broader object-state and script-state tracing
 - add the next outdoor-adjacent scenario beyond the now-live `OaksLab` seam
 - add checks for deferred `LAST_MAP` door behavior on maps beyond the PalletTown seam
 - add importer regression checks for the lower-left representative tile rule used by overworld collision/warp semantics

@@ -65,14 +65,15 @@ enum class OverlayMode : std::uint8_t {
   LastMapState = 2,
   FacingState = 3,
   FacingBranchState = 4,
-  WarpTrace = 5,
-  MoveTrace = 6,
-  InteractionTrace = 7,
-  InteractionBranchTrace = 8,
-  StateTrace = 9,
-  StateGateSourceTrace = 10,
-  MessageTrace = 11,
-  MessageSourceTrace = 12,
+  FacingGateSourceState = 5,
+  WarpTrace = 6,
+  MoveTrace = 7,
+  InteractionTrace = 8,
+  InteractionBranchTrace = 9,
+  StateTrace = 10,
+  StateGateSourceTrace = 11,
+  MessageTrace = 12,
+  MessageSourceTrace = 13,
 };
 
 enum class StateTraceSource : std::uint8_t {
@@ -219,6 +220,8 @@ OverlayMode NextOverlayMode(OverlayMode mode) {
     case OverlayMode::FacingState:
       return OverlayMode::FacingBranchState;
     case OverlayMode::FacingBranchState:
+      return OverlayMode::FacingGateSourceState;
+    case OverlayMode::FacingGateSourceState:
       return OverlayMode::WarpTrace;
     case OverlayMode::WarpTrace:
       return OverlayMode::MoveTrace;
@@ -409,6 +412,39 @@ std::string BuildFacingBranchStateText(const GameState& state, const OracleConte
     return header + "\n" + gate + "\n" + provenance->branch.label + "\n" + FormatSymbolLocation(provenance->branch);
   }
   return header + "\n" + provenance->branch.label + "\n" + FormatSymbolLocation(provenance->branch);
+}
+
+std::string BuildFacingGateSourceStateText(const GameState& state, const OracleContext& oracle_context) {
+  const MapData& map = GetMapData(state.world.map_id);
+  const InteractionResult result = InspectFacingTile(map, state.world);
+  const std::string header = "FACE GATE " + FormatCoords(result.target_x, result.target_y);
+
+  if (result.kind == InteractionKind::None || result.message == MessageId::None) {
+    return "FACE GATE\nNO TARGET";
+  }
+  if (result.state_gate == StateGate::None) {
+    return header + "\nNO GATE";
+  }
+
+  const std::string gate = FormatStateGate(result.state_gate, result.state_gate_value);
+  if (!oracle_context.available) {
+    return header + "\n" + gate + "\nNO SOURCE";
+  }
+
+  const auto provenance =
+      oracle::LookupFacingStateGateProvenance(oracle_context.symbols, oracle_context.sections, state.world);
+  if (!provenance) {
+    return header + "\n" + gate + "\nNO SOURCE";
+  }
+
+  const oracle::StateGateProvenance& gate_source = provenance->gate_source;
+  if (gate_source.state_symbol) {
+    return header + "\n" + gate + "\n" + gate_source.condition_label + "\n" + gate_source.state_symbol->label;
+  }
+  if (gate_source.context_symbol) {
+    return header + "\n" + gate + "\n" + gate_source.condition_label + "\n" + gate_source.context_symbol->label;
+  }
+  return header + "\n" + gate + "\n" + gate_source.condition_label;
 }
 
 std::string BuildWarpTraceText(const DebugOverlayState& debug_overlay, const OracleContext& oracle_context) {
@@ -698,6 +734,8 @@ std::string BuildOverlayText(const GameState& state,
       return BuildFacingStateText(state, oracle_context);
     case OverlayMode::FacingBranchState:
       return BuildFacingBranchStateText(state, oracle_context);
+    case OverlayMode::FacingGateSourceState:
+      return BuildFacingGateSourceStateText(state, oracle_context);
     case OverlayMode::WarpTrace:
       return BuildWarpTraceText(debug_overlay, oracle_context);
     case OverlayMode::MoveTrace:

@@ -68,6 +68,17 @@ struct FacingBranchProvenance {
   ProvenanceSymbol branch;
 };
 
+struct FacingStateGateProvenance {
+  WorldId world_id = WorldId::RedsHouse1F;
+  Facing facing = Facing::Up;
+  int target_x = 0;
+  int target_y = 0;
+  MessageId origin_message = MessageId::None;
+  MessageId message_id = MessageId::None;
+  bool gate_value = false;
+  StateGateProvenance gate_source {};
+};
+
 struct MessageProvenance {
   MessageId message_id = MessageId::None;
   ProvenanceSymbol text;
@@ -134,6 +145,9 @@ std::optional<FacingProvenance> LookupFacingProvenance(const SymbolTable& symbol
 std::optional<FacingBranchProvenance> LookupFacingBranchProvenance(const SymbolTable& symbols,
                                                                    const MapSections& sections,
                                                                    const WorldState& world);
+std::optional<FacingStateGateProvenance> LookupFacingStateGateProvenance(const SymbolTable& symbols,
+                                                                         const MapSections& sections,
+                                                                         const WorldState& world);
 std::optional<MessageProvenance> LookupMessageProvenance(const SymbolTable& symbols,
                                                          const MapSections& sections,
                                                          MessageId message_id);
