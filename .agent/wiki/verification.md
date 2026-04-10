@@ -71,16 +71,17 @@
   - `native/src/oracle/provenance.cpp` can also join blocker-tagged movement seams to script labels and `.map` sections for last-move runtime traces when a source-backed seam is known
   - `native/src/oracle/provenance.cpp` can also join confirm-based interactions to the current map object label plus local source label for last-interaction runtime traces
   - `native/src/oracle/provenance.cpp` can also join conditional interaction outcomes back to asm-local branch labels for last-interaction-branch runtime traces
+  - the runtime now also preserves evaluated native branch predicates (`got_starter`, `facing == up`) for a last-state-gate overlay page alongside the existing oracle-backed handler lookups
   - `native/src/oracle/provenance.cpp` can also join surfaced `MessageId` values to source text labels and `.map` sections for last-message runtime traces
   - `native/src/oracle/provenance.cpp` can also join surfaced `MessageId` values to script/local source labels and `.map` sections for last-message-source runtime traces
   - symbol lookup for `EnterMap`, `OverworldLoop`, `PalletTown_h`, `BluesHouse_h`, `OaksLab_h`, `RedsHouse1F_h`, `RedsHouse2F_h`, `PewterSpeechHouse_h`, and `TryLoadSaveFile`
   - `.sym` + `.map` section containment for `Home`, `Maps 1`, `Maps 2`, `Maps 8`, `Maps 15`, `Maps 4`, and `bank1C`
   - `TryMoveWithResult` warp metadata for PalletTown doors, OaksLab entry, and RedsHouse1F exit versus non-warp movement/script seams
-  - blocker-aware `TryMoveWithResult` metadata for the PalletTown Oak seam, a solid TV tile, an NPC collision tile, and ordinary reopened north-exit movement
-  - `InspectFacingTile` metadata for NPC, bg-event, miss, and conditional-origin interactions in the current PalletTown and OaksLab slice
+  - blocker-aware `TryMoveWithResult` metadata for the PalletTown Oak seam, a solid TV tile, an NPC collision tile, and ordinary reopened north-exit movement, including current state-gate metadata for scripted seams
+  - `InspectFacingTile` metadata for NPC, bg-event, miss, and conditional-origin interactions in the current PalletTown, OaksLab, and RedsHouse1F slice, including current state-gate metadata for Mom/TV and OaksLab branches
   - message provenance lookup for `MomWakeUp`, the PalletTown Oak warning seam, and `OaksLabPokedex`, plus source-label provenance lookup for `MomWakeUp`, the PalletTown Oak warning seam, `OaksLabRivalText.GrampsIsntAroundText`, and `OaksLabPokedex`, alongside null coverage for native-only or abstract message ids
   - move-script provenance lookup for the PalletTown Oak warning seam back to `PalletTownDefaultScript`, plus null coverage for non-script blockers and unrelated maps/messages
-  - interaction provenance lookup joining `PalletTown_Object` + `PalletTownGirlText` and `OaksLab_Object` + `OaksLabPokedexText`, plus branch provenance lookup for `RedsHouse1FMomText.heal`, `OaksLabRivalText.afterChooseMon`, and `OaksLabOak1Text.check_for_poke_balls`, plus null coverage for native-only, static no-branch, or empty interactions
+  - interaction provenance lookup joining `PalletTown_Object` + `PalletTownGirlText` and `OaksLab_Object` + `OaksLabPokedexText`, plus branch provenance lookup for `RedsHouse1FMomText`, `RedsHouse1FMomText.heal`, `RedsHouse1FTVText`, `OaksLabRivalText.afterChooseMon`, and `OaksLabOak1Text.check_for_poke_balls`, plus null coverage for native-only, static no-branch, or empty interactions
 
 ## Confirmed Oracle Assets
 - `pokered.gbc`, `pokeblue.gbc`, `pokeblue_debug.gbc`
@@ -94,7 +95,7 @@
 - keep deterministic save/load as a native milestone requirement, not a later cleanup item
 
 ## Next Verification Work
-- extend the current runtime-facing provenance hooks past the last-interaction-branch, last-interaction, last-move, and last-message-source pages into broader object-state and script-state tracing
+- extend the current runtime-facing provenance hooks past the last-state-gate, last-interaction-branch, last-interaction, last-move, and last-message-source pages into broader object-state and script-state tracing
 - add the next outdoor-adjacent scenario beyond the now-live `OaksLab` seam
 - add checks for deferred `LAST_MAP` door behavior on maps beyond the PalletTown seam
 - add importer regression checks for the lower-left representative tile rule used by overworld collision/warp semantics

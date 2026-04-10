@@ -71,6 +71,12 @@ enum class MoveBlocker : std::uint8_t {
   Script,
 };
 
+enum class StateGate : std::uint8_t {
+  None = 0,
+  GotStarter,
+  FacingUp,
+};
+
 inline constexpr std::uint16_t kNoLastMap = 0xFFFFu;
 
 struct PlayerState {
@@ -113,6 +119,8 @@ struct MoveResult {
   int to_x = 0;
   int to_y = 0;
   MoveBlocker blocker = MoveBlocker::None;
+  StateGate state_gate = StateGate::None;
+  bool state_gate_value = false;
 };
 
 void StartNewGameShortcut(GameState& state);

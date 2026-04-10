@@ -61,8 +61,9 @@
 
 ## Provenance Note
 - Runtime-facing provenance is no longer test-only: the SDL app can now display the current map's source header/object labels and section ownership through the existing `.sym` / `.map` plumbing.
-- The current overlay now also records the last successful warp's source/target object provenance, the last move attempt, the last confirm-based interaction, the last interaction branch/handler label, the most recent displayed source-backed text label, and the corresponding source/local script label that emitted it.
+- The current overlay now also records the last successful warp's source/target object provenance, the last move attempt, the last confirm-based interaction, the last interaction branch/handler label, the last evaluated native state gate, the most recent displayed source-backed text label, and the corresponding source/local script label that emitted it.
 - For the current bounded PalletTown seam, the last-move page can resolve the blocked north-exit trigger back to `PalletTownDefaultScript`, which complements the message-source page's `PalletTownOakText.HeyWaitDontGoOutText` lookup.
 - The last-interaction page can now distinguish NPC, bg-event, and miss cases and join current-map object provenance to the local text-source label for confirm-based interactions.
 - The new last-interaction-branch page uses each interaction's preserved pre-branch `origin_message` to resolve conditional handlers such as `RedsHouse1FMomText.heal` and `OaksLabRivalText.afterChooseMon`, which makes native branch selection visible without introducing a full script runner.
+- The new last-state-gate page exposes the native branch predicates that currently stand in for fuller script/event state, so the runtime can show values like `GOT_STARTER=0/1` and `FACING_UP=0/1` alongside the selected handler.
 - The overlay is still intentionally observational only and does not yet trace broader script-state transitions, object toggles, or multi-step cutscene progress.

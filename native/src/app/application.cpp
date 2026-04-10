@@ -66,8 +66,14 @@ enum class OverlayMode : std::uint8_t {
   MoveTrace = 3,
   InteractionTrace = 4,
   InteractionBranchTrace = 5,
-  MessageTrace = 6,
-  MessageSourceTrace = 7,
+  StateTrace = 6,
+  MessageTrace = 7,
+  MessageSourceTrace = 8,
+};
+
+enum class StateTraceSource : std::uint8_t {
+  Move = 0,
+  Interaction = 1,
 };
 
 struct WarpTraceState {
@@ -92,11 +98,25 @@ struct InteractionTraceState {
   InteractionResult result {};
 };
 
+struct StateTraceState {
+  bool available = false;
+  StateTraceSource source = StateTraceSource::Move;
+  WorldId map_id = WorldId::RedsHouse1F;
+  int target_x = 0;
+  int target_y = 0;
+  StateGate gate = StateGate::None;
+  bool gate_value = false;
+  MoveBlocker blocker = MoveBlocker::None;
+  MessageId origin_message = MessageId::None;
+  MessageId message = MessageId::None;
+};
+
 struct DebugOverlayState {
   OverlayMode mode = OverlayMode::Off;
   WarpTraceState last_warp {};
   MoveTraceState last_move {};
   InteractionTraceState last_interaction {};
+  StateTraceState last_state {};
   MessageId last_message = MessageId::None;
 };
 
@@ -180,6 +200,7 @@ void ClearTraceHistory(DebugOverlayState& debug_overlay) {
   debug_overlay.last_warp = {};
   debug_overlay.last_move = {};
   debug_overlay.last_interaction = {};
+  debug_overlay.last_state = {};
   debug_overlay.last_message = MessageId::None;
 }
 
@@ -196,6 +217,8 @@ OverlayMode NextOverlayMode(OverlayMode mode) {
     case OverlayMode::InteractionTrace:
       return OverlayMode::InteractionBranchTrace;
     case OverlayMode::InteractionBranchTrace:
+      return OverlayMode::StateTrace;
+    case OverlayMode::StateTrace:
       return OverlayMode::MessageTrace;
     case OverlayMode::MessageTrace:
       return OverlayMode::MessageSourceTrace;
@@ -231,6 +254,18 @@ void HandleWorldMove(GameState& state, Facing facing, DebugOverlayState& debug_o
   debug_overlay.last_move = {
       .available = true,
       .result = result,
+  };
+  debug_overlay.last_state = {
+      .available = true,
+      .source = StateTraceSource::Move,
+      .map_id = result.source_map,
+      .target_x = result.to_x,
+      .target_y = result.to_y,
+      .gate = result.state_gate,
+      .gate_value = result.state_gate_value,
+      .blocker = result.blocker,
+      .origin_message = MessageId::None,
+      .message = result.message,
   };
   if (result.warped) {
     debug_overlay.last_warp = {
@@ -354,6 +389,18 @@ std::string FormatCoords(int x, int y) {
   return std::to_string(x) + "," + std::to_string(y);
 }
 
+std::string FormatStateGate(StateGate gate, bool value) {
+  switch (gate) {
+    case StateGate::GotStarter:
+      return std::string("GOT_STARTER=") + (value ? "1" : "0");
+    case StateGate::FacingUp:
+      return std::string("FACING_UP=") + (value ? "1" : "0");
+    case StateGate::None:
+      break;
+  }
+  return "NO GATE";
+}
+
 std::string BuildMoveTraceHeading(const MoveResult& result) {
   if (result.warped) {
     return "MOVE WARP";
@@ -463,6 +510,40 @@ std::string BuildInteractionBranchTraceText(const DebugOverlayState& debug_overl
          FormatSymbolLocation(provenance->branch);
 }
 
+std::string BuildStateTraceText(const DebugOverlayState& debug_overlay, const OracleContext& oracle_context) {
+  if (!debug_overlay.last_state.available) {
+    return "STATE TRACE\nNONE YET";
+  }
+
+  const StateTraceState& trace = debug_overlay.last_state;
+  if (trace.gate == StateGate::None) {
+    return "STATE TRACE\nNO GATE";
+  }
+
+  const std::string header =
+      std::string(trace.source == StateTraceSource::Move ? "STATE MOVE " : "STATE INT ") +
+      FormatCoords(trace.target_x, trace.target_y);
+  const std::string gate = FormatStateGate(trace.gate, trace.gate_value);
+  if (oracle_context.available) {
+    if (trace.source == StateTraceSource::Move && trace.blocker == MoveBlocker::Script) {
+      const auto provenance = oracle::LookupMoveScriptProvenance(
+          oracle_context.symbols, oracle_context.sections, trace.map_id, trace.blocker, trace.message);
+      if (provenance) {
+        return header + "\n" + gate + "\n" + provenance->script.label + "\n" + FormatSymbolLocation(provenance->script);
+      }
+    }
+    if (trace.source == StateTraceSource::Interaction) {
+      const auto provenance = oracle::LookupInteractionBranchProvenance(
+          oracle_context.symbols, oracle_context.sections, trace.map_id, trace.origin_message, trace.message);
+      if (provenance) {
+        return header + "\n" + gate + "\n" + provenance->branch.label + "\n" + FormatSymbolLocation(provenance->branch);
+      }
+    }
+  }
+
+  return header + "\n" + gate + "\n" + std::string(GetMapData(trace.map_id).name);
+}
+
 std::string BuildOverlayText(const GameState& state,
                              const DebugOverlayState& debug_overlay,
                              const OracleContext& oracle_context) {
@@ -479,6 +560,8 @@ std::string BuildOverlayText(const GameState& state,
       return BuildInteractionTraceText(debug_overlay, oracle_context);
     case OverlayMode::InteractionBranchTrace:
       return BuildInteractionBranchTraceText(debug_overlay, oracle_context);
+    case OverlayMode::StateTrace:
+      return BuildStateTraceText(debug_overlay, oracle_context);
     case OverlayMode::MessageTrace:
       return BuildMessageTraceText(debug_overlay, oracle_context);
     case OverlayMode::MessageSourceTrace:
@@ -711,6 +794,18 @@ void UpdateWorld(GameState& state, const FrameInput& input, DebugOverlayState& d
         .player_y = state.world.player.y,
         .facing = state.world.player.facing,
         .result = interaction,
+    };
+    debug_overlay.last_state = {
+        .available = true,
+        .source = StateTraceSource::Interaction,
+        .map_id = state.world.map_id,
+        .target_x = interaction.target_x,
+        .target_y = interaction.target_y,
+        .gate = interaction.state_gate,
+        .gate_value = interaction.state_gate_value,
+        .blocker = MoveBlocker::None,
+        .origin_message = interaction.origin_message,
+        .message = interaction.message,
     };
     ShowMessage(state, interaction.message, &debug_overlay);
   }

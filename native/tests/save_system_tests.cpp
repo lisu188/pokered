@@ -302,6 +302,33 @@ int main() {
     std::cerr << "expected RedsHouse1F mom branch provenance lookup\n";
     return 1;
   }
+  const auto mom_default_branch_provenance = pokered::oracle::LookupInteractionBranchProvenance(
+      symbols,
+      sections,
+      pokered::WorldId::RedsHouse1F,
+      pokered::MessageId::MomWakeUp,
+      pokered::MessageId::MomWakeUp);
+  if (!mom_default_branch_provenance || mom_default_branch_provenance->branch.label != "RedsHouse1FMomText" ||
+      mom_default_branch_provenance->branch.address.bank != 0x12 ||
+      mom_default_branch_provenance->branch.address.address != 0x416F ||
+      !mom_default_branch_provenance->branch.section ||
+      mom_default_branch_provenance->branch.section->name != "Maps 8") {
+    std::cerr << "expected RedsHouse1F mom default branch provenance lookup\n";
+    return 1;
+  }
+  const auto tv_branch_provenance = pokered::oracle::LookupInteractionBranchProvenance(
+      symbols,
+      sections,
+      pokered::WorldId::RedsHouse1F,
+      pokered::MessageId::TvMovie,
+      pokered::MessageId::TvWrongSide);
+  if (!tv_branch_provenance || tv_branch_provenance->branch.label != "RedsHouse1FTVText" ||
+      tv_branch_provenance->branch.address.bank != 0x12 ||
+      tv_branch_provenance->branch.address.address != 0x41C6 || !tv_branch_provenance->branch.section ||
+      tv_branch_provenance->branch.section->name != "Maps 8") {
+    std::cerr << "expected RedsHouse1F TV branch provenance lookup\n";
+    return 1;
+  }
   const auto rival_branch_provenance = pokered::oracle::LookupInteractionBranchProvenance(
       symbols,
       sections,
@@ -564,8 +591,9 @@ int main() {
       oak_warning.source_warp != 0 || oak_warning.target_map != pokered::WorldId::PalletTown ||
       oak_warning.target_warp != 0 || oak_warning.facing != pokered::Facing::Up ||
       oak_warning.from_x != pallet_north_exit_x || oak_warning.from_y != 2 || oak_warning.to_x != pallet_north_exit_x ||
-      oak_warning.to_y != 1 || oak_warning.blocker != pokered::MoveBlocker::Script || oak_trigger.player.x != pallet_north_exit_x ||
-      oak_trigger.player.y != 2 || oak_trigger.step_counter != 0) {
+      oak_warning.to_y != 1 || oak_warning.blocker != pokered::MoveBlocker::Script ||
+      oak_warning.state_gate != pokered::StateGate::GotStarter || oak_warning.state_gate_value ||
+      oak_trigger.player.x != pallet_north_exit_x || oak_trigger.player.y != 2 || oak_trigger.step_counter != 0) {
     std::cerr << "expected PalletTown Oak north-exit warning seam\n";
     return 1;
   }
@@ -576,8 +604,9 @@ int main() {
       route_progress.target_map != pokered::WorldId::PalletTown || route_progress.facing != pokered::Facing::Up ||
       route_progress.from_x != pallet_north_exit_x || route_progress.from_y != 2 ||
       route_progress.to_x != pallet_north_exit_x || route_progress.to_y != 1 ||
-      route_progress.blocker != pokered::MoveBlocker::None || oak_trigger.player.x != pallet_north_exit_x ||
-      oak_trigger.player.y != 1 || oak_trigger.step_counter != 1) {
+      route_progress.blocker != pokered::MoveBlocker::None ||
+      route_progress.state_gate != pokered::StateGate::None || route_progress.state_gate_value ||
+      oak_trigger.player.x != pallet_north_exit_x || oak_trigger.player.y != 1 || oak_trigger.step_counter != 1) {
     std::cerr << "expected PalletTown north exit to reopen after starter flag\n";
     return 1;
   }
@@ -588,7 +617,8 @@ int main() {
   if (tv_block.moved || tv_block.warped || tv_block.message != pokered::MessageId::None ||
       tv_block.source_map != pokered::WorldId::RedsHouse1F || tv_block.target_map != pokered::WorldId::RedsHouse1F ||
       tv_block.blocker != pokered::MoveBlocker::Collision || tv_block.from_x != 3 || tv_block.from_y != 2 ||
-      tv_block.to_x != 3 || tv_block.to_y != 1 || wall_block.player.x != 3 || wall_block.player.y != 2) {
+      tv_block.to_x != 3 || tv_block.to_y != 1 || tv_block.state_gate != pokered::StateGate::None ||
+      tv_block.state_gate_value || wall_block.player.x != 3 || wall_block.player.y != 2) {
     std::cerr << "expected solid-tile move result blocker metadata\n";
     return 1;
   }
@@ -599,7 +629,8 @@ int main() {
   if (girl_block.moved || girl_block.warped || girl_block.message != pokered::MessageId::None ||
       girl_block.source_map != pokered::WorldId::PalletTown || girl_block.target_map != pokered::WorldId::PalletTown ||
       girl_block.blocker != pokered::MoveBlocker::Npc || girl_block.from_x != 8 || girl_block.from_y != 6 ||
-      girl_block.to_x != 8 || girl_block.to_y != 5 || npc_block.player.x != 8 || npc_block.player.y != 6) {
+      girl_block.to_x != 8 || girl_block.to_y != 5 || girl_block.state_gate != pokered::StateGate::None ||
+      girl_block.state_gate_value || npc_block.player.x != 8 || npc_block.player.y != 6) {
     std::cerr << "expected NPC move result blocker metadata\n";
     return 1;
   }
@@ -626,6 +657,46 @@ int main() {
       speech_world.map_id != pokered::WorldId::PewterSpeechHouse || speech_world.player.x != 2 ||
       speech_world.player.y != 7) {
     std::cerr << "expected PewterSpeechHouse door warp to remain local without a valid LAST_MAP target\n";
+    return 1;
+  }
+
+  pokered::WorldState reds_house_world {};
+  reds_house_world.map_id = pokered::WorldId::RedsHouse1F;
+  reds_house_world.player = {5, 5, pokered::Facing::Up};
+  const pokered::InteractionResult mom_default = pokered::InspectFacingTile(map, reds_house_world);
+  if (mom_default.kind != pokered::InteractionKind::Npc ||
+      mom_default.origin_message != pokered::MessageId::MomWakeUp ||
+      mom_default.message != pokered::MessageId::MomWakeUp ||
+      mom_default.state_gate != pokered::StateGate::GotStarter || mom_default.state_gate_value) {
+    std::cerr << "expected RedsHouse1F mom default interaction result metadata\n";
+    return 1;
+  }
+  reds_house_world.got_starter = true;
+  const pokered::InteractionResult mom_rest = pokered::InspectFacingTile(map, reds_house_world);
+  if (mom_rest.kind != pokered::InteractionKind::Npc ||
+      mom_rest.origin_message != pokered::MessageId::MomWakeUp ||
+      mom_rest.message != pokered::MessageId::MomRest ||
+      mom_rest.state_gate != pokered::StateGate::GotStarter || !mom_rest.state_gate_value) {
+    std::cerr << "expected RedsHouse1F mom rest interaction result metadata\n";
+    return 1;
+  }
+  reds_house_world.got_starter = false;
+  reds_house_world.player = {3, 2, pokered::Facing::Up};
+  const pokered::InteractionResult tv_front = pokered::InspectFacingTile(map, reds_house_world);
+  if (tv_front.kind != pokered::InteractionKind::BgEvent ||
+      tv_front.origin_message != pokered::MessageId::TvMovie ||
+      tv_front.message != pokered::MessageId::TvMovie ||
+      tv_front.state_gate != pokered::StateGate::FacingUp || !tv_front.state_gate_value) {
+    std::cerr << "expected RedsHouse1F TV front interaction result metadata\n";
+    return 1;
+  }
+  reds_house_world.player = {2, 1, pokered::Facing::Right};
+  const pokered::InteractionResult tv_side = pokered::InspectFacingTile(map, reds_house_world);
+  if (tv_side.kind != pokered::InteractionKind::BgEvent ||
+      tv_side.origin_message != pokered::MessageId::TvMovie ||
+      tv_side.message != pokered::MessageId::TvWrongSide ||
+      tv_side.state_gate != pokered::StateGate::FacingUp || tv_side.state_gate_value) {
+    std::cerr << "expected RedsHouse1F TV side interaction result metadata\n";
     return 1;
   }
 
@@ -819,8 +890,9 @@ int main() {
   const pokered::InteractionResult girl_interaction = pokered::InspectFacingTile(pallet_town, outdoor_walk);
   if (girl_interaction.kind != pokered::InteractionKind::Npc ||
       girl_interaction.origin_message != pokered::MessageId::PalletTownGirl ||
-      girl_interaction.message != pokered::MessageId::PalletTownGirl || girl_interaction.target_x != 3 ||
-      girl_interaction.target_y != 8) {
+      girl_interaction.message != pokered::MessageId::PalletTownGirl ||
+      girl_interaction.state_gate != pokered::StateGate::None || girl_interaction.state_gate_value ||
+      girl_interaction.target_x != 3 || girl_interaction.target_y != 8) {
     std::cerr << "expected PalletTown girl interaction result metadata\n";
     return 1;
   }
@@ -834,8 +906,9 @@ int main() {
   const pokered::InteractionResult fisher_interaction = pokered::InspectFacingTile(pallet_town, outdoor_walk);
   if (fisher_interaction.kind != pokered::InteractionKind::Npc ||
       fisher_interaction.origin_message != pokered::MessageId::PalletTownFisher ||
-      fisher_interaction.message != pokered::MessageId::PalletTownFisher || fisher_interaction.target_x != 11 ||
-      fisher_interaction.target_y != 14) {
+      fisher_interaction.message != pokered::MessageId::PalletTownFisher ||
+      fisher_interaction.state_gate != pokered::StateGate::None || fisher_interaction.state_gate_value ||
+      fisher_interaction.target_x != 11 || fisher_interaction.target_y != 14) {
     std::cerr << "expected PalletTown fisher interaction result metadata\n";
     return 1;
   }
@@ -849,8 +922,9 @@ int main() {
   const pokered::InteractionResult sign_interaction = pokered::InspectFacingTile(pallet_town, outdoor_walk);
   if (sign_interaction.kind != pokered::InteractionKind::BgEvent ||
       sign_interaction.origin_message != pokered::MessageId::PalletTownOaksLabSign ||
-      sign_interaction.message != pokered::MessageId::PalletTownOaksLabSign || sign_interaction.target_x != 13 ||
-      sign_interaction.target_y != 13) {
+      sign_interaction.message != pokered::MessageId::PalletTownOaksLabSign ||
+      sign_interaction.state_gate != pokered::StateGate::None || sign_interaction.state_gate_value ||
+      sign_interaction.target_x != 13 || sign_interaction.target_y != 13) {
     std::cerr << "expected PalletTown sign interaction result metadata\n";
     return 1;
   }
@@ -864,8 +938,9 @@ int main() {
   const pokered::InteractionResult miss_interaction = pokered::InspectFacingTile(pallet_town, outdoor_walk);
   if (miss_interaction.kind != pokered::InteractionKind::None ||
       miss_interaction.origin_message != pokered::MessageId::None ||
-      miss_interaction.message != pokered::MessageId::None || miss_interaction.target_x != 11 ||
-      miss_interaction.target_y != 10) {
+      miss_interaction.message != pokered::MessageId::None ||
+      miss_interaction.state_gate != pokered::StateGate::None || miss_interaction.state_gate_value ||
+      miss_interaction.target_x != 11 || miss_interaction.target_y != 10) {
     std::cerr << "expected empty interaction result metadata\n";
     return 1;
   }
@@ -876,7 +951,8 @@ int main() {
   const pokered::InteractionResult rival_default = pokered::InspectFacingTile(oaks_lab, oaks_world);
   if (rival_default.kind != pokered::InteractionKind::Npc ||
       rival_default.origin_message != pokered::MessageId::OaksLabRival ||
-      rival_default.message != pokered::MessageId::OaksLabRivalGrampsIsntAround) {
+      rival_default.message != pokered::MessageId::OaksLabRivalGrampsIsntAround ||
+      rival_default.state_gate != pokered::StateGate::GotStarter || rival_default.state_gate_value) {
     std::cerr << "expected OaksLab rival default interaction result metadata\n";
     return 1;
   }
@@ -884,7 +960,8 @@ int main() {
   const pokered::InteractionResult rival_post_starter = pokered::InspectFacingTile(oaks_lab, oaks_world);
   if (rival_post_starter.kind != pokered::InteractionKind::Npc ||
       rival_post_starter.origin_message != pokered::MessageId::OaksLabRival ||
-      rival_post_starter.message != pokered::MessageId::OaksLabRivalMyPokemonLooksStronger) {
+      rival_post_starter.message != pokered::MessageId::OaksLabRivalMyPokemonLooksStronger ||
+      rival_post_starter.state_gate != pokered::StateGate::GotStarter || !rival_post_starter.state_gate_value) {
     std::cerr << "expected OaksLab rival post-starter interaction result metadata\n";
     return 1;
   }
@@ -893,7 +970,8 @@ int main() {
   const pokered::InteractionResult pokeball_default = pokered::InspectFacingTile(oaks_lab, oaks_world);
   if (pokeball_default.kind != pokered::InteractionKind::Npc ||
       pokeball_default.origin_message != pokered::MessageId::OaksLabPokeBall ||
-      pokeball_default.message != pokered::MessageId::OaksLabThoseArePokeBalls) {
+      pokeball_default.message != pokered::MessageId::OaksLabThoseArePokeBalls ||
+      pokeball_default.state_gate != pokered::StateGate::GotStarter || pokeball_default.state_gate_value) {
     std::cerr << "expected OaksLab pokeball default interaction result metadata\n";
     return 1;
   }
@@ -901,7 +979,9 @@ int main() {
   const pokered::InteractionResult pokeball_post_starter = pokered::InspectFacingTile(oaks_lab, oaks_world);
   if (pokeball_post_starter.kind != pokered::InteractionKind::Npc ||
       pokeball_post_starter.origin_message != pokered::MessageId::OaksLabPokeBall ||
-      pokeball_post_starter.message != pokered::MessageId::OaksLabLastMon) {
+      pokeball_post_starter.message != pokered::MessageId::OaksLabLastMon ||
+      pokeball_post_starter.state_gate != pokered::StateGate::GotStarter ||
+      !pokeball_post_starter.state_gate_value) {
     std::cerr << "expected OaksLab pokeball post-starter interaction result metadata\n";
     return 1;
   }
@@ -910,7 +990,8 @@ int main() {
   const pokered::InteractionResult oak_default = pokered::InspectFacingTile(oaks_lab, oaks_world);
   if (oak_default.kind != pokered::InteractionKind::Npc ||
       oak_default.origin_message != pokered::MessageId::OaksLabOak1 ||
-      oak_default.message != pokered::MessageId::OaksLabOak1WhichPokemonDoYouWant) {
+      oak_default.message != pokered::MessageId::OaksLabOak1WhichPokemonDoYouWant ||
+      oak_default.state_gate != pokered::StateGate::GotStarter || oak_default.state_gate_value) {
     std::cerr << "expected OaksLab Oak1 default interaction result metadata\n";
     return 1;
   }
@@ -918,7 +999,8 @@ int main() {
   const pokered::InteractionResult oak_post_starter = pokered::InspectFacingTile(oaks_lab, oaks_world);
   if (oak_post_starter.kind != pokered::InteractionKind::Npc ||
       oak_post_starter.origin_message != pokered::MessageId::OaksLabOak1 ||
-      oak_post_starter.message != pokered::MessageId::OaksLabOak1YourPokemonCanFight) {
+      oak_post_starter.message != pokered::MessageId::OaksLabOak1YourPokemonCanFight ||
+      oak_post_starter.state_gate != pokered::StateGate::GotStarter || !oak_post_starter.state_gate_value) {
     std::cerr << "expected OaksLab Oak1 post-starter interaction result metadata\n";
     return 1;
   }

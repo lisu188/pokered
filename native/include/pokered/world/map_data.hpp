@@ -56,6 +56,8 @@ struct InteractionResult {
   MessageId message = MessageId::None;
   int target_x = 0;
   int target_y = 0;
+  StateGate state_gate = StateGate::None;
+  bool state_gate_value = false;
 };
 
 struct MapData {

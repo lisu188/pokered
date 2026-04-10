@@ -149,3 +149,9 @@ Extended the `F7` runtime provenance overlay with a dedicated interaction-branch
 
 ## [2026-04-10 10:33] verification | last-interaction-branch provenance tracing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies preserved interaction origins plus branch provenance for the conditional `RedsHouse1F` Mom and `OaksLab` Rival/Oak handlers alongside no-branch static interactions.
+
+## [2026-04-10 10:50] provenance | last-state-gate trace page added to the SDL overlay
+Extended the `F7` runtime provenance overlay with a state-gate page that records the latest evaluated native branch predicate for scripted moves and interactions. `TryMoveWithResult` and `InspectFacingTile` now preserve simplified native gates like `got_starter` and `facing == up`, which lets the runtime show values such as `GOT_STARTER=0/1` and `FACING_UP=0/1` next to source-backed handlers like `PalletTownDefaultScript`, `RedsHouse1FMomText`, and `RedsHouse1FTVText`.
+
+## [2026-04-10 10:50] verification | last-state-gate provenance tracing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies preserved state-gate metadata for the PalletTown Oak seam, RedsHouse1F Mom/TV interactions, OaksLab conditional interactions, and unchanged no-gate paths for static blockers and interactions.

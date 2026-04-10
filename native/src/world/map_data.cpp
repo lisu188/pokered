@@ -329,21 +329,33 @@ InteractionResult InspectFacingTile(const MapData& map, const WorldState& world)
           .message = npc.message,
           .target_x = target_x,
           .target_y = target_y,
+          .state_gate = StateGate::None,
+          .state_gate_value = false,
       };
-      if (npc.message == MessageId::MomWakeUp && world.got_starter) {
-        result.message = MessageId::MomRest;
+      if (npc.message == MessageId::MomWakeUp) {
+        result.state_gate = StateGate::GotStarter;
+        result.state_gate_value = world.got_starter;
+        if (world.got_starter) {
+          result.message = MessageId::MomRest;
+        }
         return result;
       }
       if (npc.message == MessageId::OaksLabRival) {
+        result.state_gate = StateGate::GotStarter;
+        result.state_gate_value = world.got_starter;
         result.message = world.got_starter ? MessageId::OaksLabRivalMyPokemonLooksStronger
                                            : MessageId::OaksLabRivalGrampsIsntAround;
         return result;
       }
       if (npc.message == MessageId::OaksLabPokeBall) {
+        result.state_gate = StateGate::GotStarter;
+        result.state_gate_value = world.got_starter;
         result.message = world.got_starter ? MessageId::OaksLabLastMon : MessageId::OaksLabThoseArePokeBalls;
         return result;
       }
       if (npc.message == MessageId::OaksLabOak1) {
+        result.state_gate = StateGate::GotStarter;
+        result.state_gate_value = world.got_starter;
         result.message = world.got_starter ? MessageId::OaksLabOak1YourPokemonCanFight
                                            : MessageId::OaksLabOak1WhichPokemonDoYouWant;
         return result;
@@ -360,9 +372,15 @@ InteractionResult InspectFacingTile(const MapData& map, const WorldState& world)
           .message = event.message,
           .target_x = target_x,
           .target_y = target_y,
+          .state_gate = StateGate::None,
+          .state_gate_value = false,
       };
-      if (event.message == MessageId::TvMovie && world.player.facing != Facing::Up) {
-        result.message = MessageId::TvWrongSide;
+      if (event.message == MessageId::TvMovie) {
+        result.state_gate = StateGate::FacingUp;
+        result.state_gate_value = world.player.facing == Facing::Up;
+        if (world.player.facing != Facing::Up) {
+          result.message = MessageId::TvWrongSide;
+        }
         return result;
       }
       return result;
@@ -375,6 +393,8 @@ InteractionResult InspectFacingTile(const MapData& map, const WorldState& world)
       .message = MessageId::None,
       .target_x = target_x,
       .target_y = target_y,
+      .state_gate = StateGate::None,
+      .state_gate_value = false,
   };
 }
 

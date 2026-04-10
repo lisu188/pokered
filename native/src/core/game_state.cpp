@@ -61,10 +61,14 @@ MoveResult TryMoveWithResult(WorldState& world, Facing facing) {
       .to_x = next_x,
       .to_y = next_y,
       .blocker = MoveBlocker::None,
+      .state_gate = StateGate::None,
+      .state_gate_value = false,
   };
   if (map.id == WorldId::PalletTown && !world.got_starter && facing == Facing::Up && next_y == 1) {
     result.message = MessageId::PalletTownOakHeyWaitDontGoOut;
     result.blocker = MoveBlocker::Script;
+    result.state_gate = StateGate::GotStarter;
+    result.state_gate_value = false;
     return result;
   }
   result.blocker = BlockerAt(map, next_x, next_y);
