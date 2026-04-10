@@ -34,7 +34,7 @@ This directory is the compiled knowledge layer for the native port effort.
 - Overworld loop anchor: `EnterMap`, `OverworldLoop`, and `NewBattle` in `home/overworld.asm`.
 - Save/load anchor: `TryLoadSaveFile`, `SaveMenu`, `SaveGameData`, and SRAM checksum logic in `engine/menus/save.asm`.
 - Native runtime now builds and runs a title -> menu -> connected `RedsHouse1F` / `RedsHouse2F` / `PalletTown` / `BluesHouse` / `OaksLab` slice with deterministic save/load.
-- Current native verification passes: configure, build, unit tests, and `--smoke-test` (`smoke-ok: world=5 pos=2,2 steps=6`).
+- Current native verification passes: configure, build, unit tests, and `--smoke-test` (`smoke-ok: world=5 pos=2,2 steps=5`).
 - `RedsHouse1F` now consumes the real `maps/RedsHouse1F.blk`, `gfx/blocksets/reds_house.bst`, and tileset collision metadata through the native map importer.
 - The Mom and TV room text now pages through the exact first-slice lines instead of truncating them to fit a single text box.
 - `RedsHouse1F` warps, bg events, NPC placement, and first-slice Mom/TV text now come from a generated metadata header sourced from `data/maps/objects/RedsHouse1F.asm` and `text/RedsHouse1F.asm`.
@@ -60,7 +60,8 @@ This directory is the compiled knowledge layer for the native port effort.
 - The new last-interaction page records NPC/bg-event versus miss context plus target coordinates, and for source-backed interactions it can join the map object label to the local source label such as `PalletTownGirlText` or `OaksLabPokedexText`.
 - The new last-interaction-branch page preserves each interaction’s origin `MessageId` before native branching so conditional handlers can point back to asm-local branch labels such as `RedsHouse1FMomText.heal` and `OaksLabRivalText.afterChooseMon`.
 - The new last-state-gate page records the latest native branch predicate and value, which makes gates like `GOT_STARTER=0/1` and `FACING_UP=0/1` visible next to source-backed handlers such as `PalletTownDefaultScript`, `RedsHouse1FMomText`, and `RedsHouse1FTVText`.
-- The current smoke path now verifies `RedsHouse1F -> PalletTown -> OaksLab`, outdoor/interior interaction readiness, and save/load, producing `smoke-ok: world=5 pos=2,2 steps=6`.
+- Exiting `RedsHouse1F`, `BluesHouse`, or `OaksLab` into `PalletTown` now auto-steps the player one tile below the exterior door, which matches the original outside-door flow more closely and removes the extra manual step from the native smoke path.
+- The current smoke path now verifies `RedsHouse1F -> PalletTown -> OaksLab`, outdoor/interior interaction readiness, and save/load, producing `smoke-ok: world=5 pos=2,2 steps=5`.
 - `Route1` and `Route21` are still missing, so the current PalletTown slice is broader but still a bounded playable hub.
 - `BluesHouse` Daisy currently uses the source-backed default Rival-at-lab text branch; the Town Map gift/event path is still intentionally deferred.
 - `OaksLab` currently uses source-backed safe default interaction branches keyed off `got_starter`; starter selection, rival battle, and Oak's wider lab sequence remain deferred.

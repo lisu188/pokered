@@ -197,3 +197,9 @@ Extended the `F7` runtime provenance overlay with a current map-script page. `na
 
 ## [2026-04-10 15:01] verification | current map-script provenance tracing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies current map-script provenance lookups for PalletTown, RedsHouse1F, and OaksLab.
+
+## [2026-04-10 16:21] implementation | PalletTown door exits now step off exterior doors
+Updated `native/src/core/game_state.cpp` so supported `LAST_MAP` returns that land on `PalletTown` door tiles immediately place the player one tile below the doorway instead of leaving them parked on the exterior warp tile. The current native slice now round-trips `RedsHouse1F`, `BluesHouse`, and `OaksLab` more closely to the original outside-door flow while leaving indoor entries unchanged.
+
+## [2026-04-10 16:21] verification | PalletTown door connectivity re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output is now `smoke-ok: world=5 pos=2,2 steps=5`, and the test binary now verifies PalletTown exterior auto-step behavior for `RedsHouse1F`, `BluesHouse`, and `OaksLab` door round-trips.

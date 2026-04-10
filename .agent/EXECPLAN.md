@@ -43,6 +43,7 @@
 - [x] Extend the runtime-facing provenance overlay with a live facing text trace page
 - [x] Extend the runtime-facing provenance overlay with a live facing-branch trace page
 - [x] Extend the runtime-facing provenance overlay with a live facing gate-source trace page
+- [x] Align PalletTown exterior door exits with the original auto step-out flow
 
 ## Current Working Assumptions
 - The disassembly remains the authoritative behavior specification.
@@ -75,8 +76,8 @@
 - `./build-native/pokered_native_tests`
 - `./build-native/pokered_native --smoke-test`
 - Current result: `100% tests passed, 0 tests failed out of 2`
-- Current smoke output: `smoke-ok: world=5 pos=2,2 steps=6`
-- Native Linux SDL launch still starts under WSL via `timeout 2s ./build-native/pokered_native` with no startup error and an expected timeout exit.
+- Current smoke output: `smoke-ok: world=5 pos=2,2 steps=5`
+- Native Linux SDL launch still starts under WSL via `timeout 2s ./build-native/pokered_native` with no startup error.
 
 ## Next Focus
 - Decide whether to keep `OaksLab` on safe default dialogue branches or implement the first starter / rival script seam.

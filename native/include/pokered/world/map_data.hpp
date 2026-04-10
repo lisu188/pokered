@@ -80,6 +80,7 @@ const MapCell& GetCell(const MapData& map, int x, int y);
 TileKind RenderTileKind(const MapData& map, int x, int y);
 MoveBlocker BlockerAt(const MapData& map, int x, int y);
 bool CanMoveTo(const MapData& map, int x, int y);
+bool ShouldAutoStepDoorExit(const MapData& map, int x, int y);
 InteractionResult InspectFacingTile(const MapData& map, const WorldState& world);
 MessageId InteractionForFacingTile(const MapData& map, const WorldState& world);
 int MessagePageCount(MessageId message);

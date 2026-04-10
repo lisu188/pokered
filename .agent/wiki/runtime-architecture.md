@@ -161,6 +161,7 @@
 - `PalletTown` is now playable as a native exterior map with `20 x 18` movement cells expanded from the original `10 x 9` block map.
 - `RedsHouse1F` front-door warps now exit into `PalletTown`, and the PalletTown house door re-enters `RedsHouse1F`.
 - The `BluesHouse` and `OaksLab` doors are now live in both directions.
+- Returning from `RedsHouse1F`, `BluesHouse`, or `OaksLab` now lands one tile below the PalletTown exterior door instead of leaving the player parked on the doorway tile, which more closely matches the original outside-door flow.
 - A bounded Oak warning seam now intercepts north-exit movement before `got_starter` and surfaces the short source-backed “Hey! Wait! Don’t go out!” text.
 - Girl, Fisher, Oak, and the PalletTown signs use source-backed message text without pulling in the map-script engine.
 - Pressing `F7` now cycles the world help box between controls, current-map provenance lines, current map-script lines, current `LAST_MAP` state lines, live facing-target lines, live facing-text lines, live facing-branch lines, live facing-gate-source lines, last-warp provenance lines, last-move trace lines, last-interaction trace lines, last-interaction-branch trace lines, last-state-gate trace lines, last-state-gate-source lines, the most recent displayed source-backed text label, and the source/local script label that emitted it.

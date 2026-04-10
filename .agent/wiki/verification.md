@@ -34,9 +34,9 @@
   - current result: `100% tests passed, 0 tests failed out of 2`
 - Native smoke run:
   - `./build-native/pokered_native --smoke-test`
-  - current result: `smoke-ok: world=5 pos=2,2 steps=6`
+  - current result: `smoke-ok: world=5 pos=2,2 steps=5`
   - note: the smoke temp path falls back to `/tmp` when `std::filesystem::temp_directory_path` is unavailable
-  - native Linux SDL launch also still starts under WSL via `timeout 2s ./build-native/pokered_native`, with the expected timeout exit and no startup error
+  - native Linux SDL launch also still starts under WSL via `timeout 2s ./build-native/pokered_native`, with no startup error
 - Save determinism coverage currently verifies:
   - identical byte output for equivalent saves
   - round-trip restoration of the first-slice world state
@@ -63,6 +63,7 @@
   - movement-triggered `PalletTown` Oak warning coverage before `got_starter`, plus reopening of the north exit once the starter flag is set
   - PalletTown <-> BluesHouse door traversal
   - PalletTown <-> OaksLab door traversal
+  - exterior PalletTown door auto-step behavior after `RedsHouse1F`, `BluesHouse`, and `OaksLab` exits
 - Oracle provenance coverage currently verifies:
   - `native/src/oracle/symbol_file.cpp` can load `pokered.sym`
   - `native/src/oracle/map_file.cpp` can load `pokered.map`

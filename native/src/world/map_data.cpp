@@ -316,6 +316,11 @@ bool CanMoveTo(const MapData& map, int x, int y) {
   return BlockerAt(map, x, y) == MoveBlocker::None;
 }
 
+bool ShouldAutoStepDoorExit(const MapData& map, int x, int y) {
+  return map.tileset_id == kOverworldTilesetId && RenderTileKind(map, x, y) == TileKind::Door &&
+         y + 1 < map.height && CanMoveTo(map, x, y + 1);
+}
+
 InteractionResult InspectFacingTile(const MapData& map, const WorldState& world) {
   const auto [dx, dy] = FacingOffset(world.player.facing);
   const int target_x = world.player.x + dx;

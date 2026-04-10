@@ -62,7 +62,9 @@
     "Extended the runtime provenance overlay with a live facing text trace page",
     "Re-verified the live facing text provenance trace on the Linux SDL CMake path",
     "Extended the runtime provenance overlay with a current map-script state trace page",
-    "Re-verified the current map-script provenance trace on the Linux SDL CMake path"
+    "Re-verified the current map-script provenance trace on the Linux SDL CMake path",
+    "Aligned PalletTown exterior door exits with the original auto step-out flow",
+    "Re-verified PalletTown door connectivity on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",
@@ -77,7 +79,7 @@
   "next_actions": [
     "Decide whether OaksLab should stay on safe default dialogue branches or gain the first starter-selection / rival-battle seam",
     "Decide whether the bounded PalletTown Oak warning should expand into the full follow-to-lab cutscene",
-    "Evaluate Route1/Route21 boundary handling once the next PalletTown door is live",
+    "Evaluate Route1/Route21 boundary handling now that the current PalletTown doors round-trip cleanly",
     "Decide whether BluesHouse Daisy should stay on the default dialogue branch or gain the first small indoor gift/event seam",
     "Extend runtime-facing provenance beyond the current-map, current-map-script, last-map-state, live-facing-target, live-facing-text, live-facing-branch, live-facing-gate-source, last-state-gate, last-state-gate-source, last-interaction-branch, last-interaction, last-move, and last-message source overlays into broader object-state and script-state trace hooks",
     "Broaden indoor metadata import beyond the current RedsHouse and House tilesets once the exterior seam is stable",
