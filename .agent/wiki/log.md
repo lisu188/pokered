@@ -209,3 +209,9 @@ Updated `native/src/core/game_state.cpp` so successful warps overwrite `MoveResu
 
 ## [2026-04-10 16:31] verification | PalletTown door warp metadata re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=5`, and the test binary now verifies final landing-coordinate metadata for PalletTown door entries/exits across `RedsHouse1F`, `BluesHouse`, and `OaksLab`.
+
+## [2026-04-10 16:40] implementation | PalletTown interior doorway re-exits now use the collision warp path
+Updated `native/src/core/game_state.cpp` so a blocked move while already standing on a supported warp tile now still resolves the warp, matching the original `CheckWarpsCollision` behavior more closely. In the current slice this restores immediate re-exits from the indoor doorway tiles in `RedsHouse1F`, `BluesHouse`, and `OaksLab` without requiring a sideways step first.
+
+## [2026-04-10 16:40] verification | PalletTown interior doorway re-exits re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=5`, and the test binary now verifies collision-triggered immediate re-exits for the indoor door tiles in `RedsHouse1F`, `BluesHouse`, and `OaksLab` alongside the existing PalletTown door round-trips.

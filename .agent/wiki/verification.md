@@ -65,6 +65,7 @@
   - PalletTown <-> OaksLab door traversal
   - exterior PalletTown door auto-step behavior after `RedsHouse1F`, `BluesHouse`, and `OaksLab` exits
   - final landing-coordinate `MoveResult` metadata for PalletTown door entries and exits, including `RedsHouse1F`, `BluesHouse`, and `OaksLab` round-trips
+  - collision-triggered immediate re-exit while standing on the indoor doorway warp tiles for `RedsHouse1F`, `BluesHouse`, and `OaksLab`
 - Oracle provenance coverage currently verifies:
   - `native/src/oracle/symbol_file.cpp` can load `pokered.sym`
   - `native/src/oracle/map_file.cpp` can load `pokered.map`

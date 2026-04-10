@@ -1156,8 +1156,22 @@ int main() {
       pallet_world.map_id != pokered::WorldId::RedsHouse1F || pallet_world.player.x != 2 ||
       pallet_world.player.y != 7 ||
       pallet_world.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
-      pallet_world.last_warp != 1 || pallet_world.player.facing != pokered::Facing::Down) {
+      pallet_world.last_warp != 1 || pallet_world.player.facing != pokered::Facing::Down ||
+      pallet_world.step_counter != 1) {
     std::cerr << "expected PalletTown door warp to enter RedsHouse1F\n";
+    return 1;
+  }
+  const pokered::MoveResult reds_immediate_exit = pokered::TryMoveWithResult(pallet_world, pokered::Facing::Down);
+  if (!reds_immediate_exit.moved || !reds_immediate_exit.warped ||
+      reds_immediate_exit.source_map != pokered::WorldId::RedsHouse1F || reds_immediate_exit.source_warp != 1 ||
+      reds_immediate_exit.target_map != pokered::WorldId::PalletTown || reds_immediate_exit.target_warp != 1 ||
+      reds_immediate_exit.message != pokered::MessageId::None || reds_immediate_exit.to_x != 5 ||
+      reds_immediate_exit.to_y != 6 || reds_immediate_exit.blocker != pokered::MoveBlocker::None ||
+      pallet_world.map_id != pokered::WorldId::PalletTown || pallet_world.player.x != 5 ||
+      pallet_world.player.y != 6 || pallet_world.last_map != static_cast<std::uint16_t>(pokered::WorldId::RedsHouse1F) ||
+      pallet_world.last_warp != 1 || pallet_world.player.facing != pokered::Facing::Down ||
+      pallet_world.step_counter != 1) {
+    std::cerr << "expected RedsHouse1F immediate door re-exit into PalletTown\n";
     return 1;
   }
 
@@ -1166,28 +1180,40 @@ int main() {
   blues_entry.player.x = 13;
   blues_entry.player.y = 6;
   blues_entry.player.facing = pokered::Facing::Up;
-  if (!pokered::TryMove(blues_entry, pokered::Facing::Up) ||
-      blues_entry.map_id != pokered::WorldId::BluesHouse || blues_entry.player.x != 2 ||
+  const pokered::MoveResult blues_warp = pokered::TryMoveWithResult(blues_entry, pokered::Facing::Up);
+  if (!blues_warp.moved || !blues_warp.warped || blues_warp.source_map != pokered::WorldId::PalletTown ||
+      blues_warp.source_warp != 2 || blues_warp.target_map != pokered::WorldId::BluesHouse ||
+      blues_warp.target_warp != 1 || blues_warp.message != pokered::MessageId::None || blues_warp.to_x != 2 ||
+      blues_warp.to_y != 7 || blues_entry.map_id != pokered::WorldId::BluesHouse || blues_entry.player.x != 2 ||
       blues_entry.player.y != 7 ||
       blues_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
-      blues_entry.last_warp != 2 || blues_entry.player.facing != pokered::Facing::Down) {
+      blues_entry.last_warp != 2 || blues_entry.player.facing != pokered::Facing::Down ||
+      blues_entry.step_counter != 1) {
     std::cerr << "expected PalletTown door warp to enter BluesHouse\n";
     return 1;
   }
-  if (!pokered::TryMove(blues_entry, pokered::Facing::Up) || blues_entry.map_id != pokered::WorldId::BluesHouse ||
-      blues_entry.player.x != 2 || blues_entry.player.y != 6) {
-    std::cerr << "expected to step off the BluesHouse door tile\n";
+  const pokered::MoveResult blues_immediate_exit = pokered::TryMoveWithResult(blues_entry, pokered::Facing::Down);
+  if (!blues_immediate_exit.moved || !blues_immediate_exit.warped ||
+      blues_immediate_exit.source_map != pokered::WorldId::BluesHouse ||
+      blues_immediate_exit.source_warp != 1 || blues_immediate_exit.target_map != pokered::WorldId::PalletTown ||
+      blues_immediate_exit.target_warp != 2 || blues_immediate_exit.message != pokered::MessageId::None ||
+      blues_immediate_exit.to_x != 13 || blues_immediate_exit.to_y != 6 ||
+      blues_immediate_exit.blocker != pokered::MoveBlocker::None ||
+      blues_entry.map_id != pokered::WorldId::PalletTown || blues_entry.player.x != 13 ||
+      blues_entry.player.y != 6 || blues_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::BluesHouse) ||
+      blues_entry.last_warp != 1 || blues_entry.player.facing != pokered::Facing::Down ||
+      blues_entry.step_counter != 1) {
+    std::cerr << "expected BluesHouse immediate door re-exit into PalletTown\n";
     return 1;
   }
-  const pokered::MoveResult blues_exit = pokered::TryMoveWithResult(blues_entry, pokered::Facing::Down);
-  if (!blues_exit.moved || !blues_exit.warped || blues_exit.source_map != pokered::WorldId::BluesHouse ||
-      blues_exit.source_warp != 1 || blues_exit.target_map != pokered::WorldId::PalletTown ||
-      blues_exit.target_warp != 2 || blues_exit.message != pokered::MessageId::None || blues_exit.to_x != 13 ||
-      blues_exit.to_y != 6 || blues_entry.map_id != pokered::WorldId::PalletTown ||
-      blues_entry.player.x != 13 || blues_entry.player.y != 6 ||
-      blues_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::BluesHouse) ||
-      blues_entry.last_warp != 1 || blues_entry.player.facing != pokered::Facing::Down) {
-    std::cerr << "expected BluesHouse door warp to return to PalletTown\n";
+  pokered::WorldState blues_step {};
+  blues_step.map_id = pokered::WorldId::BluesHouse;
+  blues_step.player = {2, 7, pokered::Facing::Down};
+  blues_step.last_map = static_cast<std::uint16_t>(pokered::WorldId::PalletTown);
+  blues_step.last_warp = 2;
+  if (!pokered::TryMove(blues_step, pokered::Facing::Up) || blues_step.map_id != pokered::WorldId::BluesHouse ||
+      blues_step.player.x != 2 || blues_step.player.y != 6 || blues_step.step_counter != 1) {
+    std::cerr << "expected to step off the BluesHouse door tile\n";
     return 1;
   }
 
@@ -1204,29 +1230,51 @@ int main() {
       oaks_entry.map_id != pokered::WorldId::OaksLab || oaks_entry.player.x != 5 ||
       oaks_entry.player.y != 11 ||
       oaks_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
-      oaks_entry.last_warp != 3 || oaks_entry.player.facing != pokered::Facing::Down) {
+      oaks_entry.last_warp != 3 || oaks_entry.player.facing != pokered::Facing::Down ||
+      oaks_entry.step_counter != 1) {
     std::cerr << "expected PalletTown door warp to enter OaksLab\n";
     return 1;
   }
-  const pokered::MoveResult oaks_exit = pokered::TryMoveWithResult(oaks_entry, pokered::Facing::Left);
+  const pokered::MoveResult oaks_immediate_exit = pokered::TryMoveWithResult(oaks_entry, pokered::Facing::Down);
+  if (!oaks_immediate_exit.moved || !oaks_immediate_exit.warped ||
+      oaks_immediate_exit.source_map != pokered::WorldId::OaksLab || oaks_immediate_exit.source_warp != 2 ||
+      oaks_immediate_exit.target_map != pokered::WorldId::PalletTown ||
+      oaks_immediate_exit.target_warp != 3 || oaks_immediate_exit.message != pokered::MessageId::None ||
+      oaks_immediate_exit.to_x != 12 || oaks_immediate_exit.to_y != 12 ||
+      oaks_immediate_exit.blocker != pokered::MoveBlocker::None ||
+      oaks_entry.map_id != pokered::WorldId::PalletTown || oaks_entry.player.x != 12 ||
+      oaks_entry.player.y != 12 || oaks_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::OaksLab) ||
+      oaks_entry.last_warp != 2 || oaks_entry.player.facing != pokered::Facing::Down ||
+      oaks_entry.step_counter != 1) {
+    std::cerr << "expected OaksLab immediate door re-exit into PalletTown\n";
+    return 1;
+  }
+  pokered::WorldState oaks_left_entry {};
+  oaks_left_entry.map_id = pokered::WorldId::OaksLab;
+  oaks_left_entry.player = {5, 11, pokered::Facing::Down};
+  oaks_left_entry.last_map = static_cast<std::uint16_t>(pokered::WorldId::PalletTown);
+  oaks_left_entry.last_warp = 3;
+  const pokered::MoveResult oaks_exit = pokered::TryMoveWithResult(oaks_left_entry, pokered::Facing::Left);
   if (!oaks_exit.moved || !oaks_exit.warped || oaks_exit.source_map != pokered::WorldId::OaksLab ||
       oaks_exit.source_warp != 1 || oaks_exit.target_map != pokered::WorldId::PalletTown ||
       oaks_exit.target_warp != 3 || oaks_exit.message != pokered::MessageId::None || oaks_exit.to_x != 12 ||
-      oaks_exit.to_y != 12 || oaks_entry.map_id != pokered::WorldId::PalletTown ||
-      oaks_entry.player.x != 12 || oaks_entry.player.y != 12 ||
-      oaks_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::OaksLab) ||
-      oaks_entry.last_warp != 1 || oaks_entry.player.facing != pokered::Facing::Down) {
+      oaks_exit.to_y != 12 || oaks_left_entry.map_id != pokered::WorldId::PalletTown ||
+      oaks_left_entry.player.x != 12 || oaks_left_entry.player.y != 12 ||
+      oaks_left_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::OaksLab) ||
+      oaks_left_entry.last_warp != 1 || oaks_left_entry.player.facing != pokered::Facing::Down ||
+      oaks_left_entry.step_counter != 1) {
     std::cerr << "expected OaksLab door warp to return to PalletTown\n";
     return 1;
   }
-  const pokered::MoveResult oaks_reentry = pokered::TryMoveWithResult(oaks_entry, pokered::Facing::Up);
+  const pokered::MoveResult oaks_reentry = pokered::TryMoveWithResult(oaks_left_entry, pokered::Facing::Up);
   if (!oaks_reentry.moved || !oaks_reentry.warped || oaks_reentry.source_map != pokered::WorldId::PalletTown ||
       oaks_reentry.source_warp != 3 || oaks_reentry.target_map != pokered::WorldId::OaksLab ||
       oaks_reentry.target_warp != 2 || oaks_reentry.message != pokered::MessageId::None ||
-      oaks_reentry.to_x != 5 || oaks_reentry.to_y != 11 || oaks_entry.map_id != pokered::WorldId::OaksLab ||
-      oaks_entry.player.x != 5 || oaks_entry.player.y != 11 ||
-      oaks_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
-      oaks_entry.last_warp != 3 || oaks_entry.player.facing != pokered::Facing::Down) {
+      oaks_reentry.to_x != 5 || oaks_reentry.to_y != 11 || oaks_left_entry.map_id != pokered::WorldId::OaksLab ||
+      oaks_left_entry.player.x != 5 || oaks_left_entry.player.y != 11 ||
+      oaks_left_entry.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
+      oaks_left_entry.last_warp != 3 || oaks_left_entry.player.facing != pokered::Facing::Down ||
+      oaks_left_entry.step_counter != 2) {
     std::cerr << "expected PalletTown lab door to re-enter OaksLab\n";
     return 1;
   }
@@ -1258,7 +1306,8 @@ int main() {
       house_reentry.to_x != 2 || house_reentry.to_y != 7 || warp_world.map_id != pokered::WorldId::RedsHouse1F ||
       warp_world.player.x != 2 || warp_world.player.y != 7 ||
       warp_world.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
-      warp_world.last_warp != 1 || warp_world.player.facing != pokered::Facing::Down) {
+      warp_world.last_warp != 1 || warp_world.player.facing != pokered::Facing::Down ||
+      warp_world.step_counter != 2) {
     std::cerr << "expected PalletTown house door to re-enter RedsHouse1F\n";
     return 1;
   }

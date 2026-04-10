@@ -45,6 +45,7 @@
 - [x] Extend the runtime-facing provenance overlay with a live facing gate-source trace page
 - [x] Align PalletTown exterior door exits with the original auto step-out flow
 - [x] Preserve final landing coordinates in PalletTown door warp move traces
+- [x] Restore collision-triggered immediate PalletTown door re-exits from indoor warp tiles
 
 ## Current Working Assumptions
 - The disassembly remains the authoritative behavior specification.

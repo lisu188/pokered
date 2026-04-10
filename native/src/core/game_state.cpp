@@ -23,6 +23,62 @@ std::pair<int, int> FacingOffset(Facing facing) {
   return {0, 0};
 }
 
+bool TryWarpFromCurrentTile(WorldState& world, const MapData& map, MoveResult& result) {
+  for (std::size_t index = 0; index < map.warps.size(); ++index) {
+    const Warp& warp = map.warps[index];
+    if (warp.x != world.player.x || warp.y != world.player.y) {
+      continue;
+    }
+
+    std::optional<WorldId> target_map_id;
+    if (warp.uses_last_map) {
+      if (world.last_map == kNoLastMap) {
+        continue;
+      }
+      const auto candidate = static_cast<WorldId>(world.last_map);
+      if (!HasMapData(candidate)) {
+        continue;
+      }
+      target_map_id = candidate;
+      world.last_map = static_cast<std::uint16_t>(map.id);
+      world.last_warp = static_cast<std::uint8_t>(index + 1);
+    } else {
+      if (!HasMapData(warp.target_map)) {
+        continue;
+      }
+      world.last_map = static_cast<std::uint16_t>(map.id);
+      world.last_warp = static_cast<std::uint8_t>(index + 1);
+      target_map_id = warp.target_map;
+    }
+
+    world.map_id = *target_map_id;
+    result.moved = true;
+    result.warped = true;
+    result.blocker = MoveBlocker::None;
+    result.source_warp = static_cast<std::uint8_t>(index + 1);
+    result.target_map = *target_map_id;
+    result.target_warp = warp.target_warp;
+
+    const MapData& target_map = GetMapData(world.map_id);
+    if (warp.target_warp == 0 || warp.target_warp > target_map.warps.size()) {
+      return true;
+    }
+
+    const Warp& target_warp = target_map.warps[warp.target_warp - 1];
+    world.player.x = target_warp.x;
+    world.player.y = target_warp.y;
+    world.player.facing = Facing::Down;
+    if (warp.uses_last_map && ShouldAutoStepDoorExit(target_map, target_warp.x, target_warp.y)) {
+      world.player.y += 1;
+    }
+    result.to_x = world.player.x;
+    result.to_y = world.player.y;
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 void StartNewGameShortcut(GameState& state) {
@@ -73,6 +129,7 @@ MoveResult TryMoveWithResult(WorldState& world, Facing facing) {
   }
   result.blocker = BlockerAt(map, next_x, next_y);
   if (result.blocker != MoveBlocker::None) {
+    TryWarpFromCurrentTile(world, map, result);
     return result;
   }
 
@@ -80,56 +137,7 @@ MoveResult TryMoveWithResult(WorldState& world, Facing facing) {
   world.player.y = next_y;
   ++world.step_counter;
   result.moved = true;
-
-  for (std::size_t index = 0; index < map.warps.size(); ++index) {
-    const Warp& warp = map.warps[index];
-    if (warp.x != world.player.x || warp.y != world.player.y) {
-      continue;
-    }
-
-    std::optional<WorldId> target_map_id;
-    if (warp.uses_last_map) {
-      if (world.last_map == kNoLastMap) {
-        continue;
-      }
-      const auto candidate = static_cast<WorldId>(world.last_map);
-      if (!HasMapData(candidate)) {
-        continue;
-      }
-      target_map_id = candidate;
-      world.last_map = static_cast<std::uint16_t>(map.id);
-      world.last_warp = static_cast<std::uint8_t>(index + 1);
-    } else {
-      if (!HasMapData(warp.target_map)) {
-        continue;
-      }
-      world.last_map = static_cast<std::uint16_t>(map.id);
-      world.last_warp = static_cast<std::uint8_t>(index + 1);
-      target_map_id = warp.target_map;
-    }
-
-    world.map_id = *target_map_id;
-    result.warped = true;
-    result.source_warp = static_cast<std::uint8_t>(index + 1);
-    result.target_map = *target_map_id;
-    result.target_warp = warp.target_warp;
-
-    const MapData& target_map = GetMapData(world.map_id);
-    if (warp.target_warp == 0 || warp.target_warp > target_map.warps.size()) {
-      return result;
-    }
-
-    const Warp& target_warp = target_map.warps[warp.target_warp - 1];
-    world.player.x = target_warp.x;
-    world.player.y = target_warp.y;
-    world.player.facing = Facing::Down;
-    if (warp.uses_last_map && ShouldAutoStepDoorExit(target_map, target_warp.x, target_warp.y)) {
-      world.player.y += 1;
-    }
-    result.to_x = world.player.x;
-    result.to_y = world.player.y;
-    return result;
-  }
+  TryWarpFromCurrentTile(world, map, result);
 
   return result;
 }
