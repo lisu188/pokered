@@ -143,3 +143,9 @@ Extended the `F7` runtime provenance overlay with a confirm-driven last-interact
 
 ## [2026-04-10 10:17] verification | last-interaction provenance tracing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies interaction-result metadata for NPC, bg-event, and miss cases plus shared interaction provenance for `PalletTownGirlText` and `OaksLabPokedexText`.
+
+## [2026-04-10 10:33] provenance | last-interaction-branch trace page added to the SDL overlay
+Extended the `F7` runtime provenance overlay with a dedicated interaction-branch page. `InspectFacingTile` now preserves each interaction's pre-branch `origin_message`, and `native/src/oracle/provenance.cpp` can resolve conditional outcomes back to asm-local handler labels such as `RedsHouse1FMomText.heal`, `OaksLabRivalText.afterChooseMon`, and `OaksLabOak1Text.check_for_poke_balls`.
+
+## [2026-04-10 10:33] verification | last-interaction-branch provenance tracing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies preserved interaction origins plus branch provenance for the conditional `RedsHouse1F` Mom and `OaksLab` Rival/Oak handlers alongside no-branch static interactions.

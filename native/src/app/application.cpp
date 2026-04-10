@@ -65,8 +65,9 @@ enum class OverlayMode : std::uint8_t {
   WarpTrace = 2,
   MoveTrace = 3,
   InteractionTrace = 4,
-  MessageTrace = 5,
-  MessageSourceTrace = 6,
+  InteractionBranchTrace = 5,
+  MessageTrace = 6,
+  MessageSourceTrace = 7,
 };
 
 struct WarpTraceState {
@@ -193,6 +194,8 @@ OverlayMode NextOverlayMode(OverlayMode mode) {
     case OverlayMode::MoveTrace:
       return OverlayMode::InteractionTrace;
     case OverlayMode::InteractionTrace:
+      return OverlayMode::InteractionBranchTrace;
+    case OverlayMode::InteractionBranchTrace:
       return OverlayMode::MessageTrace;
     case OverlayMode::MessageTrace:
       return OverlayMode::MessageSourceTrace;
@@ -429,7 +432,7 @@ std::string BuildInteractionTraceText(const DebugOverlayState& debug_overlay, co
   }
 
   const auto provenance = oracle::LookupInteractionProvenance(
-      oracle_context.symbols, oracle_context.sections, trace.map_id, result.message);
+      oracle_context.symbols, oracle_context.sections, trace.map_id, result.origin_message, result.message);
   if (!provenance) {
     return header + "\n" + std::string(GetMapData(trace.map_id).name) + "\n" +
            FormatCoords(result.target_x, result.target_y) + "\n" + FormatFacing(trace.facing);
@@ -437,6 +440,27 @@ std::string BuildInteractionTraceText(const DebugOverlayState& debug_overlay, co
 
   return header + " " + FormatCoords(result.target_x, result.target_y) + "\n" + provenance->object.label + "\n" +
          provenance->source.label + "\n" + FormatSymbolLocation(provenance->source);
+}
+
+std::string BuildInteractionBranchTraceText(const DebugOverlayState& debug_overlay, const OracleContext& oracle_context) {
+  if (!debug_overlay.last_interaction.available) {
+    return "INT BRANCH\nNONE YET";
+  }
+
+  const InteractionTraceState& trace = debug_overlay.last_interaction;
+  const InteractionResult& result = trace.result;
+  if (result.kind == InteractionKind::None || result.message == MessageId::None || !oracle_context.available) {
+    return "INT BRANCH\nNO BRANCH";
+  }
+
+  const auto provenance = oracle::LookupInteractionBranchProvenance(
+      oracle_context.symbols, oracle_context.sections, trace.map_id, result.origin_message, result.message);
+  if (!provenance) {
+    return "INT BRANCH\nNO BRANCH";
+  }
+
+  return "INT BRANCH " + FormatCoords(result.target_x, result.target_y) + "\n" + provenance->branch.label + "\n" +
+         FormatSymbolLocation(provenance->branch);
 }
 
 std::string BuildOverlayText(const GameState& state,
@@ -453,6 +477,8 @@ std::string BuildOverlayText(const GameState& state,
       return BuildMoveTraceText(debug_overlay, oracle_context);
     case OverlayMode::InteractionTrace:
       return BuildInteractionTraceText(debug_overlay, oracle_context);
+    case OverlayMode::InteractionBranchTrace:
+      return BuildInteractionBranchTraceText(debug_overlay, oracle_context);
     case OverlayMode::MessageTrace:
       return BuildMessageTraceText(debug_overlay, oracle_context);
     case OverlayMode::MessageSourceTrace:

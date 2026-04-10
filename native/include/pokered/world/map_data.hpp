@@ -52,6 +52,7 @@ enum class InteractionKind : std::uint8_t {
 
 struct InteractionResult {
   InteractionKind kind = InteractionKind::None;
+  MessageId origin_message = MessageId::None;
   MessageId message = MessageId::None;
   int target_x = 0;
   int target_y = 0;

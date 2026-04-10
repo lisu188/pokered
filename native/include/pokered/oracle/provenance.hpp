@@ -50,9 +50,17 @@ struct MoveScriptProvenance {
 
 struct InteractionProvenance {
   WorldId world_id = WorldId::RedsHouse1F;
+  MessageId origin_message = MessageId::None;
   MessageId message_id = MessageId::None;
   ProvenanceSymbol object;
   ProvenanceSymbol source;
+};
+
+struct InteractionBranchProvenance {
+  WorldId world_id = WorldId::RedsHouse1F;
+  MessageId origin_message = MessageId::None;
+  MessageId message_id = MessageId::None;
+  ProvenanceSymbol branch;
 };
 
 std::optional<MapProvenance> LookupMapProvenance(const SymbolTable& symbols,
@@ -81,6 +89,12 @@ std::optional<MoveScriptProvenance> LookupMoveScriptProvenance(const SymbolTable
 std::optional<InteractionProvenance> LookupInteractionProvenance(const SymbolTable& symbols,
                                                                  const MapSections& sections,
                                                                  WorldId world_id,
+                                                                 MessageId origin_message,
                                                                  MessageId message_id);
+std::optional<InteractionBranchProvenance> LookupInteractionBranchProvenance(const SymbolTable& symbols,
+                                                                             const MapSections& sections,
+                                                                             WorldId world_id,
+                                                                             MessageId origin_message,
+                                                                             MessageId message_id);
 
 }  // namespace pokered::oracle

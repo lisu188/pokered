@@ -250,11 +250,17 @@ int main() {
     return 1;
   }
   const auto girl_interaction_provenance = pokered::oracle::LookupInteractionProvenance(
-      symbols, sections, pokered::WorldId::PalletTown, pokered::MessageId::PalletTownGirl);
+      symbols,
+      sections,
+      pokered::WorldId::PalletTown,
+      pokered::MessageId::PalletTownGirl,
+      pokered::MessageId::PalletTownGirl);
   if (!girl_interaction_provenance || girl_interaction_provenance->object.label != "PalletTown_Object" ||
       girl_interaction_provenance->object.address.bank != 0x06 ||
       girl_interaction_provenance->object.address.address != 0x42C3 ||
       !girl_interaction_provenance->object.section || girl_interaction_provenance->object.section->name != "Maps 1" ||
+      girl_interaction_provenance->origin_message != pokered::MessageId::PalletTownGirl ||
+      girl_interaction_provenance->message_id != pokered::MessageId::PalletTownGirl ||
       girl_interaction_provenance->source.label != "PalletTownGirlText" ||
       girl_interaction_provenance->source.address.bank != 0x06 ||
       girl_interaction_provenance->source.address.address != 0x4FD3 ||
@@ -263,18 +269,63 @@ int main() {
     return 1;
   }
   const auto pokedex_interaction_provenance = pokered::oracle::LookupInteractionProvenance(
-      symbols, sections, pokered::WorldId::OaksLab, pokered::MessageId::OaksLabPokedex);
+      symbols,
+      sections,
+      pokered::WorldId::OaksLab,
+      pokered::MessageId::OaksLabPokedex,
+      pokered::MessageId::OaksLabPokedex);
   if (!pokedex_interaction_provenance || pokedex_interaction_provenance->object.label != "OaksLab_Object" ||
       pokedex_interaction_provenance->object.address.bank != 0x07 ||
       pokedex_interaction_provenance->object.address.address != 0x540A ||
       !pokedex_interaction_provenance->object.section ||
       pokedex_interaction_provenance->object.section->name != "Maps 4" ||
+      pokedex_interaction_provenance->origin_message != pokered::MessageId::OaksLabPokedex ||
+      pokedex_interaction_provenance->message_id != pokered::MessageId::OaksLabPokedex ||
       pokedex_interaction_provenance->source.label != "OaksLabPokedexText" ||
       pokedex_interaction_provenance->source.address.bank != 0x07 ||
       pokedex_interaction_provenance->source.address.address != 0x5322 ||
       !pokedex_interaction_provenance->source.section ||
       pokedex_interaction_provenance->source.section->name != "Maps 4") {
     std::cerr << "expected OaksLab interaction provenance lookup\n";
+    return 1;
+  }
+  const auto mom_branch_provenance = pokered::oracle::LookupInteractionBranchProvenance(
+      symbols,
+      sections,
+      pokered::WorldId::RedsHouse1F,
+      pokered::MessageId::MomWakeUp,
+      pokered::MessageId::MomRest);
+  if (!mom_branch_provenance || mom_branch_provenance->branch.label != "RedsHouse1FMomText.heal" ||
+      mom_branch_provenance->branch.address.bank != 0x12 ||
+      mom_branch_provenance->branch.address.address != 0x417F || !mom_branch_provenance->branch.section ||
+      mom_branch_provenance->branch.section->name != "Maps 8") {
+    std::cerr << "expected RedsHouse1F mom branch provenance lookup\n";
+    return 1;
+  }
+  const auto rival_branch_provenance = pokered::oracle::LookupInteractionBranchProvenance(
+      symbols,
+      sections,
+      pokered::WorldId::OaksLab,
+      pokered::MessageId::OaksLabRival,
+      pokered::MessageId::OaksLabRivalMyPokemonLooksStronger);
+  if (!rival_branch_provenance || rival_branch_provenance->branch.label != "OaksLabRivalText.afterChooseMon" ||
+      rival_branch_provenance->branch.address.bank != 0x07 ||
+      rival_branch_provenance->branch.address.address != 0x50EA || !rival_branch_provenance->branch.section ||
+      rival_branch_provenance->branch.section->name != "Maps 4") {
+    std::cerr << "expected OaksLab rival branch provenance lookup\n";
+    return 1;
+  }
+  const auto oak_branch_provenance = pokered::oracle::LookupInteractionBranchProvenance(
+      symbols,
+      sections,
+      pokered::WorldId::OaksLab,
+      pokered::MessageId::OaksLabOak1,
+      pokered::MessageId::OaksLabOak1WhichPokemonDoYouWant);
+  if (!oak_branch_provenance || oak_branch_provenance->branch.label != "OaksLabOak1Text.check_for_poke_balls" ||
+      oak_branch_provenance->branch.address.bank != 0x07 ||
+      oak_branch_provenance->branch.address.address != 0x5279 || !oak_branch_provenance->branch.section ||
+      oak_branch_provenance->branch.section->name != "Maps 4") {
+    std::cerr << "expected OaksLab Oak1 branch provenance lookup\n";
     return 1;
   }
   if (pokered::oracle::LookupMessageProvenance(symbols, sections, pokered::MessageId::SaveOk) ||
@@ -286,9 +337,29 @@ int main() {
       pokered::oracle::LookupMoveScriptProvenance(
           symbols, sections, pokered::WorldId::OaksLab, pokered::MoveBlocker::Script, pokered::MessageId::OaksLabPokedex) ||
       pokered::oracle::LookupInteractionProvenance(
-          symbols, sections, pokered::WorldId::PalletTown, pokered::MessageId::SaveOk) ||
+          symbols,
+          sections,
+          pokered::WorldId::PalletTown,
+          pokered::MessageId::SaveOk,
+          pokered::MessageId::SaveOk) ||
       pokered::oracle::LookupInteractionProvenance(
-          symbols, sections, pokered::WorldId::PalletTown, pokered::MessageId::None)) {
+          symbols,
+          sections,
+          pokered::WorldId::PalletTown,
+          pokered::MessageId::None,
+          pokered::MessageId::None) ||
+      pokered::oracle::LookupInteractionBranchProvenance(
+          symbols,
+          sections,
+          pokered::WorldId::PalletTown,
+          pokered::MessageId::PalletTownGirl,
+          pokered::MessageId::PalletTownGirl) ||
+      pokered::oracle::LookupInteractionBranchProvenance(
+          symbols,
+          sections,
+          pokered::WorldId::PalletTown,
+          pokered::MessageId::None,
+          pokered::MessageId::None)) {
     std::cerr << "expected native-only and abstract message ids to have no oracle provenance\n";
     return 1;
   }
@@ -747,6 +818,7 @@ int main() {
   outdoor_walk.player.facing = pokered::Facing::Left;
   const pokered::InteractionResult girl_interaction = pokered::InspectFacingTile(pallet_town, outdoor_walk);
   if (girl_interaction.kind != pokered::InteractionKind::Npc ||
+      girl_interaction.origin_message != pokered::MessageId::PalletTownGirl ||
       girl_interaction.message != pokered::MessageId::PalletTownGirl || girl_interaction.target_x != 3 ||
       girl_interaction.target_y != 8) {
     std::cerr << "expected PalletTown girl interaction result metadata\n";
@@ -761,6 +833,7 @@ int main() {
   outdoor_walk.player.facing = pokered::Facing::Right;
   const pokered::InteractionResult fisher_interaction = pokered::InspectFacingTile(pallet_town, outdoor_walk);
   if (fisher_interaction.kind != pokered::InteractionKind::Npc ||
+      fisher_interaction.origin_message != pokered::MessageId::PalletTownFisher ||
       fisher_interaction.message != pokered::MessageId::PalletTownFisher || fisher_interaction.target_x != 11 ||
       fisher_interaction.target_y != 14) {
     std::cerr << "expected PalletTown fisher interaction result metadata\n";
@@ -775,6 +848,7 @@ int main() {
   outdoor_walk.player.facing = pokered::Facing::Up;
   const pokered::InteractionResult sign_interaction = pokered::InspectFacingTile(pallet_town, outdoor_walk);
   if (sign_interaction.kind != pokered::InteractionKind::BgEvent ||
+      sign_interaction.origin_message != pokered::MessageId::PalletTownOaksLabSign ||
       sign_interaction.message != pokered::MessageId::PalletTownOaksLabSign || sign_interaction.target_x != 13 ||
       sign_interaction.target_y != 13) {
     std::cerr << "expected PalletTown sign interaction result metadata\n";
@@ -789,9 +863,63 @@ int main() {
   outdoor_walk.player.facing = pokered::Facing::Right;
   const pokered::InteractionResult miss_interaction = pokered::InspectFacingTile(pallet_town, outdoor_walk);
   if (miss_interaction.kind != pokered::InteractionKind::None ||
+      miss_interaction.origin_message != pokered::MessageId::None ||
       miss_interaction.message != pokered::MessageId::None || miss_interaction.target_x != 11 ||
       miss_interaction.target_y != 10) {
     std::cerr << "expected empty interaction result metadata\n";
+    return 1;
+  }
+
+  oaks_world = {};
+  oaks_world.map_id = pokered::WorldId::OaksLab;
+  oaks_world.player = {4, 4, pokered::Facing::Up};
+  const pokered::InteractionResult rival_default = pokered::InspectFacingTile(oaks_lab, oaks_world);
+  if (rival_default.kind != pokered::InteractionKind::Npc ||
+      rival_default.origin_message != pokered::MessageId::OaksLabRival ||
+      rival_default.message != pokered::MessageId::OaksLabRivalGrampsIsntAround) {
+    std::cerr << "expected OaksLab rival default interaction result metadata\n";
+    return 1;
+  }
+  oaks_world.got_starter = true;
+  const pokered::InteractionResult rival_post_starter = pokered::InspectFacingTile(oaks_lab, oaks_world);
+  if (rival_post_starter.kind != pokered::InteractionKind::Npc ||
+      rival_post_starter.origin_message != pokered::MessageId::OaksLabRival ||
+      rival_post_starter.message != pokered::MessageId::OaksLabRivalMyPokemonLooksStronger) {
+    std::cerr << "expected OaksLab rival post-starter interaction result metadata\n";
+    return 1;
+  }
+  oaks_world.got_starter = false;
+  oaks_world.player = {6, 4, pokered::Facing::Up};
+  const pokered::InteractionResult pokeball_default = pokered::InspectFacingTile(oaks_lab, oaks_world);
+  if (pokeball_default.kind != pokered::InteractionKind::Npc ||
+      pokeball_default.origin_message != pokered::MessageId::OaksLabPokeBall ||
+      pokeball_default.message != pokered::MessageId::OaksLabThoseArePokeBalls) {
+    std::cerr << "expected OaksLab pokeball default interaction result metadata\n";
+    return 1;
+  }
+  oaks_world.got_starter = true;
+  const pokered::InteractionResult pokeball_post_starter = pokered::InspectFacingTile(oaks_lab, oaks_world);
+  if (pokeball_post_starter.kind != pokered::InteractionKind::Npc ||
+      pokeball_post_starter.origin_message != pokered::MessageId::OaksLabPokeBall ||
+      pokeball_post_starter.message != pokered::MessageId::OaksLabLastMon) {
+    std::cerr << "expected OaksLab pokeball post-starter interaction result metadata\n";
+    return 1;
+  }
+  oaks_world.got_starter = false;
+  oaks_world.player = {5, 3, pokered::Facing::Up};
+  const pokered::InteractionResult oak_default = pokered::InspectFacingTile(oaks_lab, oaks_world);
+  if (oak_default.kind != pokered::InteractionKind::Npc ||
+      oak_default.origin_message != pokered::MessageId::OaksLabOak1 ||
+      oak_default.message != pokered::MessageId::OaksLabOak1WhichPokemonDoYouWant) {
+    std::cerr << "expected OaksLab Oak1 default interaction result metadata\n";
+    return 1;
+  }
+  oaks_world.got_starter = true;
+  const pokered::InteractionResult oak_post_starter = pokered::InspectFacingTile(oaks_lab, oaks_world);
+  if (oak_post_starter.kind != pokered::InteractionKind::Npc ||
+      oak_post_starter.origin_message != pokered::MessageId::OaksLabOak1 ||
+      oak_post_starter.message != pokered::MessageId::OaksLabOak1YourPokemonCanFight) {
+    std::cerr << "expected OaksLab Oak1 post-starter interaction result metadata\n";
     return 1;
   }
 

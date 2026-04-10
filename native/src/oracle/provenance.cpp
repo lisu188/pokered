@@ -187,6 +187,65 @@ std::optional<std::string_view> LabelForMoveScript(WorldId world_id,
   return std::nullopt;
 }
 
+std::optional<std::string_view> LabelForInteractionBranch(WorldId world_id,
+                                                          MessageId origin_message,
+                                                          MessageId message_id) {
+  switch (world_id) {
+    case WorldId::RedsHouse1F:
+      if (origin_message == MessageId::MomWakeUp) {
+        if (message_id == MessageId::MomWakeUp) {
+          return "RedsHouse1FMomText";
+        }
+        if (message_id == MessageId::MomRest) {
+          return "RedsHouse1FMomText.heal";
+        }
+      }
+      if (origin_message == MessageId::TvMovie &&
+          (message_id == MessageId::TvMovie || message_id == MessageId::TvWrongSide)) {
+        return "RedsHouse1FTVText";
+      }
+      break;
+    case WorldId::BluesHouse:
+      if (origin_message == MessageId::BluesHouseDaisyRivalAtLab &&
+          message_id == MessageId::BluesHouseDaisyRivalAtLab) {
+        return "BluesHouseDaisySittingText";
+      }
+      break;
+    case WorldId::OaksLab:
+      if (origin_message == MessageId::OaksLabRival) {
+        if (message_id == MessageId::OaksLabRivalGrampsIsntAround) {
+          return "OaksLabRivalText";
+        }
+        if (message_id == MessageId::OaksLabRivalMyPokemonLooksStronger) {
+          return "OaksLabRivalText.afterChooseMon";
+        }
+      }
+      if (origin_message == MessageId::OaksLabPokeBall) {
+        if (message_id == MessageId::OaksLabThoseArePokeBalls) {
+          return "OaksLabSelectedPokeBallScript";
+        }
+        if (message_id == MessageId::OaksLabLastMon) {
+          return "OaksLabLastMonScript";
+        }
+      }
+      if (origin_message == MessageId::OaksLabOak1) {
+        if (message_id == MessageId::OaksLabOak1WhichPokemonDoYouWant) {
+          return "OaksLabOak1Text.check_for_poke_balls";
+        }
+        if (message_id == MessageId::OaksLabOak1YourPokemonCanFight) {
+          return "OaksLabOak1Text.already_got_pokemon";
+        }
+      }
+      break;
+    case WorldId::RedsHouse2F:
+    case WorldId::PewterSpeechHouse:
+    case WorldId::PalletTown:
+      break;
+  }
+
+  return std::nullopt;
+}
+
 std::optional<ProvenanceSymbol> LookupSymbolProvenance(const SymbolTable& symbols,
                                                        const MapSections& sections,
                                                        std::string_view label) {
@@ -321,6 +380,7 @@ std::optional<MoveScriptProvenance> LookupMoveScriptProvenance(const SymbolTable
 std::optional<InteractionProvenance> LookupInteractionProvenance(const SymbolTable& symbols,
                                                                  const MapSections& sections,
                                                                  WorldId world_id,
+                                                                 MessageId origin_message,
                                                                  MessageId message_id) {
   const auto map = LookupMapProvenance(symbols, sections, world_id);
   const auto source = LookupMessageSourceProvenance(symbols, sections, message_id);
@@ -330,9 +390,33 @@ std::optional<InteractionProvenance> LookupInteractionProvenance(const SymbolTab
 
   return InteractionProvenance {
       .world_id = world_id,
+      .origin_message = origin_message,
       .message_id = message_id,
       .object = map->object,
       .source = source->source,
+  };
+}
+
+std::optional<InteractionBranchProvenance> LookupInteractionBranchProvenance(const SymbolTable& symbols,
+                                                                             const MapSections& sections,
+                                                                             WorldId world_id,
+                                                                             MessageId origin_message,
+                                                                             MessageId message_id) {
+  const auto label = LabelForInteractionBranch(world_id, origin_message, message_id);
+  if (!label) {
+    return std::nullopt;
+  }
+
+  const auto branch = LookupSymbolProvenance(symbols, sections, *label);
+  if (!branch) {
+    return std::nullopt;
+  }
+
+  return InteractionBranchProvenance {
+      .world_id = world_id,
+      .origin_message = origin_message,
+      .message_id = message_id,
+      .branch = *branch,
   };
 }
 

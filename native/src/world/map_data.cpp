@@ -325,6 +325,7 @@ InteractionResult InspectFacingTile(const MapData& map, const WorldState& world)
     if (npc.x == target_x && npc.y == target_y) {
       InteractionResult result {
           .kind = InteractionKind::Npc,
+          .origin_message = npc.message,
           .message = npc.message,
           .target_x = target_x,
           .target_y = target_y,
@@ -355,6 +356,7 @@ InteractionResult InspectFacingTile(const MapData& map, const WorldState& world)
     if (event.x == target_x && event.y == target_y) {
       InteractionResult result {
           .kind = InteractionKind::BgEvent,
+          .origin_message = event.message,
           .message = event.message,
           .target_x = target_x,
           .target_y = target_y,
@@ -369,6 +371,7 @@ InteractionResult InspectFacingTile(const MapData& map, const WorldState& world)
 
   return InteractionResult {
       .kind = InteractionKind::None,
+      .origin_message = MessageId::None,
       .message = MessageId::None,
       .target_x = target_x,
       .target_y = target_y,
