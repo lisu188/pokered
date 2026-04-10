@@ -173,3 +173,9 @@ Extended the `F7` runtime provenance overlay with a current facing-target page. 
 
 ## [2026-04-10 11:57] verification | live facing-target provenance tracing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies current facing provenance lookups for PalletTown, RedsHouse1F, and OaksLab plus null coverage for empty facing targets.
+
+## [2026-04-10 12:04] provenance | live facing-branch trace page added to the SDL overlay
+Extended the `F7` runtime provenance overlay with a current facing-branch page. `native/src/oracle/provenance.cpp` now exposes `LookupFacingBranchProvenance`, which lets the runtime preview the current asm-local handler that would run for the facing target, including branch labels such as `RedsHouse1FMomText.heal`, `RedsHouse1FTVText`, and `OaksLabRivalText.afterChooseMon`.
+
+## [2026-04-10 12:04] verification | live facing-branch provenance tracing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies current facing-branch provenance lookups for RedsHouse1F and OaksLab plus null coverage for static and empty facing targets.

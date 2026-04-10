@@ -358,6 +358,54 @@ int main() {
     std::cerr << "expected OaksLab rival facing provenance lookup\n";
     return 1;
   }
+  pokered::WorldState mom_default_facing_branch_world {};
+  mom_default_facing_branch_world.map_id = pokered::WorldId::RedsHouse1F;
+  mom_default_facing_branch_world.player = {5, 5, pokered::Facing::Up};
+  const auto mom_default_facing_branch =
+      pokered::oracle::LookupFacingBranchProvenance(symbols, sections, mom_default_facing_branch_world);
+  if (!mom_default_facing_branch || mom_default_facing_branch->world_id != pokered::WorldId::RedsHouse1F ||
+      mom_default_facing_branch->facing != pokered::Facing::Up || mom_default_facing_branch->target_x != 5 ||
+      mom_default_facing_branch->target_y != 4 ||
+      mom_default_facing_branch->origin_message != pokered::MessageId::MomWakeUp ||
+      mom_default_facing_branch->message_id != pokered::MessageId::MomWakeUp ||
+      mom_default_facing_branch->branch.label != "RedsHouse1FMomText") {
+    std::cerr << "expected RedsHouse1F mom default facing branch provenance lookup\n";
+    return 1;
+  }
+  pokered::WorldState mom_rest_facing_branch_world {};
+  mom_rest_facing_branch_world.map_id = pokered::WorldId::RedsHouse1F;
+  mom_rest_facing_branch_world.player = {5, 5, pokered::Facing::Up};
+  mom_rest_facing_branch_world.got_starter = true;
+  const auto mom_rest_facing_branch =
+      pokered::oracle::LookupFacingBranchProvenance(symbols, sections, mom_rest_facing_branch_world);
+  if (!mom_rest_facing_branch || mom_rest_facing_branch->message_id != pokered::MessageId::MomRest ||
+      mom_rest_facing_branch->branch.label != "RedsHouse1FMomText.heal") {
+    std::cerr << "expected RedsHouse1F mom rest facing branch provenance lookup\n";
+    return 1;
+  }
+  pokered::WorldState tv_facing_branch_world {};
+  tv_facing_branch_world.map_id = pokered::WorldId::RedsHouse1F;
+  tv_facing_branch_world.player = {2, 1, pokered::Facing::Right};
+  const auto tv_facing_branch =
+      pokered::oracle::LookupFacingBranchProvenance(symbols, sections, tv_facing_branch_world);
+  if (!tv_facing_branch || tv_facing_branch->origin_message != pokered::MessageId::TvMovie ||
+      tv_facing_branch->message_id != pokered::MessageId::TvWrongSide ||
+      tv_facing_branch->branch.label != "RedsHouse1FTVText") {
+    std::cerr << "expected RedsHouse1F TV facing branch provenance lookup\n";
+    return 1;
+  }
+  pokered::WorldState rival_facing_branch_world {};
+  rival_facing_branch_world.map_id = pokered::WorldId::OaksLab;
+  rival_facing_branch_world.player = {4, 4, pokered::Facing::Up};
+  rival_facing_branch_world.got_starter = true;
+  const auto rival_facing_branch =
+      pokered::oracle::LookupFacingBranchProvenance(symbols, sections, rival_facing_branch_world);
+  if (!rival_facing_branch || rival_facing_branch->origin_message != pokered::MessageId::OaksLabRival ||
+      rival_facing_branch->message_id != pokered::MessageId::OaksLabRivalMyPokemonLooksStronger ||
+      rival_facing_branch->branch.label != "OaksLabRivalText.afterChooseMon") {
+    std::cerr << "expected OaksLab rival facing branch provenance lookup\n";
+    return 1;
+  }
   const auto mom_branch_provenance = pokered::oracle::LookupInteractionBranchProvenance(
       symbols,
       sections,
@@ -509,6 +557,14 @@ int main() {
                                                                 .map_id = pokered::WorldId::PalletTown,
                                                                 .player = {10, 10, pokered::Facing::Right},
                                                             }) ||
+      pokered::oracle::LookupFacingBranchProvenance(symbols, sections, pokered::WorldState {
+                                                                       .map_id = pokered::WorldId::PalletTown,
+                                                                       .player = {4, 8, pokered::Facing::Left},
+                                                                   }) ||
+      pokered::oracle::LookupFacingBranchProvenance(symbols, sections, pokered::WorldState {
+                                                                       .map_id = pokered::WorldId::PalletTown,
+                                                                       .player = {10, 10, pokered::Facing::Right},
+                                                                   }) ||
       pokered::oracle::LookupInteractionBranchProvenance(
           symbols,
           sections,
