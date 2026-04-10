@@ -38,6 +38,13 @@ struct LastMapProvenance {
   ProvenanceSymbol object;
 };
 
+struct MapScriptProvenance {
+  WorldId world_id = WorldId::RedsHouse1F;
+  ProvenanceSymbol script;
+  std::optional<ProvenanceSymbol> script_pointers;
+  std::optional<ProvenanceSymbol> current_script;
+};
+
 struct StateGateProvenance {
   WorldId world_id = WorldId::RedsHouse1F;
   StateGate gate = StateGate::None;
@@ -134,6 +141,9 @@ std::optional<WarpProvenance> LookupWarpProvenance(const SymbolTable& symbols,
                                                    std::uint8_t source_warp,
                                                    WorldId target_world_id,
                                                    std::uint8_t target_warp);
+std::optional<MapScriptProvenance> LookupMapScriptProvenance(const SymbolTable& symbols,
+                                                             const MapSections& sections,
+                                                             WorldId world_id);
 std::optional<LastMapProvenance> LookupLastMapProvenance(const SymbolTable& symbols,
                                                          const MapSections& sections,
                                                          WorldId world_id,

@@ -60,13 +60,15 @@
     "Extended the runtime provenance overlay with a live facing gate-source trace page",
     "Re-verified the live facing gate-source provenance trace on the Linux SDL CMake path",
     "Extended the runtime provenance overlay with a live facing text trace page",
-    "Re-verified the live facing text provenance trace on the Linux SDL CMake path"
+    "Re-verified the live facing text provenance trace on the Linux SDL CMake path",
+    "Extended the runtime provenance overlay with a current map-script state trace page",
+    "Re-verified the current map-script provenance trace on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",
     "No MinGW SDL2 development package with SDL2Config.cmake is installed locally",
     "No emulator/debugger is installed locally yet for ROM-side differential traces",
-    "Runtime-facing provenance now covers the current map, the current LAST_MAP return anchor, the current facing source-backed object/interaction target, the current facing source-backed text label, the current facing branch/handler preview, the current facing gate source/backing state, the last successful warp, the last move attempt, the last confirm-based interaction, the last interaction branch/handler state, the last evaluated native state gate and its current source backing state, the last displayed source-backed message, and the last displayed message's source label, but broader object-state/script-state trace hooks are still missing",
+    "Runtime-facing provenance now covers the current map, the current map-script state, the current LAST_MAP return anchor, the current facing source-backed object/interaction target, the current facing source-backed text label, the current facing branch/handler preview, the current facing gate source/backing state, the last successful warp, the last move attempt, the last confirm-based interaction, the last interaction branch/handler state, the last evaluated native state gate and its current source backing state, the last displayed source-backed message, and the last displayed message's source label, but broader object-state/script-state trace hooks are still missing",
     "Route1 and Route21 are still unimplemented even though PalletTown now has three live interior doors",
     "Oak's PalletTown follow-to-lab chain and OaksLab starter/rival sequence are still intentionally deferred",
     "BluesHouse Daisy's Town Map gift path is still intentionally simplified to the default static-text branch until native item/event state exists",
@@ -77,7 +79,7 @@
     "Decide whether the bounded PalletTown Oak warning should expand into the full follow-to-lab cutscene",
     "Evaluate Route1/Route21 boundary handling once the next PalletTown door is live",
     "Decide whether BluesHouse Daisy should stay on the default dialogue branch or gain the first small indoor gift/event seam",
-    "Extend runtime-facing provenance beyond the current-map, last-map-state, live-facing-target, live-facing-text, live-facing-branch, live-facing-gate-source, last-state-gate, last-state-gate-source, last-interaction-branch, last-interaction, last-move, and last-message source overlays into broader object-state and script-state trace hooks",
+    "Extend runtime-facing provenance beyond the current-map, current-map-script, last-map-state, live-facing-target, live-facing-text, live-facing-branch, live-facing-gate-source, last-state-gate, last-state-gate-source, last-interaction-branch, last-interaction, last-move, and last-message source overlays into broader object-state and script-state trace hooks",
     "Broaden indoor metadata import beyond the current RedsHouse and House tilesets once the exterior seam is stable",
     "Verify the documented MinGW cross-build path once the compiler and SDL2 packages are available",
     "Pick the next small interior after OaksLab once the PalletTown hub is broader"

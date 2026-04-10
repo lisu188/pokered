@@ -38,6 +38,7 @@
 - [x] Extend the runtime-facing provenance overlay with a last-state-gate trace page
 - [x] Extend the runtime-facing provenance overlay with a last-map-state trace page
 - [x] Extend the runtime-facing provenance overlay with a gate-source trace page
+- [x] Extend the runtime-facing provenance overlay with a current map-script state trace page
 - [x] Extend the runtime-facing provenance overlay with a live facing-target trace page
 - [x] Extend the runtime-facing provenance overlay with a live facing text trace page
 - [x] Extend the runtime-facing provenance overlay with a live facing-branch trace page
@@ -53,7 +54,7 @@
 - No MinGW cross-toolchain installed locally yet
 - No MinGW SDL2 package installed locally yet
 - No emulator-backed trace harness yet
-- Runtime-facing provenance now covers the current map, the current `LAST_MAP` return anchor, the current facing source-backed object/interaction target, the current facing source-backed text label, the current facing branch/handler preview, the current facing gate source/backing state, the last successful warp, the last move attempt, the last confirm-based interaction, the last interaction branch/handler state, the last evaluated native state gate and its current source backing state, the last displayed source-backed message, and the last displayed message's source label, but broader object-state/script-state trace hooks are still missing
+- Runtime-facing provenance now covers the current map, the current map-script state, the current `LAST_MAP` return anchor, the current facing source-backed object/interaction target, the current facing source-backed text label, the current facing branch/handler preview, the current facing gate source/backing state, the last successful warp, the last move attempt, the last confirm-based interaction, the last interaction branch/handler state, the last evaluated native state gate and its current source backing state, the last displayed source-backed message, and the last displayed message's source label, but broader object-state/script-state trace hooks are still missing
 - Map import is currently proven for the `RedsHouse*`, `HOUSE`, and one `OVERWORLD` slice, but not yet broader than that
 - `Route1` and `Route21` are still not imported, so PalletTown is broader but still a bounded hub
 - Oak's PalletTown follow-to-lab chain and the `OaksLab` starter / rival sequence remain deferred
@@ -81,6 +82,6 @@
 - Decide whether to keep `OaksLab` on safe default dialogue branches or implement the first starter / rival script seam.
 - Decide whether to extend the bounded `PalletTown` Oak warning into the full follow-to-lab cutscene.
 - Decide whether `BluesHouse` Daisy should remain a static-text simplification or become the first small indoor gift/event seam.
-- Extend the current `.sym` / `.map` overlay past the current-map, last-map-state, live-facing-target, live-facing-text, live-facing-branch, live-facing-gate-source, last-state-gate, last-state-gate-source, last-interaction-branch, last-interaction, last-move, and last-message-source pages into broader object-state and script-state trace hooks.
+- Extend the current `.sym` / `.map` overlay past the current-map, current-map-script, last-map-state, live-facing-target, live-facing-text, live-facing-branch, live-facing-gate-source, last-state-gate, last-state-gate-source, last-interaction-branch, last-interaction, last-move, and last-message-source pages into broader object-state and script-state trace hooks.
 - Broaden the importer to another tileset family after the exterior seam is stable.
 - Validate the documented WSL -> MinGW -> `.exe` flow once the missing compiler and SDL2 packages are available.

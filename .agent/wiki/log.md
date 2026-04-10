@@ -191,3 +191,9 @@ Extended the `F7` runtime provenance overlay with a current facing text page. `n
 
 ## [2026-04-10 14:37] verification | live facing text provenance tracing re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies current facing text provenance lookups for PalletTown, RedsHouse1F, and OaksLab plus null coverage for empty facing targets.
+
+## [2026-04-10 15:01] provenance | current map-script trace page added to the SDL overlay
+Extended the `F7` runtime provenance overlay with a current map-script page. `native/src/oracle/provenance.cpp` now exposes `LookupMapScriptProvenance`, which lets the runtime preview the current map's root script label and, where available, the corresponding script-table/current-script state symbol.
+
+## [2026-04-10 15:01] verification | current map-script provenance tracing re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=6`, and the test binary now verifies current map-script provenance lookups for PalletTown, RedsHouse1F, and OaksLab.

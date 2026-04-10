@@ -27,6 +27,58 @@ std::optional<std::pair<std::string_view, std::string_view>> LabelsForWorld(Worl
   return std::nullopt;
 }
 
+std::optional<std::string_view> ScriptLabelForWorld(WorldId world_id) {
+  switch (world_id) {
+    case WorldId::RedsHouse1F:
+      return "RedsHouse1F_Script";
+    case WorldId::RedsHouse2F:
+      return "RedsHouse2F_Script";
+    case WorldId::PewterSpeechHouse:
+      return "PewterSpeechHouse_Script";
+    case WorldId::PalletTown:
+      return "PalletTown_Script";
+    case WorldId::BluesHouse:
+      return "BluesHouse_Script";
+    case WorldId::OaksLab:
+      return "OaksLab_Script";
+  }
+  return std::nullopt;
+}
+
+std::optional<std::string_view> ScriptPointersLabelForWorld(WorldId world_id) {
+  switch (world_id) {
+    case WorldId::RedsHouse2F:
+      return "RedsHouse2F_ScriptPointers";
+    case WorldId::PalletTown:
+      return "PalletTown_ScriptPointers";
+    case WorldId::BluesHouse:
+      return "BluesHouse_ScriptPointers";
+    case WorldId::OaksLab:
+      return "OaksLab_ScriptPointers";
+    case WorldId::RedsHouse1F:
+    case WorldId::PewterSpeechHouse:
+      break;
+  }
+  return std::nullopt;
+}
+
+std::optional<std::string_view> CurrentScriptLabelForWorld(WorldId world_id) {
+  switch (world_id) {
+    case WorldId::RedsHouse2F:
+      return "wRedsHouse2FCurScript";
+    case WorldId::PalletTown:
+      return "wPalletTownCurScript";
+    case WorldId::BluesHouse:
+      return "wBluesHouseCurScript";
+    case WorldId::OaksLab:
+      return "wOaksLabCurScript";
+    case WorldId::RedsHouse1F:
+    case WorldId::PewterSpeechHouse:
+      break;
+  }
+  return std::nullopt;
+}
+
 std::optional<std::string_view> LabelForMessage(MessageId message_id) {
   switch (message_id) {
     case MessageId::None:
@@ -403,6 +455,37 @@ std::optional<WarpProvenance> LookupWarpProvenance(const SymbolTable& symbols,
       .target_world_id = target_world_id,
       .target_warp = target_warp,
       .target_object = target->object,
+  };
+}
+
+std::optional<MapScriptProvenance> LookupMapScriptProvenance(const SymbolTable& symbols,
+                                                             const MapSections& sections,
+                                                             WorldId world_id) {
+  const auto script_label = ScriptLabelForWorld(world_id);
+  if (!script_label) {
+    return std::nullopt;
+  }
+
+  const auto script = LookupSymbolProvenance(symbols, sections, *script_label);
+  if (!script) {
+    return std::nullopt;
+  }
+
+  std::optional<ProvenanceSymbol> script_pointers;
+  if (const auto label = ScriptPointersLabelForWorld(world_id)) {
+    script_pointers = LookupSymbolProvenance(symbols, sections, *label);
+  }
+
+  std::optional<ProvenanceSymbol> current_script;
+  if (const auto label = CurrentScriptLabelForWorld(world_id)) {
+    current_script = LookupSymbolProvenance(symbols, sections, *label);
+  }
+
+  return MapScriptProvenance {
+      .world_id = world_id,
+      .script = *script,
+      .script_pointers = script_pointers,
+      .current_script = current_script,
   };
 }
 

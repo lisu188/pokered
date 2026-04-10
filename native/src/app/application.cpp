@@ -62,19 +62,20 @@ struct OracleContext {
 enum class OverlayMode : std::uint8_t {
   Off = 0,
   MapProvenance = 1,
-  LastMapState = 2,
-  FacingState = 3,
-  FacingMessageState = 4,
-  FacingBranchState = 5,
-  FacingGateSourceState = 6,
-  WarpTrace = 7,
-  MoveTrace = 8,
-  InteractionTrace = 9,
-  InteractionBranchTrace = 10,
-  StateTrace = 11,
-  StateGateSourceTrace = 12,
-  MessageTrace = 13,
-  MessageSourceTrace = 14,
+  MapScriptState = 2,
+  LastMapState = 3,
+  FacingState = 4,
+  FacingMessageState = 5,
+  FacingBranchState = 6,
+  FacingGateSourceState = 7,
+  WarpTrace = 8,
+  MoveTrace = 9,
+  InteractionTrace = 10,
+  InteractionBranchTrace = 11,
+  StateTrace = 12,
+  StateGateSourceTrace = 13,
+  MessageTrace = 14,
+  MessageSourceTrace = 15,
 };
 
 enum class StateTraceSource : std::uint8_t {
@@ -215,6 +216,8 @@ OverlayMode NextOverlayMode(OverlayMode mode) {
     case OverlayMode::Off:
       return OverlayMode::MapProvenance;
     case OverlayMode::MapProvenance:
+      return OverlayMode::MapScriptState;
+    case OverlayMode::MapScriptState:
       return OverlayMode::LastMapState;
     case OverlayMode::LastMapState:
       return OverlayMode::FacingState;
@@ -359,6 +362,28 @@ std::string BuildLastMapStateText(const GameState& state, const OracleContext& o
 
   return "LAST MAP\n" + FormatWarpLabel(provenance->object, provenance->warp_id) + "\n" +
          FormatSymbolLocation(provenance->object);
+}
+
+std::string BuildMapScriptStateText(const GameState& state, const OracleContext& oracle_context) {
+  if (!oracle_context.available) {
+    return "MAP SCRIPT\nORACLE DATA\nNOT FOUND";
+  }
+
+  const auto provenance =
+      oracle::LookupMapScriptProvenance(oracle_context.symbols, oracle_context.sections, state.world.map_id);
+  if (!provenance) {
+    return "MAP SCRIPT\nNO SOURCE";
+  }
+
+  if (provenance->current_script) {
+    return "MAP SCRIPT\n" + provenance->script.label + "\n" + provenance->current_script->label + "\n" +
+           FormatSymbolLocation(*provenance->current_script);
+  }
+  if (provenance->script_pointers) {
+    return "MAP SCRIPT\n" + provenance->script.label + "\n" + provenance->script_pointers->label + "\n" +
+           FormatSymbolLocation(*provenance->script_pointers);
+  }
+  return "MAP SCRIPT\n" + provenance->script.label + "\n" + FormatSymbolLocation(provenance->script);
 }
 
 std::string BuildFacingStateText(const GameState& state, const OracleContext& oracle_context) {
@@ -752,6 +777,8 @@ std::string BuildOverlayText(const GameState& state,
       return "ARROWS MOVE  Z TALK\nF5 SAVE  F9 LOAD\nF6 MAP  F7 ORCL\nG FLAG";
     case OverlayMode::MapProvenance:
       return BuildMapProvenanceText(state, oracle_context);
+    case OverlayMode::MapScriptState:
+      return BuildMapScriptStateText(state, oracle_context);
     case OverlayMode::LastMapState:
       return BuildLastMapStateText(state, oracle_context);
     case OverlayMode::FacingState:

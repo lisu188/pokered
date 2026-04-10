@@ -112,6 +112,65 @@ int main() {
     std::cerr << "expected OaksLab provenance lookup\n";
     return 1;
   }
+  const auto pallet_script_provenance =
+      pokered::oracle::LookupMapScriptProvenance(symbols, sections, pokered::WorldId::PalletTown);
+  if (!pallet_script_provenance || pallet_script_provenance->world_id != pokered::WorldId::PalletTown ||
+      pallet_script_provenance->script.label != "PalletTown_Script" ||
+      pallet_script_provenance->script.address.bank != 0x06 ||
+      pallet_script_provenance->script.address.address != 0x4E5B ||
+      !pallet_script_provenance->script.section || pallet_script_provenance->script.section->name != "Maps 2" ||
+      !pallet_script_provenance->script_pointers ||
+      pallet_script_provenance->script_pointers->label != "PalletTown_ScriptPointers" ||
+      pallet_script_provenance->script_pointers->address.bank != 0x06 ||
+      pallet_script_provenance->script_pointers->address.address != 0x4E73 ||
+      !pallet_script_provenance->script_pointers->section ||
+      pallet_script_provenance->script_pointers->section->name != "Maps 2" ||
+      !pallet_script_provenance->current_script ||
+      pallet_script_provenance->current_script->label != "wPalletTownCurScript" ||
+      pallet_script_provenance->current_script->address.bank != 0x00 ||
+      pallet_script_provenance->current_script->address.address != 0xD5F1 ||
+      !pallet_script_provenance->current_script->section ||
+      pallet_script_provenance->current_script->section->memory_region != "WRAM0" ||
+      pallet_script_provenance->current_script->section->name != "Main Data") {
+    std::cerr << "expected PalletTown map-script provenance lookup\n";
+    return 1;
+  }
+  const auto reds_house_1f_script_provenance =
+      pokered::oracle::LookupMapScriptProvenance(symbols, sections, pokered::WorldId::RedsHouse1F);
+  if (!reds_house_1f_script_provenance ||
+      reds_house_1f_script_provenance->world_id != pokered::WorldId::RedsHouse1F ||
+      reds_house_1f_script_provenance->script.label != "RedsHouse1F_Script" ||
+      reds_house_1f_script_provenance->script.address.bank != 0x12 ||
+      reds_house_1f_script_provenance->script.address.address != 0x4168 ||
+      !reds_house_1f_script_provenance->script.section ||
+      reds_house_1f_script_provenance->script.section->name != "Maps 8" ||
+      reds_house_1f_script_provenance->script_pointers || reds_house_1f_script_provenance->current_script) {
+    std::cerr << "expected RedsHouse1F map-script provenance lookup\n";
+    return 1;
+  }
+  const auto oaks_lab_script_provenance =
+      pokered::oracle::LookupMapScriptProvenance(symbols, sections, pokered::WorldId::OaksLab);
+  if (!oaks_lab_script_provenance || oaks_lab_script_provenance->world_id != pokered::WorldId::OaksLab ||
+      oaks_lab_script_provenance->script.label != "OaksLab_Script" ||
+      oaks_lab_script_provenance->script.address.bank != 0x07 ||
+      oaks_lab_script_provenance->script.address.address != 0x4B0E ||
+      !oaks_lab_script_provenance->script.section || oaks_lab_script_provenance->script.section->name != "Maps 4" ||
+      !oaks_lab_script_provenance->script_pointers ||
+      oaks_lab_script_provenance->script_pointers->label != "OaksLab_ScriptPointers" ||
+      oaks_lab_script_provenance->script_pointers->address.bank != 0x07 ||
+      oaks_lab_script_provenance->script_pointers->address.address != 0x4B28 ||
+      !oaks_lab_script_provenance->script_pointers->section ||
+      oaks_lab_script_provenance->script_pointers->section->name != "Maps 4" ||
+      !oaks_lab_script_provenance->current_script ||
+      oaks_lab_script_provenance->current_script->label != "wOaksLabCurScript" ||
+      oaks_lab_script_provenance->current_script->address.bank != 0x00 ||
+      oaks_lab_script_provenance->current_script->address.address != 0xD5F0 ||
+      !oaks_lab_script_provenance->current_script->section ||
+      oaks_lab_script_provenance->current_script->section->memory_region != "WRAM0" ||
+      oaks_lab_script_provenance->current_script->section->name != "Main Data") {
+    std::cerr << "expected OaksLab map-script provenance lookup\n";
+    return 1;
+  }
   const auto oaks_warp_provenance = pokered::oracle::LookupWarpProvenance(
       symbols, sections, pokered::WorldId::PalletTown, 3, pokered::WorldId::OaksLab, 2);
   if (!oaks_warp_provenance || oaks_warp_provenance->source_world_id != pokered::WorldId::PalletTown ||
