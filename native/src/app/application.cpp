@@ -1216,12 +1216,25 @@ int RunSmokeTest() {
     return 1;
   }
 
+  if (!TryMove(state.world, Facing::Up) || state.world.map_id != WorldId::RedsHouse1F ||
+      state.world.player.x != 2 || state.world.player.y != 7 || state.world.player.facing != Facing::Down ||
+      state.world.last_map != static_cast<std::uint16_t>(WorldId::PalletTown) || state.world.last_warp != 1) {
+    std::cerr << "smoke: expected PalletTown door warp into RedsHouse1F\n";
+    return 1;
+  }
+  if (!TryMove(state.world, Facing::Down) || state.world.map_id != WorldId::PalletTown ||
+      state.world.player.x != 5 || state.world.player.y != 6 || state.world.player.facing != Facing::Down ||
+      state.world.last_map != static_cast<std::uint16_t>(WorldId::RedsHouse1F) || state.world.last_warp != 1) {
+    std::cerr << "smoke: expected RedsHouse1F immediate door re-exit into PalletTown\n";
+    return 1;
+  }
+
   if (!TryMove(state.world, Facing::Down) || !TryMove(state.world, Facing::Down) || !TryMove(state.world, Facing::Left)) {
     std::cerr << "smoke: failed to move through PalletTown\n";
     return 1;
   }
   if (state.world.map_id != WorldId::PalletTown || state.world.player.x != 4 || state.world.player.y != 8 ||
-      state.world.player.facing != Facing::Left || state.world.step_counter != 4) {
+      state.world.player.facing != Facing::Left || state.world.step_counter != 5) {
     std::cerr << "smoke: expected outdoor movement state in PalletTown\n";
     return 1;
   }
@@ -1239,8 +1252,22 @@ int RunSmokeTest() {
   const MoveResult oak_warning = TryMoveWithResult(state.world, Facing::Up);
   if (oak_warning.moved || oak_warning.message != MessageId::PalletTownOakHeyWaitDontGoOut ||
       oak_warning.blocker != MoveBlocker::Script ||
-      state.world.player.x != north_exit_x || state.world.player.y != 2 || state.world.step_counter != 4) {
+      state.world.player.x != north_exit_x || state.world.player.y != 2 || state.world.step_counter != 5) {
     std::cerr << "smoke: expected PalletTown Oak north-exit warning\n";
+    return 1;
+  }
+
+  state.world.player = PlayerState {13, 6, Facing::Up};
+  if (!TryMove(state.world, Facing::Up) || state.world.map_id != WorldId::BluesHouse ||
+      state.world.player.x != 2 || state.world.player.y != 7 || state.world.player.facing != Facing::Down ||
+      state.world.last_map != static_cast<std::uint16_t>(WorldId::PalletTown) || state.world.last_warp != 2) {
+    std::cerr << "smoke: expected PalletTown door warp into BluesHouse\n";
+    return 1;
+  }
+  if (!TryMove(state.world, Facing::Down) || state.world.map_id != WorldId::PalletTown ||
+      state.world.player.x != 13 || state.world.player.y != 6 || state.world.player.facing != Facing::Down ||
+      state.world.last_map != static_cast<std::uint16_t>(WorldId::BluesHouse) || state.world.last_warp != 1) {
+    std::cerr << "smoke: expected BluesHouse immediate door re-exit into PalletTown\n";
     return 1;
   }
 
@@ -1249,6 +1276,20 @@ int RunSmokeTest() {
       state.world.player.x != 5 || state.world.player.y != 11 || state.world.player.facing != Facing::Down ||
       state.world.last_map != static_cast<std::uint16_t>(WorldId::PalletTown) || state.world.last_warp != 3) {
     std::cerr << "smoke: expected PalletTown door warp into OaksLab\n";
+    return 1;
+  }
+  if (!TryMove(state.world, Facing::Down) || state.world.map_id != WorldId::PalletTown ||
+      state.world.player.x != 12 || state.world.player.y != 12 || state.world.player.facing != Facing::Down ||
+      state.world.last_map != static_cast<std::uint16_t>(WorldId::OaksLab) || state.world.last_warp != 2) {
+    std::cerr << "smoke: expected OaksLab immediate door re-exit into PalletTown\n";
+    return 1;
+  }
+  state.world.player = PlayerState {12, 12, Facing::Up};
+  if (!TryMove(state.world, Facing::Up) || state.world.map_id != WorldId::OaksLab ||
+      state.world.player.x != 5 || state.world.player.y != 11 || state.world.player.facing != Facing::Down ||
+      state.world.last_map != static_cast<std::uint16_t>(WorldId::PalletTown) || state.world.last_warp != 3 ||
+      state.world.step_counter != 8) {
+    std::cerr << "smoke: expected PalletTown door to re-enter OaksLab\n";
     return 1;
   }
 

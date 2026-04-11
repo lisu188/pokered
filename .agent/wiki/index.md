@@ -34,7 +34,7 @@ This directory is the compiled knowledge layer for the native port effort.
 - Overworld loop anchor: `EnterMap`, `OverworldLoop`, and `NewBattle` in `home/overworld.asm`.
 - Save/load anchor: `TryLoadSaveFile`, `SaveMenu`, `SaveGameData`, and SRAM checksum logic in `engine/menus/save.asm`.
 - Native runtime now builds and runs a title -> menu -> connected `RedsHouse1F` / `RedsHouse2F` / `PalletTown` / `BluesHouse` / `OaksLab` slice with deterministic save/load.
-- Current native verification passes: configure, build, unit tests, and `--smoke-test` (`smoke-ok: world=5 pos=2,2 steps=5`).
+- Current native verification passes: configure, build, unit tests, and `--smoke-test` (`smoke-ok: world=5 pos=2,2 steps=8`).
 - `RedsHouse1F` now consumes the real `maps/RedsHouse1F.blk`, `gfx/blocksets/reds_house.bst`, and tileset collision metadata through the native map importer.
 - The Mom and TV room text now pages through the exact first-slice lines instead of truncating them to fit a single text box.
 - `RedsHouse1F` warps, bg events, NPC placement, and first-slice Mom/TV text now come from a generated metadata header sourced from `data/maps/objects/RedsHouse1F.asm` and `text/RedsHouse1F.asm`.
@@ -65,7 +65,7 @@ This directory is the compiled knowledge layer for the native port effort.
 - Standing on the current interior PalletTown doorway tiles and pressing into the blocked exit direction now re-exits correctly, which restores the original collision-on-warp door feel for `RedsHouse1F`, `BluesHouse`, and `OaksLab` without needing a sideways step first.
 - Blocked collision re-warps are now limited to door tiles, which keeps the restored PalletTown doorway behavior intact without letting unrelated stair warps retrigger on blocked moves.
 - PalletTown door coverage now explicitly includes the `BluesHouse` second doorway tile, so both interior exit tiles are verified against the same outdoor return anchor.
-- The current smoke path now verifies `RedsHouse1F -> PalletTown -> OaksLab`, outdoor/interior interaction readiness, and save/load, producing `smoke-ok: world=5 pos=2,2 steps=5`.
+- The current smoke path now verifies all three live PalletTown door pairs (`RedsHouse1F`, `BluesHouse`, and `OaksLab`) alongside the north-exit Oak seam, outdoor/interior interaction readiness, and save/load, producing `smoke-ok: world=5 pos=2,2 steps=8`.
 - `Route1` and `Route21` are still missing, so the current PalletTown slice is broader but still a bounded playable hub.
 - `BluesHouse` Daisy currently uses the source-backed default Rival-at-lab text branch; the Town Map gift/event path is still intentionally deferred.
 - `OaksLab` currently uses source-backed safe default interaction branches keyed off `got_starter`; starter selection, rival battle, and Oak's wider lab sequence remain deferred.

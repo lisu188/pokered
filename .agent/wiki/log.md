@@ -221,3 +221,9 @@ Updated `native/src/core/game_state.cpp` so the blocked-move re-warp fallback on
 
 ## [2026-04-10 16:46] verification | PalletTown door specificity re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=5`, and the test binary now verifies the `BluesHouse` second doorway tile plus a blocked-stair non-regression alongside the existing PalletTown door round-trips.
+
+## [2026-04-11 09:21] verification | PalletTown smoke path now covers every live door pair
+Updated `native/src/app/application.cpp` so `RunSmokeTest` no longer only samples one connected PalletTown doorway. The smoke path now round-trips through `RedsHouse1F`, `BluesHouse`, and `OaksLab`, checks the immediate indoor re-exit behavior for each live PalletTown-connected interior, keeps the bounded Oak north-exit seam, and still finishes with deterministic save/load in `OaksLab`.
+
+## [2026-04-11 09:21] verification | expanded PalletTown smoke coverage re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output is now `smoke-ok: world=5 pos=2,2 steps=8`, and the smoke scenario now traverses all three live PalletTown door pairs instead of only one.

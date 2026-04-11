@@ -79,7 +79,7 @@
 - `./build-native/pokered_native_tests`
 - `./build-native/pokered_native --smoke-test`
 - Current result: `100% tests passed, 0 tests failed out of 2`
-- Current smoke output: `smoke-ok: world=5 pos=2,2 steps=5`
+- Current smoke output: `smoke-ok: world=5 pos=2,2 steps=8`
 - Native Linux SDL launch still starts under WSL via `timeout 2s ./build-native/pokered_native` with no startup error.
 
 ## Next Focus

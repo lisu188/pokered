@@ -71,7 +71,9 @@
     "Re-verified PalletTown interior doorway re-exits on the Linux SDL CMake path",
     "Constrained blocked PalletTown re-warps to rendered door tiles",
     "Extended PalletTown door coverage to the BluesHouse second doorway tile and a blocked-stair non-regression",
-    "Re-verified PalletTown door specificity on the Linux SDL CMake path"
+    "Re-verified PalletTown door specificity on the Linux SDL CMake path",
+    "Expanded the native smoke path across all three live PalletTown door pairs",
+    "Re-verified expanded PalletTown smoke door coverage on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",
