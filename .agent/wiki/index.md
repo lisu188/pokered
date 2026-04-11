@@ -65,6 +65,7 @@ This directory is the compiled knowledge layer for the native port effort.
 - Standing on the current interior PalletTown doorway tiles and pressing into the blocked exit direction now re-exits correctly, which restores the original collision-on-warp door feel for `RedsHouse1F`, `BluesHouse`, and `OaksLab` without needing a sideways step first.
 - Blocked collision re-warps are now limited to door tiles, which keeps the restored PalletTown doorway behavior intact without letting unrelated stair warps retrigger on blocked moves.
 - PalletTown door coverage now explicitly includes the `BluesHouse` second doorway tile, so both interior exit tiles are verified against the same outdoor return anchor.
+- Immediate blocked re-exit coverage now spans every live interior doorway tile across `RedsHouse1F`, `BluesHouse`, and `OaksLab`, which closes the remaining doorway-symmetry gap in the PalletTown-connected interiors.
 - The current smoke path now verifies all three live PalletTown door pairs (`RedsHouse1F`, `BluesHouse`, and `OaksLab`) alongside the north-exit Oak seam, outdoor/interior interaction readiness, and save/load, producing `smoke-ok: world=5 pos=2,2 steps=8`.
 - `Route1` and `Route21` are still missing, so the current PalletTown slice is broader but still a bounded playable hub.
 - `BluesHouse` Daisy currently uses the source-backed default Rival-at-lab text branch; the Town Map gift/event path is still intentionally deferred.

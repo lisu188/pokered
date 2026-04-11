@@ -227,3 +227,9 @@ Updated `native/src/app/application.cpp` so `RunSmokeTest` no longer only sample
 
 ## [2026-04-11 09:21] verification | expanded PalletTown smoke coverage re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output is now `smoke-ok: world=5 pos=2,2 steps=8`, and the smoke scenario now traverses all three live PalletTown door pairs instead of only one.
+
+## [2026-04-11 09:26] verification | PalletTown doorway symmetry coverage expanded
+Updated `native/tests/save_system_tests.cpp` so the immediate blocked re-exit path is now verified on the remaining live interior doorway tiles: the right-hand doorway tiles in `RedsHouse1F` and `BluesHouse`, plus the left-hand doorway tile in `OaksLab`. This closes the symmetry gap in the current PalletTown-connected door coverage without changing runtime behavior.
+
+## [2026-04-11 09:26] verification | symmetric PalletTown doorway re-exits re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=8`, the test binary now covers every live interior doorway tile in the PalletTown-connected interiors, and the standalone SDL launch exits cleanly with code `0` and no startup error in the current environment.
