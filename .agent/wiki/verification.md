@@ -34,7 +34,7 @@
   - current result: `100% tests passed, 0 tests failed out of 2`
 - Native smoke run:
   - `./build-native/pokered_native --smoke-test`
-  - current result: `smoke-ok: world=5 pos=2,2 steps=8`
+  - current result: `smoke-ok: world=5 pos=2,2 steps=9`
   - note: the smoke temp path falls back to `/tmp` when `std::filesystem::temp_directory_path` is unavailable
   - native Linux SDL launch also still starts under WSL via `timeout 2s ./build-native/pokered_native`; on the latest run it timed out normally with no startup error
 - Save determinism coverage currently verifies:
@@ -63,7 +63,7 @@
   - movement-triggered `PalletTown` Oak warning coverage before `got_starter`, plus reopening of the north exit once the starter flag is set
   - PalletTown <-> BluesHouse door traversal, including the second interior doorway tile
   - PalletTown <-> OaksLab door traversal
-  - smoke coverage across all three live PalletTown door pairs, including immediate indoor re-exits from `RedsHouse1F`, `BluesHouse`, and `OaksLab`
+  - smoke coverage across all three live PalletTown door pairs, including immediate indoor re-exits from `RedsHouse1F`, `BluesHouse`, and `OaksLab` plus a PalletTown-side re-entry check for each live door pair
   - exterior PalletTown door auto-step behavior after `RedsHouse1F`, `BluesHouse`, and `OaksLab` exits
   - final landing-coordinate `MoveResult` metadata for PalletTown door entries and exits, including `RedsHouse1F`, `BluesHouse`, and `OaksLab` round-trips
   - collision-triggered immediate re-exit while standing on every live interior doorway warp tile for `RedsHouse1F`, `BluesHouse`, and `OaksLab`, while keeping passable lateral step-offs on every live interior doorway tile and blocked stair movement local

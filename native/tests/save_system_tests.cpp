@@ -1370,6 +1370,18 @@ int main() {
     std::cerr << "expected BluesHouse right-hand door tile to exit into PalletTown\n";
     return 1;
   }
+  const pokered::MoveResult blues_reentry = pokered::TryMoveWithResult(blues_right_exit, pokered::Facing::Up);
+  if (!blues_reentry.moved || !blues_reentry.warped || blues_reentry.source_map != pokered::WorldId::PalletTown ||
+      blues_reentry.source_warp != 2 || blues_reentry.target_map != pokered::WorldId::BluesHouse ||
+      blues_reentry.target_warp != 1 || blues_reentry.message != pokered::MessageId::None ||
+      blues_reentry.to_x != 2 || blues_reentry.to_y != 7 || blues_right_exit.map_id != pokered::WorldId::BluesHouse ||
+      blues_right_exit.player.x != 2 || blues_right_exit.player.y != 7 ||
+      blues_right_exit.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
+      blues_right_exit.last_warp != 2 || blues_right_exit.player.facing != pokered::Facing::Down ||
+      blues_right_exit.step_counter != 2) {
+    std::cerr << "expected PalletTown house door to re-enter BluesHouse\n";
+    return 1;
+  }
 
   pokered::WorldState oaks_entry {};
   oaks_entry.map_id = pokered::WorldId::PalletTown;

@@ -245,3 +245,9 @@ Updated `native/tests/save_system_tests.cpp` so the remaining live interior door
 
 ## [2026-04-11 11:12] verification | symmetric lateral step-off PalletTown doorway coverage re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=8`, the test binary now covers passable lateral step-offs on every live PalletTown-connected door tile, and the standalone SDL launch again timed out normally with no startup error.
+
+## [2026-04-11 13:06] verification | PalletTown-side BluesHouse re-entry coverage added
+Updated `native/tests/save_system_tests.cpp` with the missing PalletTown outdoor re-entry assertion for `BluesHouse`, which closes the remaining explicit exterior-side round-trip gap after the existing `RedsHouse1F` and `OaksLab` checks. `native/src/app/application.cpp` now exercises that same outdoor `BluesHouse` re-entry in the smoke path.
+
+## [2026-04-11 13:06] verification | PalletTown outdoor door round-trips re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output is now `smoke-ok: world=5 pos=2,2 steps=9`, the test binary now covers PalletTown-side re-entry for all three live door pairs, and the standalone SDL launch again timed out normally with no startup error.

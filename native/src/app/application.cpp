@@ -1270,6 +1270,18 @@ int RunSmokeTest() {
     std::cerr << "smoke: expected BluesHouse immediate door re-exit into PalletTown\n";
     return 1;
   }
+  if (!TryMove(state.world, Facing::Up) || state.world.map_id != WorldId::BluesHouse ||
+      state.world.player.x != 2 || state.world.player.y != 7 || state.world.player.facing != Facing::Down ||
+      state.world.last_map != static_cast<std::uint16_t>(WorldId::PalletTown) || state.world.last_warp != 2) {
+    std::cerr << "smoke: expected PalletTown door to re-enter BluesHouse\n";
+    return 1;
+  }
+  if (!TryMove(state.world, Facing::Down) || state.world.map_id != WorldId::PalletTown ||
+      state.world.player.x != 13 || state.world.player.y != 6 || state.world.player.facing != Facing::Down ||
+      state.world.last_map != static_cast<std::uint16_t>(WorldId::BluesHouse) || state.world.last_warp != 1) {
+    std::cerr << "smoke: expected BluesHouse re-entry to exit back into PalletTown\n";
+    return 1;
+  }
 
   state.world.player = PlayerState {12, 12, Facing::Up};
   if (!TryMove(state.world, Facing::Up) || state.world.map_id != WorldId::OaksLab ||
@@ -1288,7 +1300,7 @@ int RunSmokeTest() {
   if (!TryMove(state.world, Facing::Up) || state.world.map_id != WorldId::OaksLab ||
       state.world.player.x != 5 || state.world.player.y != 11 || state.world.player.facing != Facing::Down ||
       state.world.last_map != static_cast<std::uint16_t>(WorldId::PalletTown) || state.world.last_warp != 3 ||
-      state.world.step_counter != 8) {
+      state.world.step_counter != 9) {
     std::cerr << "smoke: expected PalletTown door to re-enter OaksLab\n";
     return 1;
   }
