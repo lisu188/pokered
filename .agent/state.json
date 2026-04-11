@@ -75,7 +75,9 @@
     "Expanded the native smoke path across all three live PalletTown door pairs",
     "Re-verified expanded PalletTown smoke door coverage on the Linux SDL CMake path",
     "Expanded PalletTown doorway symmetry coverage to every live interior door tile",
-    "Re-verified symmetric PalletTown doorway re-exits on the Linux SDL CMake path"
+    "Re-verified symmetric PalletTown doorway re-exits on the Linux SDL CMake path",
+    "Added PalletTown doorway lateral step-off coverage",
+    "Re-verified PalletTown doorway lateral step-offs on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",

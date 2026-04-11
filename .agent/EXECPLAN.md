@@ -80,7 +80,7 @@
 - `./build-native/pokered_native --smoke-test`
 - Current result: `100% tests passed, 0 tests failed out of 2`
 - Current smoke output: `smoke-ok: world=5 pos=2,2 steps=8`
-- Native Linux SDL launch still starts under WSL via `timeout 2s ./build-native/pokered_native`; in the current environment it exits cleanly with code `0` and no startup error.
+- Native Linux SDL launch still starts under WSL via `timeout 2s ./build-native/pokered_native`; on the latest run it timed out normally with no startup error.
 
 ## Next Focus
 - Decide whether to keep `OaksLab` on safe default dialogue branches or implement the first starter / rival script seam.

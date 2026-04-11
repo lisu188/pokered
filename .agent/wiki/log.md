@@ -233,3 +233,9 @@ Updated `native/tests/save_system_tests.cpp` so the immediate blocked re-exit pa
 
 ## [2026-04-11 09:26] verification | symmetric PalletTown doorway re-exits re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=8`, the test binary now covers every live interior doorway tile in the PalletTown-connected interiors, and the standalone SDL launch exits cleanly with code `0` and no startup error in the current environment.
+
+## [2026-04-11 10:35] verification | PalletTown door coverage now distinguishes re-exits from lateral step-offs
+Updated `native/tests/save_system_tests.cpp` so the live PalletTown-connected doorway tiles in `RedsHouse1F`, `BluesHouse`, and `OaksLab` now also verify the passable lateral step-off path. This complements the existing blocked re-exit checks by confirming that stepping sideways off an interior door tile stays local instead of spuriously triggering a warp.
+
+## [2026-04-11 10:35] verification | lateral step-off PalletTown doorway coverage re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=8`, the test binary now covers passable lateral step-offs on the PalletTown-connected door tiles, and the standalone SDL launch again timed out normally with no startup error.
