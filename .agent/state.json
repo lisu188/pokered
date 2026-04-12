@@ -81,7 +81,9 @@
     "Expanded PalletTown doorway lateral step-off coverage to every live interior door tile",
     "Re-verified symmetric PalletTown doorway lateral step-offs on the Linux SDL CMake path",
     "Added PalletTown-side BluesHouse re-entry coverage",
-    "Re-verified PalletTown outdoor door round-trips on the Linux SDL CMake path"
+    "Re-verified PalletTown outdoor door round-trips on the Linux SDL CMake path",
+    "Added PalletTown outdoor landing-tile lateral step-off coverage",
+    "Re-verified PalletTown outdoor landing-tile step-offs on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",

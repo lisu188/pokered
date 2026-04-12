@@ -65,6 +65,7 @@
   - PalletTown <-> OaksLab door traversal
   - smoke coverage across all three live PalletTown door pairs, including immediate indoor re-exits from `RedsHouse1F`, `BluesHouse`, and `OaksLab` plus a PalletTown-side re-entry check for each live door pair
   - exterior PalletTown door auto-step behavior after `RedsHouse1F`, `BluesHouse`, and `OaksLab` exits
+  - passable lateral step-offs from the PalletTown auto-step landing tile for `RedsHouse1F`, `BluesHouse`, and `OaksLab`
   - final landing-coordinate `MoveResult` metadata for PalletTown door entries and exits, including `RedsHouse1F`, `BluesHouse`, and `OaksLab` round-trips
   - collision-triggered immediate re-exit while standing on every live interior doorway warp tile for `RedsHouse1F`, `BluesHouse`, and `OaksLab`, while keeping passable lateral step-offs on every live interior doorway tile and blocked stair movement local
 - Oracle provenance coverage currently verifies:

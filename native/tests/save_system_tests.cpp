@@ -1382,6 +1382,32 @@ int main() {
     std::cerr << "expected PalletTown house door to re-enter BluesHouse\n";
     return 1;
   }
+  if (pokered::BlockerAt(pokered::GetMapData(pokered::WorldId::PalletTown), 12, 6) != pokered::MoveBlocker::None) {
+    std::cerr << "expected BluesHouse outdoor landing tile left edge to remain passable\n";
+    return 1;
+  }
+  pokered::WorldState blues_outdoor_left_step {};
+  blues_outdoor_left_step.map_id = pokered::WorldId::PalletTown;
+  blues_outdoor_left_step.player = {13, 6, pokered::Facing::Left};
+  blues_outdoor_left_step.last_map = static_cast<std::uint16_t>(pokered::WorldId::BluesHouse);
+  blues_outdoor_left_step.last_warp = 2;
+  const pokered::MoveResult blues_outdoor_left_move =
+      pokered::TryMoveWithResult(blues_outdoor_left_step, pokered::Facing::Left);
+  if (!blues_outdoor_left_move.moved || blues_outdoor_left_move.warped ||
+      blues_outdoor_left_move.source_map != pokered::WorldId::PalletTown ||
+      blues_outdoor_left_move.source_warp != 0 || blues_outdoor_left_move.target_map != pokered::WorldId::PalletTown ||
+      blues_outdoor_left_move.target_warp != 0 || blues_outdoor_left_move.message != pokered::MessageId::None ||
+      blues_outdoor_left_move.to_x != 12 || blues_outdoor_left_move.to_y != 6 ||
+      blues_outdoor_left_move.blocker != pokered::MoveBlocker::None ||
+      blues_outdoor_left_step.map_id != pokered::WorldId::PalletTown ||
+      blues_outdoor_left_step.player.x != 12 || blues_outdoor_left_step.player.y != 6 ||
+      blues_outdoor_left_step.last_map != static_cast<std::uint16_t>(pokered::WorldId::BluesHouse) ||
+      blues_outdoor_left_step.last_warp != 2 ||
+      blues_outdoor_left_step.player.facing != pokered::Facing::Left ||
+      blues_outdoor_left_step.step_counter != 1) {
+    std::cerr << "expected BluesHouse outdoor landing tile left step to stay in PalletTown\n";
+    return 1;
+  }
 
   pokered::WorldState oaks_entry {};
   oaks_entry.map_id = pokered::WorldId::PalletTown;
@@ -1512,6 +1538,32 @@ int main() {
     std::cerr << "expected PalletTown lab door to re-enter OaksLab\n";
     return 1;
   }
+  if (pokered::BlockerAt(pokered::GetMapData(pokered::WorldId::PalletTown), 11, 12) != pokered::MoveBlocker::None) {
+    std::cerr << "expected OaksLab outdoor landing tile left edge to remain passable\n";
+    return 1;
+  }
+  pokered::WorldState oaks_outdoor_left_step {};
+  oaks_outdoor_left_step.map_id = pokered::WorldId::PalletTown;
+  oaks_outdoor_left_step.player = {12, 12, pokered::Facing::Left};
+  oaks_outdoor_left_step.last_map = static_cast<std::uint16_t>(pokered::WorldId::OaksLab);
+  oaks_outdoor_left_step.last_warp = 1;
+  const pokered::MoveResult oaks_outdoor_left_move =
+      pokered::TryMoveWithResult(oaks_outdoor_left_step, pokered::Facing::Left);
+  if (!oaks_outdoor_left_move.moved || oaks_outdoor_left_move.warped ||
+      oaks_outdoor_left_move.source_map != pokered::WorldId::PalletTown ||
+      oaks_outdoor_left_move.source_warp != 0 || oaks_outdoor_left_move.target_map != pokered::WorldId::PalletTown ||
+      oaks_outdoor_left_move.target_warp != 0 || oaks_outdoor_left_move.message != pokered::MessageId::None ||
+      oaks_outdoor_left_move.to_x != 11 || oaks_outdoor_left_move.to_y != 12 ||
+      oaks_outdoor_left_move.blocker != pokered::MoveBlocker::None ||
+      oaks_outdoor_left_step.map_id != pokered::WorldId::PalletTown ||
+      oaks_outdoor_left_step.player.x != 11 || oaks_outdoor_left_step.player.y != 12 ||
+      oaks_outdoor_left_step.last_map != static_cast<std::uint16_t>(pokered::WorldId::OaksLab) ||
+      oaks_outdoor_left_step.last_warp != 1 ||
+      oaks_outdoor_left_step.player.facing != pokered::Facing::Left ||
+      oaks_outdoor_left_step.step_counter != 1) {
+    std::cerr << "expected OaksLab outdoor landing tile left step to stay in PalletTown\n";
+    return 1;
+  }
 
   pokered::WorldState warp_world {};
   warp_world.map_id = pokered::WorldId::RedsHouse1F;
@@ -1543,6 +1595,32 @@ int main() {
       warp_world.last_warp != 1 || warp_world.player.facing != pokered::Facing::Down ||
       warp_world.step_counter != 2) {
     std::cerr << "expected PalletTown house door to re-enter RedsHouse1F\n";
+    return 1;
+  }
+  if (pokered::BlockerAt(pokered::GetMapData(pokered::WorldId::PalletTown), 4, 6) != pokered::MoveBlocker::None) {
+    std::cerr << "expected RedsHouse1F outdoor landing tile left edge to remain passable\n";
+    return 1;
+  }
+  pokered::WorldState house_outdoor_left_step {};
+  house_outdoor_left_step.map_id = pokered::WorldId::PalletTown;
+  house_outdoor_left_step.player = {5, 6, pokered::Facing::Left};
+  house_outdoor_left_step.last_map = static_cast<std::uint16_t>(pokered::WorldId::RedsHouse1F);
+  house_outdoor_left_step.last_warp = 2;
+  const pokered::MoveResult house_outdoor_left_move =
+      pokered::TryMoveWithResult(house_outdoor_left_step, pokered::Facing::Left);
+  if (!house_outdoor_left_move.moved || house_outdoor_left_move.warped ||
+      house_outdoor_left_move.source_map != pokered::WorldId::PalletTown ||
+      house_outdoor_left_move.source_warp != 0 || house_outdoor_left_move.target_map != pokered::WorldId::PalletTown ||
+      house_outdoor_left_move.target_warp != 0 || house_outdoor_left_move.message != pokered::MessageId::None ||
+      house_outdoor_left_move.to_x != 4 || house_outdoor_left_move.to_y != 6 ||
+      house_outdoor_left_move.blocker != pokered::MoveBlocker::None ||
+      house_outdoor_left_step.map_id != pokered::WorldId::PalletTown ||
+      house_outdoor_left_step.player.x != 4 || house_outdoor_left_step.player.y != 6 ||
+      house_outdoor_left_step.last_map != static_cast<std::uint16_t>(pokered::WorldId::RedsHouse1F) ||
+      house_outdoor_left_step.last_warp != 2 ||
+      house_outdoor_left_step.player.facing != pokered::Facing::Left ||
+      house_outdoor_left_step.step_counter != 1) {
+    std::cerr << "expected RedsHouse1F outdoor landing tile left step to stay in PalletTown\n";
     return 1;
   }
 
