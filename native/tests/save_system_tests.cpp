@@ -1408,6 +1408,33 @@ int main() {
     std::cerr << "expected BluesHouse outdoor landing tile left step to stay in PalletTown\n";
     return 1;
   }
+  if (pokered::BlockerAt(pokered::GetMapData(pokered::WorldId::PalletTown), 14, 6) != pokered::MoveBlocker::None) {
+    std::cerr << "expected BluesHouse outdoor landing tile right edge to remain passable\n";
+    return 1;
+  }
+  pokered::WorldState blues_outdoor_right_step {};
+  blues_outdoor_right_step.map_id = pokered::WorldId::PalletTown;
+  blues_outdoor_right_step.player = {13, 6, pokered::Facing::Right};
+  blues_outdoor_right_step.last_map = static_cast<std::uint16_t>(pokered::WorldId::BluesHouse);
+  blues_outdoor_right_step.last_warp = 2;
+  const pokered::MoveResult blues_outdoor_right_move =
+      pokered::TryMoveWithResult(blues_outdoor_right_step, pokered::Facing::Right);
+  if (!blues_outdoor_right_move.moved || blues_outdoor_right_move.warped ||
+      blues_outdoor_right_move.source_map != pokered::WorldId::PalletTown ||
+      blues_outdoor_right_move.source_warp != 0 ||
+      blues_outdoor_right_move.target_map != pokered::WorldId::PalletTown ||
+      blues_outdoor_right_move.target_warp != 0 || blues_outdoor_right_move.message != pokered::MessageId::None ||
+      blues_outdoor_right_move.to_x != 14 || blues_outdoor_right_move.to_y != 6 ||
+      blues_outdoor_right_move.blocker != pokered::MoveBlocker::None ||
+      blues_outdoor_right_step.map_id != pokered::WorldId::PalletTown ||
+      blues_outdoor_right_step.player.x != 14 || blues_outdoor_right_step.player.y != 6 ||
+      blues_outdoor_right_step.last_map != static_cast<std::uint16_t>(pokered::WorldId::BluesHouse) ||
+      blues_outdoor_right_step.last_warp != 2 ||
+      blues_outdoor_right_step.player.facing != pokered::Facing::Right ||
+      blues_outdoor_right_step.step_counter != 1) {
+    std::cerr << "expected BluesHouse outdoor landing tile right step to stay in PalletTown\n";
+    return 1;
+  }
 
   pokered::WorldState oaks_entry {};
   oaks_entry.map_id = pokered::WorldId::PalletTown;
@@ -1564,6 +1591,33 @@ int main() {
     std::cerr << "expected OaksLab outdoor landing tile left step to stay in PalletTown\n";
     return 1;
   }
+  if (pokered::BlockerAt(pokered::GetMapData(pokered::WorldId::PalletTown), 13, 12) != pokered::MoveBlocker::None) {
+    std::cerr << "expected OaksLab outdoor landing tile right edge to remain passable\n";
+    return 1;
+  }
+  pokered::WorldState oaks_outdoor_right_step {};
+  oaks_outdoor_right_step.map_id = pokered::WorldId::PalletTown;
+  oaks_outdoor_right_step.player = {12, 12, pokered::Facing::Right};
+  oaks_outdoor_right_step.last_map = static_cast<std::uint16_t>(pokered::WorldId::OaksLab);
+  oaks_outdoor_right_step.last_warp = 1;
+  const pokered::MoveResult oaks_outdoor_right_move =
+      pokered::TryMoveWithResult(oaks_outdoor_right_step, pokered::Facing::Right);
+  if (!oaks_outdoor_right_move.moved || oaks_outdoor_right_move.warped ||
+      oaks_outdoor_right_move.source_map != pokered::WorldId::PalletTown ||
+      oaks_outdoor_right_move.source_warp != 0 ||
+      oaks_outdoor_right_move.target_map != pokered::WorldId::PalletTown ||
+      oaks_outdoor_right_move.target_warp != 0 || oaks_outdoor_right_move.message != pokered::MessageId::None ||
+      oaks_outdoor_right_move.to_x != 13 || oaks_outdoor_right_move.to_y != 12 ||
+      oaks_outdoor_right_move.blocker != pokered::MoveBlocker::None ||
+      oaks_outdoor_right_step.map_id != pokered::WorldId::PalletTown ||
+      oaks_outdoor_right_step.player.x != 13 || oaks_outdoor_right_step.player.y != 12 ||
+      oaks_outdoor_right_step.last_map != static_cast<std::uint16_t>(pokered::WorldId::OaksLab) ||
+      oaks_outdoor_right_step.last_warp != 1 ||
+      oaks_outdoor_right_step.player.facing != pokered::Facing::Right ||
+      oaks_outdoor_right_step.step_counter != 1) {
+    std::cerr << "expected OaksLab outdoor landing tile right step to stay in PalletTown\n";
+    return 1;
+  }
 
   pokered::WorldState warp_world {};
   warp_world.map_id = pokered::WorldId::RedsHouse1F;
@@ -1621,6 +1675,33 @@ int main() {
       house_outdoor_left_step.player.facing != pokered::Facing::Left ||
       house_outdoor_left_step.step_counter != 1) {
     std::cerr << "expected RedsHouse1F outdoor landing tile left step to stay in PalletTown\n";
+    return 1;
+  }
+  if (pokered::BlockerAt(pokered::GetMapData(pokered::WorldId::PalletTown), 6, 6) != pokered::MoveBlocker::None) {
+    std::cerr << "expected RedsHouse1F outdoor landing tile right edge to remain passable\n";
+    return 1;
+  }
+  pokered::WorldState house_outdoor_right_step {};
+  house_outdoor_right_step.map_id = pokered::WorldId::PalletTown;
+  house_outdoor_right_step.player = {5, 6, pokered::Facing::Right};
+  house_outdoor_right_step.last_map = static_cast<std::uint16_t>(pokered::WorldId::RedsHouse1F);
+  house_outdoor_right_step.last_warp = 2;
+  const pokered::MoveResult house_outdoor_right_move =
+      pokered::TryMoveWithResult(house_outdoor_right_step, pokered::Facing::Right);
+  if (!house_outdoor_right_move.moved || house_outdoor_right_move.warped ||
+      house_outdoor_right_move.source_map != pokered::WorldId::PalletTown ||
+      house_outdoor_right_move.source_warp != 0 ||
+      house_outdoor_right_move.target_map != pokered::WorldId::PalletTown ||
+      house_outdoor_right_move.target_warp != 0 || house_outdoor_right_move.message != pokered::MessageId::None ||
+      house_outdoor_right_move.to_x != 6 || house_outdoor_right_move.to_y != 6 ||
+      house_outdoor_right_move.blocker != pokered::MoveBlocker::None ||
+      house_outdoor_right_step.map_id != pokered::WorldId::PalletTown ||
+      house_outdoor_right_step.player.x != 6 || house_outdoor_right_step.player.y != 6 ||
+      house_outdoor_right_step.last_map != static_cast<std::uint16_t>(pokered::WorldId::RedsHouse1F) ||
+      house_outdoor_right_step.last_warp != 2 ||
+      house_outdoor_right_step.player.facing != pokered::Facing::Right ||
+      house_outdoor_right_step.step_counter != 1) {
+    std::cerr << "expected RedsHouse1F outdoor landing tile right step to stay in PalletTown\n";
     return 1;
   }
 

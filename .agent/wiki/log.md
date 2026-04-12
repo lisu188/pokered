@@ -257,3 +257,9 @@ Updated `native/tests/save_system_tests.cpp` so the PalletTown auto-step landing
 
 ## [2026-04-12 17:20] verification | PalletTown outdoor landing-tile step-offs re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=9`, the test binary now covers passable lateral step-offs from every live PalletTown outdoor landing tile, and the standalone SDL launch again timed out normally with no startup error.
+
+## [2026-04-12 21:21] verification | PalletTown outdoor landing-tile symmetry coverage expanded
+Updated `native/tests/save_system_tests.cpp` so the opposite lateral direction from each live PalletTown outdoor landing tile is now covered too: the right-side step from the landing tiles below `RedsHouse1F`, `BluesHouse`, and `OaksLab`. This closes the remaining outdoor landing-tile symmetry gap without changing runtime behavior.
+
+## [2026-04-12 21:21] verification | symmetric PalletTown outdoor landing-tile step-offs re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=9`, the test binary now covers passable lateral step-offs in both directions from every live PalletTown outdoor landing tile, and the standalone SDL launch again timed out normally with no startup error.
