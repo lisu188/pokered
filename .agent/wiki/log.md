@@ -335,3 +335,9 @@ Updated `native/tests/save_system_tests.cpp` so the two PalletTown-connected hou
 
 ## [2026-04-13 16:51] verification | symmetric house room-side returns re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=9`, the test binary now covers both reachable house room-side return tiles alongside the reachable paired-side lab return, and the standalone SDL launch again timed out normally with no startup error.
+
+## [2026-04-13 20:07] verification | reverse paired-doorway span cases added
+Updated `native/src/app/application.cpp` and `native/tests/save_system_tests.cpp` so the remaining interior doorway-span direction is now explicit in coverage too. `RedsHouse1F`, `BluesHouse`, and `OaksLab` now all verify that stepping from the non-entry interior doorway tile back onto the entry doorway tile exits immediately into `PalletTown`.
+
+## [2026-04-13 20:07] verification | reverse paired-doorway span cases re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=9`, the smoke path and native test binary now cover reverse paired-doorway span warps across `RedsHouse1F`, `BluesHouse`, and `OaksLab`, and the standalone SDL launch again timed out normally with no startup error.
