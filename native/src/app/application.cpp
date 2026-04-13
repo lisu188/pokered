@@ -1296,6 +1296,19 @@ int RunSmokeTest() {
     std::cerr << "smoke: expected OaksLab immediate door re-exit into PalletTown\n";
     return 1;
   }
+  const MoveResult oaks_forward_block = TryMoveWithResult(state.world, Facing::Down);
+  if (oaks_forward_block.moved || oaks_forward_block.warped ||
+      oaks_forward_block.source_map != WorldId::PalletTown || oaks_forward_block.source_warp != 0 ||
+      oaks_forward_block.target_map != WorldId::PalletTown || oaks_forward_block.target_warp != 0 ||
+      oaks_forward_block.message != MessageId::None || oaks_forward_block.to_x != 12 ||
+      oaks_forward_block.to_y != 13 || oaks_forward_block.blocker != MoveBlocker::Collision ||
+      state.world.map_id != WorldId::PalletTown || state.world.player.x != 12 || state.world.player.y != 12 ||
+      state.world.player.facing != Facing::Down ||
+      state.world.last_map != static_cast<std::uint16_t>(WorldId::OaksLab) || state.world.last_warp != 2 ||
+      state.world.step_counter != 8) {
+    std::cerr << "smoke: expected OaksLab outdoor landing forward edge to stay blocked\n";
+    return 1;
+  }
   state.world.player = PlayerState {12, 12, Facing::Up};
   if (!TryMove(state.world, Facing::Up) || state.world.map_id != WorldId::OaksLab ||
       state.world.player.x != 5 || state.world.player.y != 11 || state.world.player.facing != Facing::Down ||

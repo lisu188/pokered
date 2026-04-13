@@ -269,3 +269,9 @@ Updated `native/tests/save_system_tests.cpp` so the remaining forward direction 
 
 ## [2026-04-13 09:49] verification | PalletTown outdoor landing forward-movement re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=9`, the test binary now covers all non-re-entry movement directions from every live PalletTown outdoor landing tile, and the standalone SDL launch again timed out normally with no startup error.
+
+## [2026-04-13 12:33] verification | OaksLab outdoor landing blocked-forward case added to smoke
+Updated `native/src/app/application.cpp` so `RunSmokeTest` now also asserts the unique `OaksLab` outdoor landing behavior directly. After the immediate lab re-exit into `PalletTown`, pressing forward from the landing tile must stay local, report a collision blocker, keep `last_map`/`last_warp` intact, and avoid retriggering a warp before the smoke path re-enters the lab.
+
+## [2026-04-13 12:33] verification | OaksLab outdoor landing smoke case re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=9`, the smoke path now covers the blocked-forward `OaksLab` landing case alongside the existing PalletTown door round-trips, and the standalone SDL launch again timed out normally with no startup error.

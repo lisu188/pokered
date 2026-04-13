@@ -64,6 +64,7 @@
   - PalletTown <-> BluesHouse door traversal, including the second interior doorway tile
   - PalletTown <-> OaksLab door traversal
   - smoke coverage across all three live PalletTown door pairs, including immediate indoor re-exits from `RedsHouse1F`, `BluesHouse`, and `OaksLab` plus a PalletTown-side re-entry check for each live door pair
+  - smoke coverage for the collision-blocked forward edge below the `OaksLab` PalletTown landing tile, preserving the current `smoke-ok: world=5 pos=2,2 steps=9` path
   - exterior PalletTown door auto-step behavior after `RedsHouse1F`, `BluesHouse`, and `OaksLab` exits
   - passable lateral step-offs in both directions from the PalletTown auto-step landing tile for `RedsHouse1F`, `BluesHouse`, and `OaksLab`
   - forward movement from the PalletTown auto-step landing tile, including passable forward steps below `RedsHouse1F` and `BluesHouse` plus the collision-blocked forward edge below `OaksLab`
