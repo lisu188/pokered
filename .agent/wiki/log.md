@@ -275,3 +275,9 @@ Updated `native/src/app/application.cpp` so `RunSmokeTest` now also asserts the 
 
 ## [2026-04-13 12:33] verification | OaksLab outdoor landing smoke case re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=9`, the smoke path now covers the blocked-forward `OaksLab` landing case alongside the existing PalletTown door round-trips, and the standalone SDL launch again timed out normally with no startup error.
+
+## [2026-04-13 12:54] verification | house outdoor landing forward cases added to smoke
+Updated `native/src/app/application.cpp` so `RunSmokeTest` now also covers the passable forward steps below the `RedsHouse1F` and `BluesHouse` PalletTown landing tiles. These checks run against snapshot copies of the live world state, which lets the smoke scenario exercise the remaining house-frontage cases without perturbing the established `steps=9` main route.
+
+## [2026-04-13 12:54] verification | house outdoor landing smoke cases re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=9`, the smoke path now covers the passable house landing forward steps alongside the blocked-forward `OaksLab` landing case, and the standalone SDL launch again timed out normally with no startup error.
