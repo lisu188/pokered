@@ -1161,6 +1161,24 @@ int main() {
     std::cerr << "expected PalletTown door warp to enter RedsHouse1F\n";
     return 1;
   }
+  if (pokered::BlockerAt(pokered::GetMapData(pokered::WorldId::RedsHouse1F), 2, 6) != pokered::MoveBlocker::None) {
+    std::cerr << "expected RedsHouse1F interior forward tile to remain passable\n";
+    return 1;
+  }
+  pokered::WorldState reds_forward_step = pallet_world;
+  const pokered::MoveResult reds_forward_move = pokered::TryMoveWithResult(reds_forward_step, pokered::Facing::Up);
+  if (!reds_forward_move.moved || reds_forward_move.warped ||
+      reds_forward_move.source_map != pokered::WorldId::RedsHouse1F || reds_forward_move.source_warp != 0 ||
+      reds_forward_move.target_map != pokered::WorldId::RedsHouse1F || reds_forward_move.target_warp != 0 ||
+      reds_forward_move.message != pokered::MessageId::None || reds_forward_move.to_x != 2 ||
+      reds_forward_move.to_y != 6 || reds_forward_move.blocker != pokered::MoveBlocker::None ||
+      reds_forward_step.map_id != pokered::WorldId::RedsHouse1F || reds_forward_step.player.x != 2 ||
+      reds_forward_step.player.y != 6 || reds_forward_step.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
+      reds_forward_step.last_warp != 1 || reds_forward_step.player.facing != pokered::Facing::Up ||
+      reds_forward_step.step_counter != 2) {
+    std::cerr << "expected RedsHouse1F to step off the door tile into the room\n";
+    return 1;
+  }
   const pokered::MoveResult reds_immediate_exit = pokered::TryMoveWithResult(pallet_world, pokered::Facing::Down);
   if (!reds_immediate_exit.moved || !reds_immediate_exit.warped ||
       reds_immediate_exit.source_map != pokered::WorldId::RedsHouse1F || reds_immediate_exit.source_warp != 1 ||
@@ -1480,6 +1498,25 @@ int main() {
       oaks_entry.last_warp != 3 || oaks_entry.player.facing != pokered::Facing::Down ||
       oaks_entry.step_counter != 1) {
     std::cerr << "expected PalletTown door warp to enter OaksLab\n";
+    return 1;
+  }
+  if (pokered::BlockerAt(pokered::GetMapData(pokered::WorldId::OaksLab), 5, 10) != pokered::MoveBlocker::Npc) {
+    std::cerr << "expected OaksLab interior forward tile to remain NPC-blocked\n";
+    return 1;
+  }
+  pokered::WorldState oaks_forward_exit = oaks_entry;
+  const pokered::MoveResult oaks_forward_move = pokered::TryMoveWithResult(oaks_forward_exit, pokered::Facing::Up);
+  if (!oaks_forward_move.moved || !oaks_forward_move.warped ||
+      oaks_forward_move.source_map != pokered::WorldId::OaksLab || oaks_forward_move.source_warp != 2 ||
+      oaks_forward_move.target_map != pokered::WorldId::PalletTown || oaks_forward_move.target_warp != 3 ||
+      oaks_forward_move.message != pokered::MessageId::None || oaks_forward_move.to_x != 12 ||
+      oaks_forward_move.to_y != 12 || oaks_forward_move.blocker != pokered::MoveBlocker::None ||
+      oaks_forward_exit.map_id != pokered::WorldId::PalletTown || oaks_forward_exit.player.x != 12 ||
+      oaks_forward_exit.player.y != 12 ||
+      oaks_forward_exit.last_map != static_cast<std::uint16_t>(pokered::WorldId::OaksLab) ||
+      oaks_forward_exit.last_warp != 2 || oaks_forward_exit.player.facing != pokered::Facing::Down ||
+      oaks_forward_exit.step_counter != 1) {
+    std::cerr << "expected OaksLab interior forward NPC block to re-exit into PalletTown\n";
     return 1;
   }
   const pokered::MoveResult oaks_immediate_exit = pokered::TryMoveWithResult(oaks_entry, pokered::Facing::Down);
