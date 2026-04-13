@@ -99,7 +99,9 @@
     "Extended the smoke path with the PalletTown interior doorway-span warp cases",
     "Re-verified the PalletTown interior doorway-span smoke cases on the Linux SDL CMake path",
     "Extended the smoke path with PalletTown indoor landing forward-movement cases, including the OaksLab NPC-blocked re-exit",
-    "Re-verified the PalletTown indoor landing forward-movement smoke cases on the Linux SDL CMake path"
+    "Re-verified the PalletTown indoor landing forward-movement smoke cases on the Linux SDL CMake path",
+    "Expanded paired-doorway indoor forward coverage across the live PalletTown-connected interiors",
+    "Re-verified paired-doorway indoor forward movement on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",

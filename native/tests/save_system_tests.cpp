@@ -1179,6 +1179,31 @@ int main() {
     std::cerr << "expected RedsHouse1F to step off the door tile into the room\n";
     return 1;
   }
+  if (pokered::BlockerAt(pokered::GetMapData(pokered::WorldId::RedsHouse1F), 3, 6) != pokered::MoveBlocker::None) {
+    std::cerr << "expected RedsHouse1F paired interior forward tile to remain passable\n";
+    return 1;
+  }
+  pokered::WorldState reds_right_forward_step {};
+  reds_right_forward_step.map_id = pokered::WorldId::RedsHouse1F;
+  reds_right_forward_step.player = {3, 7, pokered::Facing::Up};
+  reds_right_forward_step.last_map = static_cast<std::uint16_t>(pokered::WorldId::PalletTown);
+  reds_right_forward_step.last_warp = 1;
+  const pokered::MoveResult reds_right_forward_move =
+      pokered::TryMoveWithResult(reds_right_forward_step, pokered::Facing::Up);
+  if (!reds_right_forward_move.moved || reds_right_forward_move.warped ||
+      reds_right_forward_move.source_map != pokered::WorldId::RedsHouse1F ||
+      reds_right_forward_move.source_warp != 0 || reds_right_forward_move.target_map != pokered::WorldId::RedsHouse1F ||
+      reds_right_forward_move.target_warp != 0 || reds_right_forward_move.message != pokered::MessageId::None ||
+      reds_right_forward_move.to_x != 3 || reds_right_forward_move.to_y != 6 ||
+      reds_right_forward_move.blocker != pokered::MoveBlocker::None ||
+      reds_right_forward_step.map_id != pokered::WorldId::RedsHouse1F || reds_right_forward_step.player.x != 3 ||
+      reds_right_forward_step.player.y != 6 ||
+      reds_right_forward_step.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
+      reds_right_forward_step.last_warp != 1 || reds_right_forward_step.player.facing != pokered::Facing::Up ||
+      reds_right_forward_step.step_counter != 1) {
+    std::cerr << "expected RedsHouse1F paired doorway forward step to stay inside the house\n";
+    return 1;
+  }
   const pokered::MoveResult reds_immediate_exit = pokered::TryMoveWithResult(pallet_world, pokered::Facing::Down);
   if (!reds_immediate_exit.moved || !reds_immediate_exit.warped ||
       reds_immediate_exit.source_map != pokered::WorldId::RedsHouse1F || reds_immediate_exit.source_warp != 1 ||
@@ -1369,6 +1394,31 @@ int main() {
     std::cerr << "expected to step off the BluesHouse door tile\n";
     return 1;
   }
+  if (pokered::BlockerAt(pokered::GetMapData(pokered::WorldId::BluesHouse), 3, 6) != pokered::MoveBlocker::None) {
+    std::cerr << "expected BluesHouse paired interior forward tile to remain passable\n";
+    return 1;
+  }
+  pokered::WorldState blues_right_forward_step {};
+  blues_right_forward_step.map_id = pokered::WorldId::BluesHouse;
+  blues_right_forward_step.player = {3, 7, pokered::Facing::Up};
+  blues_right_forward_step.last_map = static_cast<std::uint16_t>(pokered::WorldId::PalletTown);
+  blues_right_forward_step.last_warp = 2;
+  const pokered::MoveResult blues_right_forward_move =
+      pokered::TryMoveWithResult(blues_right_forward_step, pokered::Facing::Up);
+  if (!blues_right_forward_move.moved || blues_right_forward_move.warped ||
+      blues_right_forward_move.source_map != pokered::WorldId::BluesHouse ||
+      blues_right_forward_move.source_warp != 0 || blues_right_forward_move.target_map != pokered::WorldId::BluesHouse ||
+      blues_right_forward_move.target_warp != 0 || blues_right_forward_move.message != pokered::MessageId::None ||
+      blues_right_forward_move.to_x != 3 || blues_right_forward_move.to_y != 6 ||
+      blues_right_forward_move.blocker != pokered::MoveBlocker::None ||
+      blues_right_forward_step.map_id != pokered::WorldId::BluesHouse || blues_right_forward_step.player.x != 3 ||
+      blues_right_forward_step.player.y != 6 ||
+      blues_right_forward_step.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
+      blues_right_forward_step.last_warp != 2 || blues_right_forward_step.player.facing != pokered::Facing::Up ||
+      blues_right_forward_step.step_counter != 1) {
+    std::cerr << "expected BluesHouse paired doorway forward step to stay inside the house\n";
+    return 1;
+  }
   pokered::WorldState blues_right_exit {};
   blues_right_exit.map_id = pokered::WorldId::BluesHouse;
   blues_right_exit.player = {3, 6, pokered::Facing::Down};
@@ -1531,6 +1581,31 @@ int main() {
       oaks_entry.last_warp != 2 || oaks_entry.player.facing != pokered::Facing::Down ||
       oaks_entry.step_counter != 1) {
     std::cerr << "expected OaksLab immediate door re-exit into PalletTown\n";
+    return 1;
+  }
+  if (pokered::BlockerAt(pokered::GetMapData(pokered::WorldId::OaksLab), 4, 10) != pokered::MoveBlocker::None) {
+    std::cerr << "expected OaksLab paired interior forward tile to remain passable\n";
+    return 1;
+  }
+  pokered::WorldState oaks_left_forward_step {};
+  oaks_left_forward_step.map_id = pokered::WorldId::OaksLab;
+  oaks_left_forward_step.player = {4, 11, pokered::Facing::Up};
+  oaks_left_forward_step.last_map = static_cast<std::uint16_t>(pokered::WorldId::PalletTown);
+  oaks_left_forward_step.last_warp = 3;
+  const pokered::MoveResult oaks_left_forward_move =
+      pokered::TryMoveWithResult(oaks_left_forward_step, pokered::Facing::Up);
+  if (!oaks_left_forward_move.moved || oaks_left_forward_move.warped ||
+      oaks_left_forward_move.source_map != pokered::WorldId::OaksLab ||
+      oaks_left_forward_move.source_warp != 0 || oaks_left_forward_move.target_map != pokered::WorldId::OaksLab ||
+      oaks_left_forward_move.target_warp != 0 || oaks_left_forward_move.message != pokered::MessageId::None ||
+      oaks_left_forward_move.to_x != 4 || oaks_left_forward_move.to_y != 10 ||
+      oaks_left_forward_move.blocker != pokered::MoveBlocker::None ||
+      oaks_left_forward_step.map_id != pokered::WorldId::OaksLab || oaks_left_forward_step.player.x != 4 ||
+      oaks_left_forward_step.player.y != 10 ||
+      oaks_left_forward_step.last_map != static_cast<std::uint16_t>(pokered::WorldId::PalletTown) ||
+      oaks_left_forward_step.last_warp != 3 || oaks_left_forward_step.player.facing != pokered::Facing::Up ||
+      oaks_left_forward_step.step_counter != 1) {
+    std::cerr << "expected OaksLab paired doorway forward step to stay inside the lab\n";
     return 1;
   }
   if (pokered::BlockerAt(pokered::GetMapData(pokered::WorldId::OaksLab), 3, 11) != pokered::MoveBlocker::None) {

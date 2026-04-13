@@ -65,6 +65,7 @@
   - PalletTown <-> OaksLab door traversal
   - smoke coverage across all three live PalletTown door pairs, including immediate indoor re-exits from `RedsHouse1F`, `BluesHouse`, and `OaksLab`, snapshot-checked passable lateral steps from the live interior landing tiles after each PalletTown re-entry, snapshot-checked doorway-span warps back into `PalletTown`, plus a PalletTown-side re-entry check for each live door pair
   - forward movement from the live interior landing tiles after PalletTown re-entry, including passable forward steps inside `RedsHouse1F` and `BluesHouse` plus the NPC-blocked `OaksLab` forward input that re-exits into `PalletTown`
+  - forward movement from the remaining paired interior doorway tiles, including passable forward steps from the non-entry door tile inside `RedsHouse1F`, `BluesHouse`, and `OaksLab`
   - smoke coverage for the outdoor landing forward and lateral cases below `RedsHouse1F`, `BluesHouse`, and `OaksLab`, including passable house frontage checks via snapshot copies, passable left/right landing steps for all three live doors, plus the collision-blocked `OaksLab` frontage, while preserving the current `smoke-ok: world=5 pos=2,2 steps=9` path
   - exterior PalletTown door auto-step behavior after `RedsHouse1F`, `BluesHouse`, and `OaksLab` exits
   - passable lateral step-offs in both directions from the PalletTown auto-step landing tile for `RedsHouse1F`, `BluesHouse`, and `OaksLab`
