@@ -93,7 +93,9 @@
     "Extended the smoke path with the RedsHouse1F and BluesHouse outdoor landing forward-step cases",
     "Re-verified the house outdoor landing forward-step smoke cases on the Linux SDL CMake path",
     "Extended the smoke path with the PalletTown outdoor landing lateral-step cases",
-    "Re-verified the PalletTown outdoor landing lateral-step smoke cases on the Linux SDL CMake path"
+    "Re-verified the PalletTown outdoor landing lateral-step smoke cases on the Linux SDL CMake path",
+    "Extended the smoke path with the PalletTown indoor landing lateral-step cases",
+    "Re-verified the PalletTown indoor landing lateral-step smoke cases on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",
