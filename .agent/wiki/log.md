@@ -323,3 +323,15 @@ Updated `native/src/app/application.cpp` so `RunSmokeTest` now also snapshot-che
 
 ## [2026-04-13 15:37] verification | paired-doorway lateral smoke cases re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=9`, the smoke path now covers passable lateral step-offs from the paired interior doorway tiles in `RedsHouse1F`, `BluesHouse`, and `OaksLab`, and the standalone SDL launch again timed out normally with no startup error.
+
+## [2026-04-13 16:48] verification | room-side PalletTown door returns added
+Updated `native/src/app/application.cpp` and `native/tests/save_system_tests.cpp` so the reachable room-side return onto live PalletTown door tiles is now explicit in coverage too. The two houses now verify stepping down from the interior-adjacent return tiles back onto the doorway, and `OaksLab` now verifies the reachable paired-side return from `(4,10)` back onto the lab door seam.
+
+## [2026-04-13 16:48] verification | room-side PalletTown door returns re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=9`, the smoke path now covers reachable room-side returns onto the live PalletTown door tiles, and the standalone SDL launch again timed out normally with no startup error.
+
+## [2026-04-13 16:51] verification | symmetric house room-side returns added
+Updated `native/tests/save_system_tests.cpp` so the two PalletTown-connected houses now also verify the paired room-side return tile above the second live doorway. This closes the remaining unit-test symmetry gap after the smoke path already proved both reachable house return tiles and the reachable paired-side lab return.
+
+## [2026-04-13 16:51] verification | symmetric house room-side returns re-verified
+Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=9`, the test binary now covers both reachable house room-side return tiles alongside the reachable paired-side lab return, and the standalone SDL launch again timed out normally with no startup error.

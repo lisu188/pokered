@@ -105,7 +105,11 @@
     "Extended the smoke path with paired-doorway blocked re-exit cases across the live PalletTown-connected interiors",
     "Re-verified paired-doorway blocked exits in the PalletTown smoke path on the Linux SDL CMake path",
     "Extended the smoke path with paired-doorway lateral step-off cases across the live PalletTown-connected interiors",
-    "Re-verified paired-doorway lateral step-offs in the PalletTown smoke path on the Linux SDL CMake path"
+    "Re-verified paired-doorway lateral step-offs in the PalletTown smoke path on the Linux SDL CMake path",
+    "Extended PalletTown door coverage with reachable room-side return warps across the live connected interiors",
+    "Re-verified reachable room-side PalletTown door returns on the Linux SDL CMake path",
+    "Closed the native house-room return symmetry gap in the PalletTown door unit suite",
+    "Re-verified symmetric house room-side returns on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",
