@@ -85,7 +85,9 @@
     "Added PalletTown outdoor landing-tile lateral step-off coverage",
     "Re-verified PalletTown outdoor landing-tile step-offs on the Linux SDL CMake path",
     "Expanded PalletTown outdoor landing-tile lateral step-off coverage symmetrically",
-    "Re-verified symmetric PalletTown outdoor landing-tile step-offs on the Linux SDL CMake path"
+    "Re-verified symmetric PalletTown outdoor landing-tile step-offs on the Linux SDL CMake path",
+    "Extended PalletTown outdoor landing-tile coverage to forward movement",
+    "Re-verified PalletTown outdoor landing-tile forward movement on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",
