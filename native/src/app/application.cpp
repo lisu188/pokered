@@ -1303,6 +1303,25 @@ int RunSmokeTest() {
     std::cerr << "smoke: expected RedsHouse1F indoor landing left step to stay inside the house\n";
     return 1;
   }
+  WorldState reds_entry_side_return = state.world;
+  reds_entry_side_return.player = PlayerState {1, 7, Facing::Right};
+  const MoveResult reds_entry_side_return_move = TryMoveWithResult(reds_entry_side_return, Facing::Right);
+  if (!reds_entry_side_return_move.moved || !reds_entry_side_return_move.warped ||
+      reds_entry_side_return_move.source_map != WorldId::RedsHouse1F ||
+      reds_entry_side_return_move.source_warp != 1 ||
+      reds_entry_side_return_move.target_map != WorldId::PalletTown ||
+      reds_entry_side_return_move.target_warp != 1 ||
+      reds_entry_side_return_move.message != MessageId::None || reds_entry_side_return_move.to_x != 5 ||
+      reds_entry_side_return_move.to_y != 6 || reds_entry_side_return_move.blocker != MoveBlocker::None ||
+      reds_entry_side_return.map_id != WorldId::PalletTown || reds_entry_side_return.player.x != 5 ||
+      reds_entry_side_return.player.y != 6 || reds_entry_side_return.player.facing != Facing::Down ||
+      reds_entry_side_return.last_map != static_cast<std::uint16_t>(WorldId::RedsHouse1F) ||
+      reds_entry_side_return.last_warp != 1 ||
+      reds_entry_side_return.step_counter != state.world.step_counter + 1 || state.world.player.x != 2 ||
+      state.world.player.y != 7 || state.world.step_counter != 2) {
+    std::cerr << "smoke: expected RedsHouse1F lateral return onto the entry doorway to exit into PalletTown\n";
+    return 1;
+  }
   WorldState reds_entry_right_step = state.world;
   const MoveResult reds_entry_right_move = TryMoveWithResult(reds_entry_right_step, Facing::Right);
   if (!reds_entry_right_move.moved || !reds_entry_right_move.warped ||
@@ -1376,6 +1395,28 @@ int RunSmokeTest() {
       reds_paired_right_step.last_warp != 1 || reds_paired_right_step.step_counter != state.world.step_counter + 1 ||
       state.world.player.x != 5 || state.world.player.y != 6 || state.world.step_counter != 2) {
     std::cerr << "smoke: expected RedsHouse1F paired doorway right step to stay inside the house\n";
+    return 1;
+  }
+  WorldState reds_paired_side_return = state.world;
+  reds_paired_side_return.map_id = WorldId::RedsHouse1F;
+  reds_paired_side_return.player = PlayerState {4, 7, Facing::Left};
+  reds_paired_side_return.last_map = static_cast<std::uint16_t>(WorldId::PalletTown);
+  reds_paired_side_return.last_warp = 1;
+  const MoveResult reds_paired_side_return_move = TryMoveWithResult(reds_paired_side_return, Facing::Left);
+  if (!reds_paired_side_return_move.moved || !reds_paired_side_return_move.warped ||
+      reds_paired_side_return_move.source_map != WorldId::RedsHouse1F ||
+      reds_paired_side_return_move.source_warp != 2 ||
+      reds_paired_side_return_move.target_map != WorldId::PalletTown ||
+      reds_paired_side_return_move.target_warp != 1 ||
+      reds_paired_side_return_move.message != MessageId::None || reds_paired_side_return_move.to_x != 5 ||
+      reds_paired_side_return_move.to_y != 6 || reds_paired_side_return_move.blocker != MoveBlocker::None ||
+      reds_paired_side_return.map_id != WorldId::PalletTown || reds_paired_side_return.player.x != 5 ||
+      reds_paired_side_return.player.y != 6 || reds_paired_side_return.player.facing != Facing::Down ||
+      reds_paired_side_return.last_map != static_cast<std::uint16_t>(WorldId::RedsHouse1F) ||
+      reds_paired_side_return.last_warp != 2 ||
+      reds_paired_side_return.step_counter != state.world.step_counter + 1 || state.world.player.x != 5 ||
+      state.world.player.y != 6 || state.world.step_counter != 2) {
+    std::cerr << "smoke: expected RedsHouse1F lateral return onto the paired doorway to exit into PalletTown\n";
     return 1;
   }
   WorldState reds_forward_step = state.world;
@@ -1541,6 +1582,25 @@ int RunSmokeTest() {
     std::cerr << "smoke: expected BluesHouse indoor landing left step to stay inside the house\n";
     return 1;
   }
+  WorldState blues_entry_side_return = state.world;
+  blues_entry_side_return.player = PlayerState {1, 7, Facing::Right};
+  const MoveResult blues_entry_side_return_move = TryMoveWithResult(blues_entry_side_return, Facing::Right);
+  if (!blues_entry_side_return_move.moved || !blues_entry_side_return_move.warped ||
+      blues_entry_side_return_move.source_map != WorldId::BluesHouse ||
+      blues_entry_side_return_move.source_warp != 1 ||
+      blues_entry_side_return_move.target_map != WorldId::PalletTown ||
+      blues_entry_side_return_move.target_warp != 2 ||
+      blues_entry_side_return_move.message != MessageId::None || blues_entry_side_return_move.to_x != 13 ||
+      blues_entry_side_return_move.to_y != 6 || blues_entry_side_return_move.blocker != MoveBlocker::None ||
+      blues_entry_side_return.map_id != WorldId::PalletTown || blues_entry_side_return.player.x != 13 ||
+      blues_entry_side_return.player.y != 6 || blues_entry_side_return.player.facing != Facing::Down ||
+      blues_entry_side_return.last_map != static_cast<std::uint16_t>(WorldId::BluesHouse) ||
+      blues_entry_side_return.last_warp != 1 ||
+      blues_entry_side_return.step_counter != state.world.step_counter + 1 || state.world.player.x != 2 ||
+      state.world.player.y != 7 || state.world.step_counter != 6) {
+    std::cerr << "smoke: expected BluesHouse lateral return onto the entry doorway to exit into PalletTown\n";
+    return 1;
+  }
   WorldState blues_entry_right_step = state.world;
   const MoveResult blues_entry_right_move = TryMoveWithResult(blues_entry_right_step, Facing::Right);
   if (!blues_entry_right_move.moved || !blues_entry_right_move.warped ||
@@ -1614,6 +1674,28 @@ int RunSmokeTest() {
       blues_paired_right_step.last_warp != 2 || blues_paired_right_step.step_counter != state.world.step_counter + 1 ||
       state.world.player.x != 13 || state.world.player.y != 6 || state.world.step_counter != 6) {
     std::cerr << "smoke: expected BluesHouse paired doorway right step to stay inside the house\n";
+    return 1;
+  }
+  WorldState blues_paired_side_return = state.world;
+  blues_paired_side_return.map_id = WorldId::BluesHouse;
+  blues_paired_side_return.player = PlayerState {4, 7, Facing::Left};
+  blues_paired_side_return.last_map = static_cast<std::uint16_t>(WorldId::PalletTown);
+  blues_paired_side_return.last_warp = 2;
+  const MoveResult blues_paired_side_return_move = TryMoveWithResult(blues_paired_side_return, Facing::Left);
+  if (!blues_paired_side_return_move.moved || !blues_paired_side_return_move.warped ||
+      blues_paired_side_return_move.source_map != WorldId::BluesHouse ||
+      blues_paired_side_return_move.source_warp != 2 ||
+      blues_paired_side_return_move.target_map != WorldId::PalletTown ||
+      blues_paired_side_return_move.target_warp != 2 ||
+      blues_paired_side_return_move.message != MessageId::None || blues_paired_side_return_move.to_x != 13 ||
+      blues_paired_side_return_move.to_y != 6 || blues_paired_side_return_move.blocker != MoveBlocker::None ||
+      blues_paired_side_return.map_id != WorldId::PalletTown || blues_paired_side_return.player.x != 13 ||
+      blues_paired_side_return.player.y != 6 || blues_paired_side_return.player.facing != Facing::Down ||
+      blues_paired_side_return.last_map != static_cast<std::uint16_t>(WorldId::BluesHouse) ||
+      blues_paired_side_return.last_warp != 2 ||
+      blues_paired_side_return.step_counter != state.world.step_counter + 1 || state.world.player.x != 13 ||
+      state.world.player.y != 6 || state.world.step_counter != 6) {
+    std::cerr << "smoke: expected BluesHouse lateral return onto the paired doorway to exit into PalletTown\n";
     return 1;
   }
   WorldState blues_forward_step = state.world;
@@ -1749,6 +1831,25 @@ int RunSmokeTest() {
     std::cerr << "smoke: expected OaksLab indoor landing right step to stay inside the lab\n";
     return 1;
   }
+  WorldState oaks_entry_side_return = state.world;
+  oaks_entry_side_return.player = PlayerState {6, 11, Facing::Left};
+  const MoveResult oaks_entry_side_return_move = TryMoveWithResult(oaks_entry_side_return, Facing::Left);
+  if (!oaks_entry_side_return_move.moved || !oaks_entry_side_return_move.warped ||
+      oaks_entry_side_return_move.source_map != WorldId::OaksLab ||
+      oaks_entry_side_return_move.source_warp != 2 ||
+      oaks_entry_side_return_move.target_map != WorldId::PalletTown ||
+      oaks_entry_side_return_move.target_warp != 3 ||
+      oaks_entry_side_return_move.message != MessageId::None || oaks_entry_side_return_move.to_x != 12 ||
+      oaks_entry_side_return_move.to_y != 12 || oaks_entry_side_return_move.blocker != MoveBlocker::None ||
+      oaks_entry_side_return.map_id != WorldId::PalletTown || oaks_entry_side_return.player.x != 12 ||
+      oaks_entry_side_return.player.y != 12 || oaks_entry_side_return.player.facing != Facing::Down ||
+      oaks_entry_side_return.last_map != static_cast<std::uint16_t>(WorldId::OaksLab) ||
+      oaks_entry_side_return.last_warp != 2 ||
+      oaks_entry_side_return.step_counter != state.world.step_counter + 1 || state.world.player.x != 5 ||
+      state.world.player.y != 11 || state.world.step_counter != 8) {
+    std::cerr << "smoke: expected OaksLab lateral return onto the entry doorway to exit into PalletTown\n";
+    return 1;
+  }
   WorldState oaks_entry_left_step = state.world;
   const MoveResult oaks_entry_left_move = TryMoveWithResult(oaks_entry_left_step, Facing::Left);
   if (!oaks_entry_left_move.moved || !oaks_entry_left_move.warped ||
@@ -1822,6 +1923,28 @@ int RunSmokeTest() {
       oaks_paired_left_step.last_warp != 3 || oaks_paired_left_step.step_counter != state.world.step_counter + 1 ||
       state.world.player.x != 12 || state.world.player.y != 12 || state.world.step_counter != 8) {
     std::cerr << "smoke: expected OaksLab paired doorway left step to stay inside the lab\n";
+    return 1;
+  }
+  WorldState oaks_paired_side_return = state.world;
+  oaks_paired_side_return.map_id = WorldId::OaksLab;
+  oaks_paired_side_return.player = PlayerState {3, 11, Facing::Right};
+  oaks_paired_side_return.last_map = static_cast<std::uint16_t>(WorldId::PalletTown);
+  oaks_paired_side_return.last_warp = 3;
+  const MoveResult oaks_paired_side_return_move = TryMoveWithResult(oaks_paired_side_return, Facing::Right);
+  if (!oaks_paired_side_return_move.moved || !oaks_paired_side_return_move.warped ||
+      oaks_paired_side_return_move.source_map != WorldId::OaksLab ||
+      oaks_paired_side_return_move.source_warp != 1 ||
+      oaks_paired_side_return_move.target_map != WorldId::PalletTown ||
+      oaks_paired_side_return_move.target_warp != 3 ||
+      oaks_paired_side_return_move.message != MessageId::None || oaks_paired_side_return_move.to_x != 12 ||
+      oaks_paired_side_return_move.to_y != 12 || oaks_paired_side_return_move.blocker != MoveBlocker::None ||
+      oaks_paired_side_return.map_id != WorldId::PalletTown || oaks_paired_side_return.player.x != 12 ||
+      oaks_paired_side_return.player.y != 12 || oaks_paired_side_return.player.facing != Facing::Down ||
+      oaks_paired_side_return.last_map != static_cast<std::uint16_t>(WorldId::OaksLab) ||
+      oaks_paired_side_return.last_warp != 1 ||
+      oaks_paired_side_return.step_counter != state.world.step_counter + 1 || state.world.player.x != 12 ||
+      state.world.player.y != 12 || state.world.step_counter != 8) {
+    std::cerr << "smoke: expected OaksLab lateral return onto the paired doorway to exit into PalletTown\n";
     return 1;
   }
   const MoveResult oaks_forward_block = TryMoveWithResult(state.world, Facing::Down);

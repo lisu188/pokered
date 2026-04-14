@@ -67,6 +67,7 @@
   - forward movement from the live interior landing tiles after PalletTown re-entry, including passable forward steps inside `RedsHouse1F` and `BluesHouse` plus the NPC-blocked `OaksLab` forward input that re-exits into `PalletTown`
   - forward movement from the remaining paired interior doorway tiles, including passable forward steps from the non-entry door tile inside `RedsHouse1F`, `BluesHouse`, and `OaksLab`
   - reverse doorway-span warps from the paired interior doorway tile back onto the entry tile, including `RedsHouse1F`, `BluesHouse`, and `OaksLab`
+  - lateral returns from the local side-adjacent interior tiles back onto both live doorway tiles, including `RedsHouse1F`, `BluesHouse`, and `OaksLab`
   - reachable room-side return warps from adjacent interior tiles, including both house return tiles in `RedsHouse1F` and `BluesHouse` plus the reachable paired-side lab return tile in `OaksLab`
   - smoke coverage for the outdoor landing forward and lateral cases below `RedsHouse1F`, `BluesHouse`, and `OaksLab`, including passable house frontage checks via snapshot copies, passable left/right landing steps for all three live doors, plus the collision-blocked `OaksLab` frontage, while preserving the current `smoke-ok: world=5 pos=2,2 steps=9` path
   - exterior PalletTown door auto-step behavior after `RedsHouse1F`, `BluesHouse`, and `OaksLab` exits

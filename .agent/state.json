@@ -111,7 +111,9 @@
     "Closed the native house-room return symmetry gap in the PalletTown door unit suite",
     "Re-verified symmetric house room-side returns on the Linux SDL CMake path",
     "Extended PalletTown door coverage with reverse paired-doorway span warps across the live connected interiors",
-    "Re-verified reverse paired-doorway span warps on the Linux SDL CMake path"
+    "Re-verified reverse paired-doorway span warps on the Linux SDL CMake path",
+    "Extended PalletTown door coverage with side-adjacent interior returns onto both live doorway tiles",
+    "Re-verified side-adjacent interior doorway returns on the Linux SDL CMake path"
   ],
   "blockers": [
     "MinGW cross-compilation tools are not installed locally",
