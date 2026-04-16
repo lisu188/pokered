@@ -50,6 +50,7 @@
   - imported `BluesHouse` block data, `House_Coll` passability, live PalletTown door-warp metadata, and NPC/object counts
   - imported `OaksLab` block data, `Dojo_Coll` passability, live PalletTown door-warp metadata, and NPC/object counts
   - imported `PalletTown` block data, `Overworld_Coll` passability, door-warp metadata, sign/NPC counts, and outdoor message coverage
+  - imported `Route1` block data, `Overworld_Coll` passability, source header connection metadata, sign/NPC counts, and outdoor message coverage
   - source-driven passability through `native/tests/save_system_tests.cpp`
   - paged Mom/TV message lookup behavior through `native/tests/save_system_tests.cpp`
   - imported warp/bg-event/NPC counts for `RedsHouse1F`, `RedsHouse2F`, `PewterSpeechHouse`, `BluesHouse`, `OaksLab`, and `PalletTown`
@@ -61,6 +62,7 @@
   - safe default interaction dispatch for the current `OaksLab` Rival / Oak / Pokeball branches plus Pokedex / Girl / Scientist text
   - static NPC/sign interaction dispatch for `PalletTown`
   - movement-triggered `PalletTown` Oak warning coverage before `got_starter`, plus reopening of the north exit once the starter flag is set
+  - PalletTown <-> Route1 north/south map-connection traversal after `got_starter`, while keeping the pre-starter Oak warning seam active
   - PalletTown <-> BluesHouse door traversal, including the second interior doorway tile
   - PalletTown <-> OaksLab door traversal
   - smoke coverage across all three live PalletTown door pairs, including immediate indoor re-exits from both live doorway tiles in `RedsHouse1F`, `BluesHouse`, and `OaksLab`, snapshot-checked passable lateral steps from the live interior landing tiles after each PalletTown re-entry, snapshot-checked passable lateral step-offs from the paired interior doorway tiles, snapshot-checked reachable room-side return warps onto those door tiles, snapshot-checked doorway-span warps back into `PalletTown`, plus a PalletTown-side re-entry check for each live door pair
@@ -102,12 +104,14 @@
   - move-script provenance lookup for the PalletTown Oak warning seam back to `PalletTownDefaultScript`, plus null coverage for non-script blockers and unrelated maps/messages
   - interaction provenance lookup joining `PalletTown_Object` + `PalletTownGirlText` and `OaksLab_Object` + `OaksLabPokedexText`, plus branch provenance lookup for `RedsHouse1FMomText`, `RedsHouse1FMomText.heal`, `RedsHouse1FTVText`, `OaksLabRivalText.afterChooseMon`, and `OaksLabOak1Text.check_for_poke_balls`, plus null coverage for native-only, static no-branch, or empty interactions
   - current map-script provenance lookup for the PalletTown and OaksLab script-table maps plus the script-only RedsHouse1F map, including current-script WRAM labels where the source uses them
+  - current map-script provenance lookup for the static `Route1_Script` path
   - current `LAST_MAP` provenance lookup for `PalletTown_Object #1` and `RedsHouse1F_Object #2`, plus null coverage for unset/invalid warp ids
   - state-gate provenance lookup for the PalletTown Oak seam event gate, `wStatusFlags4` / `BIT_GOT_STARTER`, and `wSpritePlayerStateData1FacingDirection` / `SPRITE_FACING_UP`, plus null coverage for non-script moves and static interactions
   - current facing provenance lookup for the PalletTown girl, the branched RedsHouse1F TV wrong-side text, and the post-starter OaksLab rival line, plus null coverage for empty facing targets
   - current facing text provenance lookup for the PalletTown girl, the branched RedsHouse1F TV wrong-side text, and the post-starter OaksLab rival line, plus null coverage for empty facing targets
   - current facing-branch provenance lookup for the RedsHouse1F Mom default/rest handlers, the RedsHouse1F TV handler, and the post-starter OaksLab rival handler, plus null coverage for static or empty facing targets
   - current facing gate-source provenance lookup for the RedsHouse1F Mom gate, the RedsHouse1F TV facing gate, and the post-starter OaksLab rival gate, plus null coverage for static or empty facing targets
+  - Route1 map, script, message, source-label, interaction, branch, facing-target, and facing-message provenance for the Pokemart sample NPC and Route1 sign
 
 ## Confirmed Oracle Assets
 - `pokered.gbc`, `pokeblue.gbc`, `pokeblue_debug.gbc`
@@ -122,7 +126,7 @@
 
 ## Next Verification Work
 - extend the current runtime-facing provenance hooks past the current-map, current-map-script, last-map-state, live-facing-target, live-facing-text, live-facing-branch, live-facing-gate-source, last-state-gate, last-state-gate-source, last-interaction-branch, last-interaction, last-move, and last-message-source pages into broader object-state and script-state tracing
-- add the next outdoor-adjacent scenario beyond the now-live `OaksLab` seam
+- add the next outdoor-adjacent scenario beyond the now-live `Route1` seam, such as Route1's ViridianCity edge or PalletTown's Route21 edge
 - add checks for deferred `LAST_MAP` door behavior on maps beyond the PalletTown seam
 - add importer regression checks for the lower-left representative tile rule used by overworld collision/warp semantics
 - later, add screenshot and structured trace comparisons for a multi-room indoor scenario

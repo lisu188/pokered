@@ -79,6 +79,67 @@ bool TryWarpFromCurrentTile(WorldState& world, const MapData& map, MoveResult& r
   return false;
 }
 
+const MapConnection* FindConnection(const MapData& map, Facing direction) {
+  for (const MapConnection& connection : map.connections) {
+    if (connection.direction == direction) {
+      return &connection;
+    }
+  }
+  return nullptr;
+}
+
+bool IsBoundsStep(const MapData& map, int x, int y) {
+  return x < 0 || y < 0 || x >= map.width || y >= map.height;
+}
+
+bool TryMapConnection(WorldState& world, const MapData& map, Facing facing,
+                      int next_x, int next_y, MoveResult& result) {
+  if (!IsBoundsStep(map, next_x, next_y)) {
+    return false;
+  }
+  const MapConnection* connection = FindConnection(map, facing);
+  if (connection == nullptr || !HasMapData(connection->target_map)) {
+    return false;
+  }
+
+  const MapData& target_map = GetMapData(connection->target_map);
+  int target_x = next_x;
+  int target_y = next_y;
+  switch (facing) {
+    case Facing::Up:
+      target_x = next_x + connection->offset;
+      target_y = target_map.height - 1;
+      break;
+    case Facing::Down:
+      target_x = next_x + connection->offset;
+      target_y = 0;
+      break;
+    case Facing::Left:
+      target_x = target_map.width - 1;
+      target_y = next_y + connection->offset;
+      break;
+    case Facing::Right:
+      target_x = 0;
+      target_y = next_y + connection->offset;
+      break;
+  }
+
+  if (!CanMoveTo(target_map, target_x, target_y)) {
+    return false;
+  }
+
+  world.map_id = connection->target_map;
+  world.player.x = target_x;
+  world.player.y = target_y;
+  ++world.step_counter;
+  result.moved = true;
+  result.blocker = MoveBlocker::None;
+  result.target_map = connection->target_map;
+  result.to_x = target_x;
+  result.to_y = target_y;
+  return true;
+}
+
 bool IsDoorWarpTile(const MapData& map, int x, int y) {
   return RenderTileKind(map, x, y) == TileKind::Door;
 }
@@ -132,6 +193,10 @@ MoveResult TryMoveWithResult(WorldState& world, Facing facing) {
     return result;
   }
   result.blocker = BlockerAt(map, next_x, next_y);
+  if (result.blocker == MoveBlocker::Bounds &&
+      TryMapConnection(world, map, facing, next_x, next_y, result)) {
+    return result;
+  }
   if (result.blocker != MoveBlocker::None) {
     if (IsDoorWarpTile(map, from_x, from_y)) {
       TryWarpFromCurrentTile(world, map, result);

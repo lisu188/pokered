@@ -97,6 +97,20 @@ add_custom_command(
 )
 
 add_custom_command(
+    OUTPUT "${POKERED_NATIVE_GENERATED_DIR}/route_1_blk.hpp"
+    COMMAND "${CMAKE_COMMAND}"
+            -DINPUT=${CMAKE_CURRENT_SOURCE_DIR}/maps/Route1.blk
+            -DOUTPUT=${POKERED_NATIVE_GENERATED_DIR}/route_1_blk.hpp
+            -DVAR_NAME=kRoute1Blocks
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateBinaryHeader.cmake"
+    DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/maps/Route1.blk"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateBinaryHeader.cmake"
+    COMMENT "Generating native header for Route1 block data"
+    VERBATIM
+)
+
+add_custom_command(
     OUTPUT "${POKERED_NATIVE_GENERATED_DIR}/reds_house_blockset.hpp"
     COMMAND "${CMAKE_COMMAND}"
             -DINPUT=${CMAKE_CURRENT_SOURCE_DIR}/gfx/blocksets/reds_house.bst
@@ -237,16 +251,37 @@ add_custom_command(
     OUTPUT "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_metadata.hpp"
     COMMAND "${CMAKE_COMMAND}"
             -DOBJECTS_FILE=${CMAKE_CURRENT_SOURCE_DIR}/data/maps/objects/PalletTown.asm
+            -DHEADER_FILE=${CMAKE_CURRENT_SOURCE_DIR}/data/maps/headers/PalletTown.asm
             -DTEXT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/text/PalletTown.asm
             -DCOLLISION_FILE=${CMAKE_CURRENT_SOURCE_DIR}/data/tilesets/collision_tile_ids.asm
             -DOUTPUT=${POKERED_NATIVE_GENERATED_DIR}/pallet_town_metadata.hpp
             -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GeneratePalletTownMetadata.cmake"
     DEPENDS
         "${CMAKE_CURRENT_SOURCE_DIR}/data/maps/objects/PalletTown.asm"
+        "${CMAKE_CURRENT_SOURCE_DIR}/data/maps/headers/PalletTown.asm"
         "${CMAKE_CURRENT_SOURCE_DIR}/text/PalletTown.asm"
         "${CMAKE_CURRENT_SOURCE_DIR}/data/tilesets/collision_tile_ids.asm"
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GeneratePalletTownMetadata.cmake"
     COMMENT "Generating native header for PalletTown metadata"
+    VERBATIM
+)
+
+add_custom_command(
+    OUTPUT "${POKERED_NATIVE_GENERATED_DIR}/route_1_metadata.hpp"
+    COMMAND "${CMAKE_COMMAND}"
+            -DOBJECTS_FILE=${CMAKE_CURRENT_SOURCE_DIR}/data/maps/objects/Route1.asm
+            -DHEADER_FILE=${CMAKE_CURRENT_SOURCE_DIR}/data/maps/headers/Route1.asm
+            -DTEXT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/text/Route1.asm
+            -DCOLLISION_FILE=${CMAKE_CURRENT_SOURCE_DIR}/data/tilesets/collision_tile_ids.asm
+            -DOUTPUT=${POKERED_NATIVE_GENERATED_DIR}/route_1_metadata.hpp
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateRoute1Metadata.cmake"
+    DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/data/maps/objects/Route1.asm"
+        "${CMAKE_CURRENT_SOURCE_DIR}/data/maps/headers/Route1.asm"
+        "${CMAKE_CURRENT_SOURCE_DIR}/text/Route1.asm"
+        "${CMAKE_CURRENT_SOURCE_DIR}/data/tilesets/collision_tile_ids.asm"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateRoute1Metadata.cmake"
+    COMMENT "Generating native header for Route1 metadata"
     VERBATIM
 )
 
@@ -258,6 +293,7 @@ add_custom_target(pokered_native_generated
         "${POKERED_NATIVE_GENERATED_DIR}/blues_house_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_blk.hpp"
+        "${POKERED_NATIVE_GENERATED_DIR}/route_1_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/reds_house_blockset.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/house_blockset.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/dojo_blockset.hpp"
@@ -268,6 +304,7 @@ add_custom_target(pokered_native_generated
         "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_metadata.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/reds_house_2f_metadata.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_metadata.hpp"
+        "${POKERED_NATIVE_GENERATED_DIR}/route_1_metadata.hpp"
 )
 
 if(MINGW)
@@ -298,6 +335,7 @@ add_executable(pokered_native
     "${POKERED_NATIVE_GENERATED_DIR}/blues_house_blk.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_blk.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_blk.hpp"
+    "${POKERED_NATIVE_GENERATED_DIR}/route_1_blk.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/reds_house_blockset.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/house_blockset.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/dojo_blockset.hpp"
@@ -308,6 +346,7 @@ add_executable(pokered_native
     "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_metadata.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/reds_house_2f_metadata.hpp"
     "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_metadata.hpp"
+    "${POKERED_NATIVE_GENERATED_DIR}/route_1_metadata.hpp"
 )
 add_dependencies(pokered_native pokered_native_generated)
 
@@ -340,6 +379,7 @@ if(POKERED_NATIVE_BUILD_TESTS)
         "${POKERED_NATIVE_GENERATED_DIR}/blues_house_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_blk.hpp"
+        "${POKERED_NATIVE_GENERATED_DIR}/route_1_blk.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/reds_house_blockset.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/house_blockset.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/dojo_blockset.hpp"
@@ -350,6 +390,7 @@ if(POKERED_NATIVE_BUILD_TESTS)
         "${POKERED_NATIVE_GENERATED_DIR}/oaks_lab_metadata.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/reds_house_2f_metadata.hpp"
         "${POKERED_NATIVE_GENERATED_DIR}/pallet_town_metadata.hpp"
+        "${POKERED_NATIVE_GENERATED_DIR}/route_1_metadata.hpp"
     )
     add_dependencies(pokered_native_tests pokered_native_generated)
     target_include_directories(pokered_native_tests

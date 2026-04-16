@@ -33,7 +33,7 @@ This directory is the compiled knowledge layer for the native port effort.
 - New-game path: `MainMenu -> StartNewGame -> OakSpeech -> SpecialEnterMap -> EnterMap`.
 - Overworld loop anchor: `EnterMap`, `OverworldLoop`, and `NewBattle` in `home/overworld.asm`.
 - Save/load anchor: `TryLoadSaveFile`, `SaveMenu`, `SaveGameData`, and SRAM checksum logic in `engine/menus/save.asm`.
-- Native runtime now builds and runs a title -> menu -> connected `RedsHouse1F` / `RedsHouse2F` / `PalletTown` / `BluesHouse` / `OaksLab` slice with deterministic save/load.
+- Native runtime now builds and runs a title -> menu -> connected `RedsHouse1F` / `RedsHouse2F` / `PalletTown` / `BluesHouse` / `OaksLab` / `Route1` slice with deterministic save/load.
 - Current native verification passes: configure, build, unit tests, and `--smoke-test` (`smoke-ok: world=5 pos=2,2 steps=9`).
 - `RedsHouse1F` now consumes the real `maps/RedsHouse1F.blk`, `gfx/blocksets/reds_house.bst`, and tileset collision metadata through the native map importer.
 - The Mom and TV room text now pages through the exact first-slice lines instead of truncating them to fit a single text box.
@@ -83,7 +83,10 @@ This directory is the compiled knowledge layer for the native port effort.
 - Side-adjacent returns onto the live interior door tiles are now explicit in both the smoke path and the native test binary too: stepping in from the local tiles beside the entry and paired doorway tiles now re-exits cleanly into `PalletTown` for `RedsHouse1F`, `BluesHouse`, and `OaksLab`.
 - Reachable room-side returns onto live PalletTown door tiles are now symmetric in both the smoke path and the unit suite: both house return tiles above the PalletTown doors plus the reachable paired-side return in `OaksLab`.
 - The current smoke path now verifies all three live PalletTown door pairs (`RedsHouse1F`, `BluesHouse`, and `OaksLab`), including a PalletTown-side re-entry check for each, blocked re-exits from both live interior doorway tiles, paired-doorway local step-offs, reachable room-side return warps, plus indoor doorway-span, interior landing, and outdoor landing movement behavior, alongside the north-exit Oak seam, outdoor/interior interaction readiness, and save/load, producing `smoke-ok: world=5 pos=2,2 steps=9`.
-- `Route1` and `Route21` are still missing, so the current PalletTown slice is broader but still a bounded playable hub.
+- `Route1` is now imported from `maps/Route1.blk`, `data/maps/headers/Route1.asm`, `data/maps/objects/Route1.asm`, `text/Route1.asm`, `gfx/blocksets/overworld.bst`, and `Overworld_Coll`.
+- PalletTown's north map connection now enters `Route1` after `got_starter`, and `Route1`'s south map connection returns to PalletTown; the pre-starter Oak warning still blocks the north-exit approach at the original script seam.
+- `Route1` currently keeps the ViridianCity edge, wild encounters, ledge behavior, and the Pokemart sample item-give state intentionally deferred, but its sign and two NPC text targets are source-backed.
+- `Route21` is still missing, so the current PalletTown slice is broader but not yet a full north/south outdoor hub.
 - `BluesHouse` Daisy currently uses the source-backed default Rival-at-lab text branch; the Town Map gift/event path is still intentionally deferred.
 - `OaksLab` currently uses source-backed safe default interaction branches keyed off `got_starter`; starter selection, rival battle, and Oak's wider lab sequence remain deferred.
 - Oak's full follow-to-lab cutscene is still deferred; the current seam stops at the warning text and does not animate Oak or escort the player.

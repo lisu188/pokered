@@ -588,6 +588,9 @@ std::string BuildMoveTraceHeading(const MoveResult& result) {
   if (result.warped) {
     return "MOVE WARP";
   }
+  if (result.moved && result.source_map != result.target_map) {
+    return "MOVE CONN";
+  }
   if (result.moved) {
     return "MOVE STEP";
   }
@@ -624,7 +627,7 @@ std::string BuildMoveTraceText(const DebugOverlayState& debug_overlay, const Ora
     }
   }
 
-  const std::string destination = result.warped
+  const std::string destination = (result.warped || result.source_map != result.target_map)
                                       ? std::string(GetMapData(result.target_map).name) + " " +
                                             FormatCoords(result.to_x, result.to_y)
                                       : FormatCoords(result.to_x, result.to_y);
@@ -873,6 +876,11 @@ void SetDebugMap(GameState& state, WorldId map_id, DebugOverlayState& debug_over
       state.world.last_map = static_cast<std::uint16_t>(WorldId::RedsHouse1F);
       state.world.last_warp = 2;
       break;
+    case WorldId::Route1:
+      state.world.player = PlayerState {10, 34, Facing::Up};
+      state.world.last_map = kNoLastMap;
+      state.world.last_warp = 1;
+      break;
     case WorldId::OaksLab:
       state.world.player = PlayerState {2, 2, Facing::Up};
       state.world.last_map = static_cast<std::uint16_t>(WorldId::PalletTown);
@@ -887,6 +895,9 @@ void CycleDebugMap(GameState& state, DebugOverlayState& debug_overlay) {
       SetDebugMap(state, WorldId::PalletTown, debug_overlay);
       break;
     case WorldId::PalletTown:
+      SetDebugMap(state, WorldId::Route1, debug_overlay);
+      break;
+    case WorldId::Route1:
       SetDebugMap(state, WorldId::BluesHouse, debug_overlay);
       break;
     case WorldId::BluesHouse:
@@ -1490,6 +1501,54 @@ int RunSmokeTest() {
       oak_warning.blocker != MoveBlocker::Script ||
       state.world.player.x != north_exit_x || state.world.player.y != 2 || state.world.step_counter != 5) {
     std::cerr << "smoke: expected PalletTown Oak north-exit warning\n";
+    return 1;
+  }
+
+  WorldState route1_probe = state.world;
+  route1_probe.got_starter = true;
+  route1_probe.player = PlayerState {north_exit_x, 2, Facing::Up};
+  const MoveResult route1_first_step = TryMoveWithResult(route1_probe, Facing::Up);
+  if (!route1_first_step.moved || route1_first_step.warped ||
+      route1_first_step.source_map != WorldId::PalletTown || route1_first_step.target_map != WorldId::PalletTown ||
+      route1_first_step.to_x != north_exit_x || route1_first_step.to_y != 1 ||
+      route1_probe.map_id != WorldId::PalletTown || route1_probe.player.x != north_exit_x ||
+      route1_probe.player.y != 1 || route1_probe.step_counter != 6) {
+    std::cerr << "smoke: expected PalletTown north-exit pre-connection step\n";
+    return 1;
+  }
+  const MoveResult route1_edge_step = TryMoveWithResult(route1_probe, Facing::Up);
+  if (!route1_edge_step.moved || route1_edge_step.warped ||
+      route1_edge_step.source_map != WorldId::PalletTown || route1_edge_step.target_map != WorldId::PalletTown ||
+      route1_edge_step.to_x != north_exit_x || route1_edge_step.to_y != 0 ||
+      route1_probe.map_id != WorldId::PalletTown || route1_probe.player.x != north_exit_x ||
+      route1_probe.player.y != 0 || route1_probe.step_counter != 7) {
+    std::cerr << "smoke: expected PalletTown north edge step before Route1 connection\n";
+    return 1;
+  }
+  const MapData& route1_map = GetMapData(WorldId::Route1);
+  const MoveResult route1_connection = TryMoveWithResult(route1_probe, Facing::Up);
+  if (!route1_connection.moved || route1_connection.warped ||
+      route1_connection.source_map != WorldId::PalletTown || route1_connection.target_map != WorldId::Route1 ||
+      route1_connection.source_warp != 0 || route1_connection.target_warp != 0 ||
+      route1_connection.to_x != north_exit_x || route1_connection.to_y != route1_map.height - 1 ||
+      route1_probe.map_id != WorldId::Route1 || route1_probe.player.x != north_exit_x ||
+      route1_probe.player.y != route1_map.height - 1 || route1_probe.step_counter != 8) {
+    std::cerr << "smoke: expected PalletTown north edge to connect to Route1\n";
+    return 1;
+  }
+  const MoveResult pallet_return = TryMoveWithResult(route1_probe, Facing::Down);
+  if (!pallet_return.moved || pallet_return.warped ||
+      pallet_return.source_map != WorldId::Route1 || pallet_return.target_map != WorldId::PalletTown ||
+      pallet_return.source_warp != 0 || pallet_return.target_warp != 0 ||
+      pallet_return.to_x != north_exit_x || pallet_return.to_y != 0 ||
+      route1_probe.map_id != WorldId::PalletTown || route1_probe.player.x != north_exit_x ||
+      route1_probe.player.y != 0 || route1_probe.step_counter != 9) {
+    std::cerr << "smoke: expected Route1 south edge to reconnect to PalletTown\n";
+    return 1;
+  }
+  if (state.world.map_id != WorldId::PalletTown || state.world.player.x != north_exit_x ||
+      state.world.player.y != 2 || state.world.got_starter || state.world.step_counter != 5) {
+    std::cerr << "smoke: Route1 probe mutated main smoke state\n";
     return 1;
   }
 

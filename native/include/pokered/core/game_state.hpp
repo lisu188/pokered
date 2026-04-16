@@ -23,6 +23,7 @@ enum class WorldId : std::uint8_t {
   PalletTown = 3,
   BluesHouse = 4,
   OaksLab = 5,
+  Route1 = 6,
 };
 
 enum class MessageId : std::uint8_t {
@@ -57,6 +58,13 @@ enum class MessageId : std::uint8_t {
   PalletTownSign,
   PalletTownPlayersHouseSign,
   PalletTownRivalsHouseSign,
+  Route1Youngster1,
+  Route1Youngster1MartSample,
+  Route1Youngster1GotPotion,
+  Route1Youngster1AlsoGotPokeballs,
+  Route1Youngster1NoRoom,
+  Route1Youngster2,
+  Route1Sign,
   SaveOk,
   LoadOk,
   SaveMissing,

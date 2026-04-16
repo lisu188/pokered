@@ -11,6 +11,8 @@
 #include "overworld_blockset.hpp"
 #include "pallet_town_blk.hpp"
 #include "pallet_town_metadata.hpp"
+#include "route_1_blk.hpp"
+#include "route_1_metadata.hpp"
 #include "reds_house_1f_blk.hpp"
 #include "reds_house_1f_metadata.hpp"
 #include "reds_house_2f_blk.hpp"
@@ -40,6 +42,10 @@ constexpr int kPalletTownBlockWidth = 10;
 constexpr int kPalletTownBlockHeight = 9;
 constexpr int kPalletTownWidth = kPalletTownBlockWidth * kCellsPerBlockEdge;
 constexpr int kPalletTownHeight = kPalletTownBlockHeight * kCellsPerBlockEdge;
+constexpr int kRoute1BlockWidth = 10;
+constexpr int kRoute1BlockHeight = 18;
+constexpr int kRoute1Width = kRoute1BlockWidth * kCellsPerBlockEdge;
+constexpr int kRoute1Height = kRoute1BlockHeight * kCellsPerBlockEdge;
 constexpr std::uint8_t kOverworldTilesetId = 0;
 
 constexpr std::array<std::uint8_t, 4> kRedsHouse1TableTiles = {
@@ -58,6 +64,8 @@ static_assert(generated::kOaksLabBlocks.size() ==
               static_cast<std::size_t>(kOaksLabBlockWidth * kOaksLabBlockHeight));
 static_assert(generated::kPalletTownBlocks.size() ==
               static_cast<std::size_t>(kPalletTownBlockWidth * kPalletTownBlockHeight));
+static_assert(generated::kRoute1Blocks.size() ==
+              static_cast<std::size_t>(kRoute1BlockWidth * kRoute1BlockHeight));
 static_assert(generated::kRedsHouseBlockset.size() % kTilesPerBlock == 0);
 static_assert(generated::kHouseBlockset.size() % kTilesPerBlock == 0);
 static_assert(generated::kDojoBlockset.size() % kTilesPerBlock == 0);
@@ -137,6 +145,9 @@ constexpr std::array<MapCell, kOaksLabWidth * kOaksLabHeight> kOaksLabCells =
 constexpr std::array<MapCell, kPalletTownWidth * kPalletTownHeight> kPalletTownCells =
     BuildCells<kPalletTownBlockWidth, kPalletTownBlockHeight>(
         generated::kPalletTownBlocks, generated::kOverworldBlockset, generated::kOverworldCollisionTiles);
+constexpr std::array<MapCell, kRoute1Width * kRoute1Height> kRoute1Cells =
+    BuildCells<kRoute1BlockWidth, kRoute1BlockHeight>(
+        generated::kRoute1Blocks, generated::kOverworldBlockset, generated::kRoute1CollisionTiles);
 
 constexpr MapData kRedsHouse1F = {
     WorldId::RedsHouse1F,
@@ -220,6 +231,22 @@ constexpr MapData kPalletTown = {
     generated::kPalletTownWarps,
     generated::kPalletTownBgEvents,
     generated::kPalletTownNpcs,
+    generated::kPalletTownConnections,
+};
+
+constexpr MapData kRoute1 = {
+    WorldId::Route1,
+    "ROUTE 1",
+    kRoute1Width,
+    kRoute1Height,
+    kOverworldTilesetId,
+    generated::kRoute1BorderBlock,
+    generated::kRoute1Blocks,
+    kRoute1Cells,
+    generated::kRoute1Warps,
+    generated::kRoute1BgEvents,
+    generated::kRoute1Npcs,
+    generated::kRoute1Connections,
 };
 
 std::pair<int, int> FacingOffset(Facing facing) {
@@ -250,6 +277,8 @@ const MapData* FindMapData(WorldId id) {
       return &kOaksLab;
     case WorldId::PalletTown:
       return &kPalletTown;
+    case WorldId::Route1:
+      return &kRoute1;
   }
   return nullptr;
 }
@@ -365,6 +394,10 @@ InteractionResult InspectFacingTile(const MapData& map, const WorldState& world)
                                            : MessageId::OaksLabOak1WhichPokemonDoYouWant;
         return result;
       }
+      if (npc.message == MessageId::Route1Youngster1) {
+        result.message = MessageId::Route1Youngster1MartSample;
+        return result;
+      }
       return result;
     }
   }
@@ -469,6 +502,20 @@ std::string_view RawMessageText(MessageId message) {
       return generated::kPalletTownPlayersHouseSignText;
     case MessageId::PalletTownRivalsHouseSign:
       return generated::kPalletTownRivalsHouseSignText;
+    case MessageId::Route1Youngster1:
+      return "";
+    case MessageId::Route1Youngster1MartSample:
+      return generated::kRoute1Youngster1MartSampleText;
+    case MessageId::Route1Youngster1GotPotion:
+      return generated::kRoute1Youngster1GotPotionText;
+    case MessageId::Route1Youngster1AlsoGotPokeballs:
+      return generated::kRoute1Youngster1AlsoGotPokeballsText;
+    case MessageId::Route1Youngster1NoRoom:
+      return generated::kRoute1Youngster1NoRoomText;
+    case MessageId::Route1Youngster2:
+      return generated::kRoute1Youngster2Text;
+    case MessageId::Route1Sign:
+      return generated::kRoute1SignText;
     case MessageId::SaveOk:
       return "SAVE WRITTEN TO\nNATIVE-SAVE.SAV";
     case MessageId::LoadOk:
