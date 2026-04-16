@@ -58,6 +58,7 @@
   - `${build}/generated/reds_house_1f_blk.hpp`
   - `${build}/generated/reds_house_2f_blk.hpp`
   - `${build}/generated/pallet_town_blk.hpp`
+  - `${build}/generated/route_1_blk.hpp`
   - `${build}/generated/dojo_blockset.hpp`
   - `${build}/generated/house_blockset.hpp`
   - `${build}/generated/reds_house_blockset.hpp`
@@ -68,6 +69,7 @@
   - `${build}/generated/reds_house_2f_metadata.hpp`
   - `${build}/generated/overworld_blockset.hpp`
   - `${build}/generated/pallet_town_metadata.hpp`
+  - `${build}/generated/route_1_metadata.hpp`
 - Current implemented behavior:
   - Linux/WSL host build through CMake + `pkg-config sdl2`
   - SDL window and render loop
@@ -82,6 +84,7 @@
   - source-driven `BluesHouse` semantics via `.blk`, `house.bst`, `House_Coll`, and asm/text metadata
   - source-driven `OaksLab` semantics via `.blk`, the original `DOJO -> gym.bst` blockset alias, `Dojo_Coll`, and asm/text metadata
   - source-driven `PalletTown` semantics via `.blk`, `overworld.bst`, `Overworld_Coll`, and asm/text metadata
+  - source-driven `Route1` semantics via `.blk`, `overworld.bst`, `Overworld_Coll`, header connection data, and asm/text metadata
   - NPC-specific static text dispatch through source-driven `MessageId` values on `Npc` records
   - movement-triggered message dispatch for bounded outdoor/script seams
   - paged Mom/TV dialogue so the exact first-slice lines fit the current message box
@@ -89,6 +92,7 @@
   - `.sym` + `.map` oracle parsing in native code for provenance-oriented tests
   - a runtime-facing `F7` overlay that cycles between the current map's header/object provenance, the current map-script state, the current `LAST_MAP` return anchor, the current facing source-backed interaction target, the current facing source-backed text label, the current facing branch/handler preview, the current facing gate source/backing state, the last successful warp's source/target object provenance, the last move attempt, the last confirm-based interaction, the last interaction branch/handler provenance, the last evaluated native state gate, the exact source gate backing that native predicate, the last displayed source-backed text provenance, and that message's source/local script-label provenance from `pokered.sym` and `pokered.map`
   - `LAST_MAP` door traversal for supported native maps
+  - north/south map-connection traversal for the live `PalletTown` <-> `Route1` outdoor seam
   - blocked re-warp fallback limited to door tiles so PalletTown-style doorway exits do not leak onto unrelated stair warps
   - camera-based SDL world rendering for larger maps on the Linux/WSL window size
 
@@ -96,7 +100,7 @@
 - Real `gfx/tilesets/reds_house.2bpp` graphics are not rendered yet; the first slice still uses semantic colors.
 - Runtime-facing provenance now includes current-map, current-map-script, last-map-state, live-facing-target, live-facing-text, live-facing-branch, live-facing-gate-source, last-warp, last-move, last-interaction, last-interaction-branch, last-state-gate, last-state-gate-source, last-message, and last-message-source trace pages, but broader object-state/script-state trace hooks are still missing.
 - The current control flow is still a native simplification of the original map script/text dispatch rather than a reusable generated script runtime.
-- `Route1` and `Route21` are still not imported, so PalletTown is currently a broader bounded hub rather than a full outdoor progression map.
+- `Route21` is still not imported, and `Route1` is live only as a bounded PalletTown-adjacent outdoor map; ViridianCity, wild encounters, ledges, and item-give state remain deferred.
 - `BluesHouse` Daisy's Town Map gift path is still simplified to the default static-text branch; native item/event state does not exist yet.
 - Oak's PalletTown follow-to-lab cutscene chain and the `OaksLab` starter / rival sequence are still intentionally deferred; only the first north-exit warning seam is live.
 - Battle, broader overworld support, and audio are still intentionally deferred.
@@ -162,6 +166,7 @@
 - `PalletTown` is now playable as a native exterior map with `20 x 18` movement cells expanded from the original `10 x 9` block map.
 - `RedsHouse1F` front-door warps now exit into `PalletTown`, and the PalletTown house door re-enters `RedsHouse1F`.
 - The `BluesHouse` and `OaksLab` doors are now live in both directions.
+- The north edge now connects into `Route1` after the starter gate is open, and `Route1`'s south edge returns to PalletTown.
 - Returning from `RedsHouse1F`, `BluesHouse`, or `OaksLab` now lands one tile below the PalletTown exterior door instead of leaving the player parked on the doorway tile, which more closely matches the original outside-door flow.
 - Warped move traces now keep the final landing coordinates after those PalletTown door transitions instead of the intermediate doorway tile, which makes the runtime's last-move view line up with the connected world state.
 - Standing on the current indoor doorway tiles in `RedsHouse1F`, `BluesHouse`, and `OaksLab` and pressing back into the blocked exit direction now also warps out correctly, which matches the original collision-on-warp door path more closely.
@@ -186,9 +191,11 @@
 - `RedsHouse1F`, `RedsHouse2F`, and `PewterSpeechHouse` each use `8 x 8` movement-cell space expanded from `4 x 4` block maps.
 - `OaksLab` uses `10 x 12` movement-cell space expanded from its original `5 x 6` block map.
 - `PalletTown` uses `20 x 18` movement-cell space expanded from its original `10 x 9` block map.
+- `Route1` uses `20 x 36` movement-cell space expanded from its original `10 x 18` block map.
 - Each movement cell is derived from the lower-left representative tile of the relevant `2 x 2` quadrant inside a `16`-byte `.bst` metatile block, matching the original collision sampling convention.
 - Passability for the `RedsHouse*` rooms comes from the shared `RedsHouse1_Coll` / `RedsHouse2_Coll` entries in `data/tilesets/collision_tile_ids.asm`.
 - `HOUSE` tileset passability now comes from `House_Coll` in `data/tilesets/collision_tile_ids.asm`.
 - `OaksLab` passability now comes from `Dojo_Coll` in `data/tilesets/collision_tile_ids.asm`, matching the original `DOJO` tileset alias.
 - `PalletTown` passability now comes from `Overworld_Coll` in `data/tilesets/collision_tile_ids.asm`.
+- `Route1` passability uses the same `Overworld_Coll` source and `overworld.bst` blockset path as PalletTown.
 - TV and warp presentation remain layered from map-event data rather than a special-case room mask.

@@ -23,6 +23,10 @@
     - Pokeballs: explanatory line vs last-mon line
     - Oak: choose-your-#MON line vs post-starter battle tutorial line
     - Pokedex, Girl, Scientist, and Oak2: direct source-backed static text
+- `Route1` is now the first imported outdoor-adjacent route:
+  - `scripts/Route1.asm` is a static `EnableAutoTextBoxDrawing` map script.
+  - the second youngster and sign are source-backed static text.
+  - the first youngster's Pokemart sample path is currently simplified to the initial sample dialogue branch; native inventory/event state for `EVENT_GOT_POTION_SAMPLE`, `GiveItem`, and follow-up item text remains deferred.
 - Expected source hotspots:
   - `scripts/`
   - `data/maps/objects/`

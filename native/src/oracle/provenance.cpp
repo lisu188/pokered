@@ -23,6 +23,8 @@ std::optional<std::pair<std::string_view, std::string_view>> LabelsForWorld(Worl
       return std::pair {"BluesHouse_h", "BluesHouse_Object"};
     case WorldId::OaksLab:
       return std::pair {"OaksLab_h", "OaksLab_Object"};
+    case WorldId::Route1:
+      return std::pair {"Route1_h", "Route1_Object"};
   }
   return std::nullopt;
 }
@@ -41,6 +43,8 @@ std::optional<std::string_view> ScriptLabelForWorld(WorldId world_id) {
       return "BluesHouse_Script";
     case WorldId::OaksLab:
       return "OaksLab_Script";
+    case WorldId::Route1:
+      return "Route1_Script";
   }
   return std::nullopt;
 }
@@ -57,6 +61,7 @@ std::optional<std::string_view> ScriptPointersLabelForWorld(WorldId world_id) {
       return "OaksLab_ScriptPointers";
     case WorldId::RedsHouse1F:
     case WorldId::PewterSpeechHouse:
+    case WorldId::Route1:
       break;
   }
   return std::nullopt;
@@ -74,6 +79,7 @@ std::optional<std::string_view> CurrentScriptLabelForWorld(WorldId world_id) {
       return "wOaksLabCurScript";
     case WorldId::RedsHouse1F:
     case WorldId::PewterSpeechHouse:
+    case WorldId::Route1:
       break;
   }
   return std::nullopt;
@@ -85,6 +91,7 @@ std::optional<std::string_view> LabelForMessage(MessageId message_id) {
     case MessageId::OaksLabRival:
     case MessageId::OaksLabPokeBall:
     case MessageId::OaksLabOak1:
+    case MessageId::Route1Youngster1:
     case MessageId::SaveOk:
     case MessageId::LoadOk:
     case MessageId::SaveMissing:
@@ -144,6 +151,18 @@ std::optional<std::string_view> LabelForMessage(MessageId message_id) {
       return "_PalletTownPlayersHouseSignText";
     case MessageId::PalletTownRivalsHouseSign:
       return "_PalletTownRivalsHouseSignText";
+    case MessageId::Route1Youngster1MartSample:
+      return "_Route1Youngster1MartSampleText";
+    case MessageId::Route1Youngster1GotPotion:
+      return "_Route1Youngster1GotPotionText";
+    case MessageId::Route1Youngster1AlsoGotPokeballs:
+      return "_Route1Youngster1AlsoGotPokeballsText";
+    case MessageId::Route1Youngster1NoRoom:
+      return "_Route1Youngster1NoRoomText";
+    case MessageId::Route1Youngster2:
+      return "_Route1Youngster2Text";
+    case MessageId::Route1Sign:
+      return "_Route1SignText";
   }
   return std::nullopt;
 }
@@ -154,6 +173,7 @@ std::optional<std::string_view> SourceLabelForMessage(MessageId message_id) {
     case MessageId::OaksLabRival:
     case MessageId::OaksLabPokeBall:
     case MessageId::OaksLabOak1:
+    case MessageId::Route1Youngster1:
     case MessageId::SaveOk:
     case MessageId::LoadOk:
     case MessageId::SaveMissing:
@@ -213,6 +233,18 @@ std::optional<std::string_view> SourceLabelForMessage(MessageId message_id) {
       return "PalletTownPlayersHouseSignText";
     case MessageId::PalletTownRivalsHouseSign:
       return "PalletTownRivalsHouseSignText";
+    case MessageId::Route1Youngster1MartSample:
+      return "Route1Youngster1Text.MartSampleText";
+    case MessageId::Route1Youngster1GotPotion:
+      return "Route1Youngster1Text.GotPotionText";
+    case MessageId::Route1Youngster1AlsoGotPokeballs:
+      return "Route1Youngster1Text.AlsoGotPokeballsText";
+    case MessageId::Route1Youngster1NoRoom:
+      return "Route1Youngster1Text.NoRoomText";
+    case MessageId::Route1Youngster2:
+      return "Route1Youngster2Text";
+    case MessageId::Route1Sign:
+      return "Route1SignText";
   }
   return std::nullopt;
 }
@@ -235,6 +267,7 @@ std::optional<std::string_view> LabelForMoveScript(WorldId world_id,
     case WorldId::PewterSpeechHouse:
     case WorldId::BluesHouse:
     case WorldId::OaksLab:
+    case WorldId::Route1:
       break;
   }
 
@@ -278,6 +311,7 @@ std::optional<std::string_view> ConditionLabelForInteractionStateGate(WorldId wo
         case WorldId::PewterSpeechHouse:
         case WorldId::PalletTown:
         case WorldId::BluesHouse:
+        case WorldId::Route1:
           break;
       }
       break;
@@ -314,6 +348,7 @@ std::optional<std::string_view> StorageLabelForInteractionStateGate(WorldId worl
         case WorldId::PewterSpeechHouse:
         case WorldId::PalletTown:
         case WorldId::BluesHouse:
+        case WorldId::Route1:
           break;
       }
       break;
@@ -376,6 +411,22 @@ std::optional<std::string_view> LabelForInteractionBranch(WorldId world_id,
         }
         if (message_id == MessageId::OaksLabOak1YourPokemonCanFight) {
           return "OaksLabOak1Text.already_got_pokemon";
+        }
+      }
+      break;
+    case WorldId::Route1:
+      if (origin_message == MessageId::Route1Youngster1) {
+        if (message_id == MessageId::Route1Youngster1MartSample) {
+          return "Route1Youngster1Text.MartSampleText";
+        }
+        if (message_id == MessageId::Route1Youngster1GotPotion) {
+          return "Route1Youngster1Text.GotPotionText";
+        }
+        if (message_id == MessageId::Route1Youngster1AlsoGotPokeballs) {
+          return "Route1Youngster1Text.AlsoGotPokeballsText";
+        }
+        if (message_id == MessageId::Route1Youngster1NoRoom) {
+          return "Route1Youngster1Text.NoRoomText";
         }
       }
       break;
