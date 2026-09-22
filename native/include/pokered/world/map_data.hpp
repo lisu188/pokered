@@ -44,6 +44,12 @@ struct Npc {
   MessageId message;
 };
 
+struct MapConnection {
+  Facing direction;
+  WorldId target_map;
+  int offset;
+};
+
 enum class InteractionKind : std::uint8_t {
   None = 0,
   Npc,
@@ -72,6 +78,7 @@ struct MapData {
   std::span<const Warp> warps;
   std::span<const BgEvent> bg_events;
   std::span<const Npc> npcs;
+  std::span<const MapConnection> connections {};
 };
 
 const MapData& GetMapData(WorldId id);

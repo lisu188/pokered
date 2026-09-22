@@ -47,6 +47,7 @@
 - [x] Preserve final landing coordinates in PalletTown door warp move traces
 - [x] Restore collision-triggered immediate PalletTown door re-exits from indoor warp tiles
 - [x] Constrain blocked PalletTown re-warps to door tiles and cover the remaining BluesHouse doorway tile
+- [x] Import `Route1` as the first PalletTown-adjacent outdoor map and connect PalletTown's north edge after the starter gate
 
 ## Current Working Assumptions
 - The disassembly remains the authoritative behavior specification.
@@ -60,7 +61,7 @@
 - No emulator-backed trace harness yet
 - Runtime-facing provenance now covers the current map, the current map-script state, the current `LAST_MAP` return anchor, the current facing source-backed object/interaction target, the current facing source-backed text label, the current facing branch/handler preview, the current facing gate source/backing state, the last successful warp, the last move attempt, the last confirm-based interaction, the last interaction branch/handler state, the last evaluated native state gate and its current source backing state, the last displayed source-backed message, and the last displayed message's source label, but broader object-state/script-state trace hooks are still missing
 - Map import is currently proven for the `RedsHouse*`, `HOUSE`, and one `OVERWORLD` slice, but not yet broader than that
-- `Route1` and `Route21` are still not imported, so PalletTown is broader but still a bounded hub
+- `Route21` is still not imported, and `Route1` is live only through the PalletTown-side connection; its ViridianCity edge is still bounded
 - Oak's PalletTown follow-to-lab chain and the `OaksLab` starter / rival sequence remain deferred
 - `BluesHouse` currently uses the source-backed default Daisy text branch only; the Town Map gift/event path is still deferred
 
@@ -83,6 +84,7 @@
 - Native Linux SDL launch still starts under WSL via `timeout 2s ./build-native/pokered_native`; on the latest run it timed out normally with no startup error.
 
 ## Next Focus
+- Extend the new `Route1` seam toward either ViridianCity boundary handling, Route1 encounter/ledge semantics, or a small source-backed Route1 item/event simplification.
 - Decide whether to keep `OaksLab` on safe default dialogue branches or implement the first starter / rival script seam.
 - Decide whether to extend the bounded `PalletTown` Oak warning into the full follow-to-lab cutscene.
 - Decide whether `BluesHouse` Daisy should remain a static-text simplification or become the first small indoor gift/event seam.
