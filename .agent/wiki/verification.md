@@ -130,3 +130,9 @@
 - add checks for deferred `LAST_MAP` door behavior on maps beyond the PalletTown seam
 - add importer regression checks for the lower-left representative tile rule used by overworld collision/warp semantics
 - later, add screenshot and structured trace comparisons for a multi-room indoor scenario
+
+## Automatic fork validation (2026-10-18)
+- .github/workflows/native.yml compares the pinned RGBDS ROM outputs before native tests consume its symbols/map.
+- Four hosted GCC/Clang Debug/Release configurations run both existing CTests, requiring a nonempty test inventory.
+- Seven-day artifacts retain hash receipts, symbols/map and JUnit/CTest reports, without ROM binaries.
+- Full game parity, emulator trace comparison, visual acceptance and Windows cross-build qualification remain separate gates.
