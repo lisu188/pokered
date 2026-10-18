@@ -1,0 +1,96 @@
+name: Native C++ and ROM oracle
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  rgbds_version: v1.0.1
+
+jobs:
+  oracle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Check out pinned RGBDS
+        uses: actions/checkout@v6
+        with:
+          repository: gbdev/rgbds
+          ref: ${{ env.rgbds_version }}
+          path: rgbds
+          persist-credentials: false
+      - name: Install RGBDS build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bison libpng-dev pkg-config
+      - name: Build and install pinned RGBDS
+        working-directory: rgbds
+        run: sudo make -j2 install
+      - name: Build and compare original ROMs
+        run: |
+          make DEBUG=1 -j2 compare
+          sha1sum -c roms.sha1 | tee rom-comparison.txt
+          test -s pokered.sym
+          test -s pokered.map
+      - name: Retain oracle provenance without ROM binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-oracle-provenance
+          path: |
+            pokered.sym
+            pokered.map
+            rom-comparison.txt
+          if-no-files-found: error
+          retention-days: 7
+
+  native:
+    needs: oracle
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [g++, clang++]
+        build_type: [Debug, Release]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Retrieve same-run oracle symbols and map
+        uses: actions/download-artifact@v4
+        with:
+          name: native-oracle-provenance
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build g++ clang libsdl2-dev pkg-config
+      - name: Configure native application and tests
+        run: >-
+          cmake -S . -B build-native -G Ninja
+          -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DPOKERED_NATIVE_BUILD_TESTS=ON
+      - name: Build native application and tests
+        run: cmake --build build-native --parallel 2
+      - name: Run native unit and smoke tests
+        run: >-
+          ctest --test-dir build-native --no-tests=error
+          --output-on-failure --output-junit native-results.xml
+      - name: Retain native test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-results-${{ matrix.compiler }}-${{ matrix.build_type }}
+          path: |
+            build-native/native-results.xml
+            build-native/Testing/Temporary/LastTest.log
+          if-no-files-found: warn
+          retention-days: 7

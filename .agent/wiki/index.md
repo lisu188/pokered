@@ -92,3 +92,6 @@ This directory is the compiled knowledge layer for the native port effort.
 - Oak's full follow-to-lab cutscene is still deferred; the current seam stops at the warning text and does not animate Oak or escort the player.
 - Runtime-facing provenance is still intentionally narrow: the overlay now covers the current map, the current map-script state, the current `LAST_MAP` return anchor, the current facing source-backed object/interaction target, the current facing source-backed text label, the current facing branch/handler preview, the current facing gate source/backing state, the last successful warp, the last move attempt, the last confirm-based interaction, the last interaction branch/handler state, the last evaluated native state gate, the exact source gate backing that state, the last displayed source-backed message, and that message’s source/local script label, but not broader object-state or script-state history.
 - Windows cross-build support now has a repo-local MinGW toolchain file plus a documented package/config path; local verification is still blocked by missing MinGW + SDL2 packages.
+
+## Automatic fork validation
+- See [verification.md](verification.md) for the same-run ROM oracle and native PR CI contract added on 2026-10-18.

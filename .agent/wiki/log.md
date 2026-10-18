@@ -353,3 +353,15 @@ Imported `Route1` into the native runtime using generated block data from `maps/
 
 ## [2026-04-16 10:33] verification | Route1-connected PalletTown slice re-verified
 Rebuilt and re-ran the Linux/WSL checks with `cmake --build build-native -j"$(nproc)"`, `./build-native/pokered_native_tests`, `ctest --test-dir build-native --output-on-failure`, `./build-native/pokered_native --smoke-test`, and `timeout 2s ./build-native/pokered_native`. Current smoke output remains `smoke-ok: world=5 pos=2,2 steps=9`, the test binary verifies Route1 map/script/message/interaction provenance plus PalletTown -> Route1 -> PalletTown connection movement, and the standalone SDL launch timed out normally with no startup error.
+
+## [2026-10-18 19:44] verification | automatic native and original-ROM CI
+Added a read-only PR/master/manual workflow that builds pinned RGBDS v1.0.1,
+checks every `roms.sha1` output, and transfers only the same-run symbols/map
+and hash-check receipt into GCC/Clang Debug/Release native CMake/CTest jobs.
+Both registered native tests run with no-tests treated as an error. Test
+reports and oracle provenance have seven-day retention; ROM binaries are
+not uploaded. README now distinguishes the upstream ROM badge from fork
+native CI and documents the bounded playable slice and local invocation.
+No production, disassembly, asset or native test source changed. Local
+large builds were withheld under the parent 90-percent disk reserve;
+hosted execution and fresh code review remain required before integration.
