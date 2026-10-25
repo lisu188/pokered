@@ -2,6 +2,7 @@
 #define USAGE_OPTS "[-h|--help] [--trim-whitespace] [--remove-whitespace] [--interleave] [--remove-duplicates [--keep-whitespace]] [--remove-xflip] [--remove-yflip] [--preserve indexes] [-d|--depth depth] [-p|--png filename.png] [-o|--out outfile] infile"
 
 #include "common.h"
+#include <limits.h>
 
 struct Options {
 	bool trim_whitespace;
@@ -65,9 +66,15 @@ void parse_args(int argc, char *argv[]) {
 				options.preserved[options.num_preserved-1] = strtoul(token, NULL, 0);
 			}
 			break;
-		case 'd':
-			options.depth = strtoul(optarg, NULL, 0);
+		case 'd': {
+			char *end;
+			unsigned long depth = strtoul(optarg, &end, 0);
+			if (!*optarg || *end || (depth != 1 && depth != 2)) {
+				error_exit("depth must be 1 or 2\n");
+			}
+			options.depth = (int)depth;
 			break;
+		}
 		case 'p':
 			options.png_file = optarg;
 			break;
@@ -181,7 +188,7 @@ void remove_duplicates(struct Graphic *graphic) {
 		}
 		num_tiles++;
 	}
-	graphic->size = num_tiles * tile_size;
+	graphic->size = (long)num_tiles * tile_size;
 }
 
 // for (int i = 0; i < 256; i++)
@@ -236,20 +243,26 @@ void remove_flip(struct Graphic *graphic, bool xflip, bool yflip) {
 		}
 		num_tiles++;
 	}
-	graphic->size = num_tiles * tile_size;
+	graphic->size = (long)num_tiles * tile_size;
 }
 
-void interleave(struct Graphic *graphic, int width) {
-	int tile_size = options.depth * 8;
-	int width_tiles = width / 8;
-	int num_tiles = graphic->size / tile_size;
-	uint8_t *interleaved = xmalloc(graphic->size);
-	for (int i = 0; i < num_tiles; i++) {
-		int row = i / width_tiles;
-		int tile = i * 2 - (row % 2 ? width_tiles * (row + 1) - 1 : width_tiles * row);
+void interleave(struct Graphic *graphic, uint32_t width) {
+	size_t tile_size = (size_t)options.depth * 8;
+	if (!width || width % 8 || graphic->size % tile_size) {
+		error_exit("interleave requires whole 8-pixel tiles\n");
+	}
+	size_t width_tiles = (size_t)width / 8;
+	size_t num_tiles = (size_t)graphic->size / tile_size;
+	if (num_tiles % (width_tiles * 2)) {
+		error_exit("interleave requires complete pairs of tile rows\n");
+	}
+	uint8_t *interleaved = xmalloc(graphic->size ? (size_t)graphic->size : 1);
+	for (size_t i = 0; i < num_tiles; i++) {
+		size_t row = i / width_tiles;
+		size_t tile = (row / 2) * (width_tiles * 2) + (i % width_tiles) * 2 + row % 2;
 		memcpy(&interleaved[tile * tile_size], &graphic->data[i * tile_size], tile_size);
 	}
-	graphic->size = num_tiles * tile_size;
+	graphic->size = (long)(num_tiles * tile_size);
 	memcpy(graphic->data, interleaved, graphic->size);
 	free(interleaved);
 }
@@ -264,7 +277,17 @@ int main(int argc, char *argv[]) {
 	}
 
 	struct Graphic graphic;
-	graphic.data = read_u8(argv[0], &graphic.size);
+	FILE *input = xfopen(argv[0], 'r');
+	graphic.size = xfsize(argv[0], input);
+	// The remaining tile-processing loops use int byte offsets, advancing by
+	// at most 32 bytes. Reject unrepresentable files before allocating them.
+	if (graphic.size > INT_MAX - 32) {
+		fclose(input);
+		error_exit("input is too large for tile processing\n");
+	}
+	graphic.data = xmalloc(graphic.size ? (size_t)graphic.size : 1);
+	xfread(graphic.data, graphic.size, argv[0], input);
+	fclose(input);
 
 	if (options.trim_whitespace) {
 		trim_whitespace(&graphic);
@@ -273,7 +296,7 @@ int main(int argc, char *argv[]) {
 		if (!options.png_file) {
 			error_exit("--interleave needs --png to infer dimensions");
 		}
-		int width = read_png_width(options.png_file);
+		uint32_t width = read_png_width(options.png_file);
 		interleave(&graphic, width);
 	}
 	if (options.remove_duplicates) {
