@@ -8,8 +8,13 @@ on:
 env:
   rgbds_version: v1.0.1
 
+permissions:
+  contents: read
+
 jobs:
   build:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -100,3 +105,4 @@ jobs:
         run: |
           make -j$(sysctl -n hw.ncpu)
           .github/checkdiff.sh
+

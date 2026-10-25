@@ -365,3 +365,8 @@ native CI and documents the bounded playable slice and local invocation.
 No production, disassembly, asset or native test source changed. Local
 large builds were withheld under the parent 90-percent disk reserve;
 hosted execution and fresh code review remain required before integration.
+
+## [2026-10-25 11:52] security | Explicit ROM CI token permissions
+- Added a contents-read workflow default; retained contents-write only on the Linux job that includes upstream-only symbols publication.
+- Focused YAML parsing and a semantic comparison verify that permissions are the only workflow behavior change; the two missing-permissions findings are covered.
+- No ROM/native build was run locally because the host exceeds the 90 percent disk guard. Hosted PR checks remain separate evidence.
