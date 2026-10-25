@@ -95,3 +95,6 @@ This directory is the compiled knowledge layer for the native port effort.
 
 ## Automatic fork validation
 - See [verification.md](verification.md) for the same-run ROM oracle and native PR CI contract added on 2026-10-18.
+
+## CI token permissions
+- The ROM CI declares a read-only default token. Only the Linux build retains contents write access for its existing upstream-only symbols publication; the macOS build stays read-only. See the 2026-10-25 security entry in log.md.
