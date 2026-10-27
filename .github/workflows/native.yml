@@ -72,6 +72,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake ninja-build g++ clang libsdl2-dev pkg-config
+      - name: Run graphics tool source regressions (ASan and UBSan)
+        if: ${{ matrix.compiler == 'g++' && matrix.build_type == 'Debug' }}
+        run: python3 tools/test_gfx_sizes.py
       - name: Configure native application and tests
         run: >-
           cmake -S . -B build-native -G Ninja
