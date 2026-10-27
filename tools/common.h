@@ -130,7 +130,7 @@ uint32_t read_png_width(const char *filename) {
 	uint8_t bytes[4] = {0};
 	xfread(bytes, sizeof(bytes), filename, f);
 	fclose(f);
-	return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+	return ((uint32_t)bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
 }
 
 #endif // GUARD_COMMON_H

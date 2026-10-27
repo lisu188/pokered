@@ -98,3 +98,6 @@ This directory is the compiled knowledge layer for the native port effort.
 
 ## CI token permissions
 - The ROM CI declares a read-only default token. Only the Linux build retains contents write access for its existing upstream-only symbols publication; the macOS build stays read-only. See the 2026-10-25 security entry in log.md.
+
+## Graphics tool input bounds
+- `tools/gfx.c` now checks bit depth, the integer-sized input limit, and complete paired rows before interleaving. `tools/test_gfx_sizes.py` runs the actual CLI under AddressSanitizer/UndefinedBehaviorSanitizer with bounded fixtures. Valid 1bpp/2bpp deduplication, flips and paired-row layouts retain their bytes.
