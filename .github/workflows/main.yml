@@ -13,12 +13,12 @@ permissions:
 
 jobs:
   build:
-    permissions:
-      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Checkout rgbds
         uses: actions/checkout@v6
@@ -26,6 +26,7 @@ jobs:
           path: rgbds
           ref: ${{ env.rgbds_version }}
           repository: gbdev/rgbds
+          persist-credentials: false
 
       - name: Install rgbds
         working-directory: rgbds
@@ -50,21 +51,43 @@ jobs:
           make -j$(nproc)
           .github/checkdiff.sh
 
-      - name: Checkout symbols
+      - name: Stage symbols for publication
         if: ${{ github.repository_owner == 'pret' && github.event_name == 'push' }}
-        uses: actions/checkout@master
+        run: |
+          mkdir -p "$RUNNER_TEMP/rom-symbols"
+          cp -v *.sym *.map "$RUNNER_TEMP/rom-symbols/"
+
+      - name: Retain same-run symbols for publication
+        if: ${{ github.repository_owner == 'pret' && github.event_name == 'push' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rom-symbols-${{ github.sha }}
+          path: ${{ runner.temp }}/rom-symbols
+          if-no-files-found: error
+          retention-days: 7
+
+  publish-symbols:
+    needs: build
+    if: ${{ github.repository_owner == 'pret' && github.event_name == 'push' }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout symbols
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           path: symbols
           ref: symbols
+          persist-credentials: true
 
-      - name: Move symbols
-        if: ${{ github.repository_owner == 'pret' && github.event_name == 'push' }}
-        run: |
-          cp -v *.sym *.map symbols/
+      - name: Retrieve same-run symbols
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: rom-symbols-${{ github.sha }}
+          path: symbols
 
       - name: Update symbols
-        if: ${{ github.repository_owner == 'pret' && github.event_name == 'push' }}
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
         with:
           cwd: "./symbols"
           add: "*.sym *.map"
@@ -75,6 +98,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Checkout rgbds
         uses: actions/checkout@v6
@@ -82,6 +107,7 @@ jobs:
           path: rgbds
           ref: ${{ env.rgbds_version }}
           repository: gbdev/rgbds
+          persist-credentials: false
 
       - name: Install rgbds
         working-directory: rgbds

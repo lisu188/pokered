@@ -376,3 +376,19 @@ The three CodeQL multiplication alerts in tools/gfx.c exposed int-sized tile ari
 
 ## [2026-10-25 17:48] verification | documentation conflict resolved without source changes
 Rebuilt the graphics-tool security branch on master 561ef5ea93339bb286234cccc7437cd36231ac88 after the CI token-permission change merged. Both original wiki appendices and their timestamps are retained. The Git blob identities of tools/gfx.c, tools/common.h and tools/test_gfx_sizes.py are unchanged from validated head 3bc38b7a74468e75d930e87d324690f9456b1242. This resolves documentation overlap only; fresh hosted CI and current-head review remain required, and no new game/ROM runtime acceptance is claimed.
+
+## [2026-10-25 19:33] security | Isolate upstream symbol publication from ROM builds
+- Removed the Linux build's contents-write override; both normal ROM build jobs inherit contents-read and disable checkout credential persistence.
+- Moved the existing symbols branch update into a separate contents-write job gated to owner `pret`, push events and successful Linux build completion. Only same-run `.sym`/`.map` data crosses into that job; no ROM/build executable is transferred or run there. The existing copy glob still requires both output types before upload. Publishing actions use full commit pins.
+- YAML parsing and focused semantic checks preserve both platforms' existing build/comparison commands, workflow events, RGBDS version, publisher branch/pathspec/message and current fork behavior. No workflow, ROM/native build, artifact download or symbol push was executed locally; hosted CI and actual upstream publication remain unverified.
+
+## [2026-10-27 06:24] integration | Combined graphics bounds and CI token hardening
+- Retained the exact PR #5 graphics source/test blobs and 100644 modes on current master c5502d09b1c2639aebb9052d1a67c90cdbe75536. The only intervening master change adds static-analysis.yml, with no graphics overlap; PR #5's branch/head remain separate and unchanged.
+- Combined the graphics and permissions wiki appendices without removing earlier entries. Applied the reviewed publisher isolation and added the unchanged graphics-size fixture to exactly one hosted native row (GCC Debug), as a normal failing step. Existing ROM hash comparison and all native configure/build/CTest commands remain intact.
+- Local checks cover source identities, YAML semantics, patch applicability, documentation union and the static matrix condition. No local graphics fixture, rejection probe, ROM/native build, artifact execution or symbol publication was run. Existing fixture results are historical support only; fresh combined-head hosted CI and review remain required before integration.
+
+## [2026-10-27 06:42] integration | Rebase workflow hardening after graphics fix merged
+- Rebased the draft onto verified master f30159b748f5ad5abcdc65f3aa4d265b55c26ec5 after PR #5 merged. Its three exact graphics source/test blobs and 100644 modes are inherited; only five workflow/wiki paths remain in this draft.
+- Preserved the reviewed symbol publisher isolation, single GCC Debug graphics fixture gate, existing ROM/native commands and all prior graphics/permissions wiki appendices. The component PR branch was not changed by this work.
+- Updated the shared analyzer pin to 0adcb8f8da733a6f8ae453a6abdadc889f3113e9 and passed the exact boolean run_codeql:false to skip duplicate custom uploads while managed default CodeQL remains configured. Source comparison verifies no caller event/permission change and no other analyzer disabled; the central delta only adds that input/guard and disables the broken Microsoft package feed on the ephemeral docs runner.
+- Earlier component and pre-rebase CI results do not accept this rebased head. Fresh ROM/native/graphics-source checks, managed CodeQL and current-head review remain required; no local fixture/probe/build/artifact execution or symbol publication was performed.
